@@ -1,6 +1,5 @@
 Pool/*
 Radio/*
 venv
-start_radio.sh
 .env
 __pycache__
