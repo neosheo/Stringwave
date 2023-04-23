@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Radio</title>
+        <!--<link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='styles.css') }}">-->
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>    
+    </head>
+    <body>
+            <table>
+                <tr>
+                    <th>Title</th>
+                    <th>Artist</th>
+                    <th>Config</th>
+                </tr>
+                {% for track in tracks %}
+                <tr>
+                    <th>{{ track.title }}</th>
+                    <th>{{ track.artist }}</th>
+                    <th>{{ track.config }}</th>
+                </tr>
+                {% endfor %}
+            </table>
+    </body>
+</html>

@@ -1,5 +1,7 @@
-Pool/*
-Radio/*
+radio/*
 venv
 .env
 __pycache__
+compose.yaml
+config/*
+containers
