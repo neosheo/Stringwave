@@ -1,6 +1,6 @@
-uwsgi
+requests
+bs4
 flask
 flask-sqlalchemy
 yt-dlp
-python-dotenv
-requests
+uwsgi

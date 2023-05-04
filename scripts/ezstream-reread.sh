@@ -1,7 +1,18 @@
 #!/bin/bash
 
-cd /stringwave/radio && python remove_whitespaces.py 
+station=$1
 
-./convert.sh
+cd /stringwave/radio/"$station"
 
-find /stringwave/radio -name "*.opus" > /stringwave/radio/.playlist
+python /stringwave/scripts/remove_whitespaces.py 
+
+find /stringwave/radio -name "*.opus" > /stringwave/radio/"$station"/.playlist
+
+ezpid = "$(cat /stringwave/.pid)"
+
+if ps h --pid $ezpid
+then
+    kill -1 $ezpid
+else
+    ./ezstream.sh
+fi

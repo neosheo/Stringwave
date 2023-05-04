@@ -8,14 +8,14 @@
     <body>
             <table>
                 <tr>
-                    <th>Title</th>
-                    <th>Artist</th>
+                    <th>ID</th>
+                    <th>Track</th>
                     <th>Config</th>
                 </tr>
                 {% for track in tracks %}
                 <tr>
-                    <th>{{ track.title }}</th>
-                    <th>{{ track.artist }}</th>
+                    <th>{{ track.track_id }}</th>
+                    <th>{{ track.filename }}</th>
                     <th>{{ track.config }}</th>
                 </tr>
                 {% endfor %}

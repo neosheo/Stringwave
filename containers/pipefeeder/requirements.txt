@@ -1,0 +1,9 @@
+bs4
+lxml
+requests
+yt-dlp
+flask
+flask_sqlalchemy
+tqdm
+uwsgi
+python-dotenv

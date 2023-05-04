@@ -17,6 +17,10 @@ main_radio_tracks = os.listdir(main_radio)
 new_radio = f'{os.getcwd()}/radio/new'
 new_radio_tracks = os.listdir(new_radio)
 
+# log paths
+cogmera_log = f'{os.getcwd()}/logs/cogmera.log'
+pipefeeder_log = f'{os.getcwd()}/logs/pipefeeder.log'
+
 
 def remove_white_spaces_in_track_filenames(radio_dir):
     for old_file_name in radio_dir:

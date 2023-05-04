@@ -29,7 +29,7 @@ void main() {
 	// bind socket
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
-	addr.sin_addr.s_addr = inet_addr("10.64.187.7");
+	addr.sin_addr.s_addr = inet_addr("0.0.0.0");
 	addr.sin_port = htons(5800);
 	if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) < 0)
 		puts("Error binding socket.");

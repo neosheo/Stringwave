@@ -1,8 +1,12 @@
 #!/bin/bash
 
-cd radio && python remove_whitespaces.py
+station=$1
+
+cd /stringwave/radio/"$station"
+
+python /stringwave/scripts/remove_whitespaces.py "$station"
 
 find . -name "*.opus" > .playlist
 
-ezstream -rv -p .pid -c /stringwave/config/ezstream.xml
+ezstream -rv -p /stringwave/.pid -c /stringwave/config/ezstream.xml
 
