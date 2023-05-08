@@ -15,6 +15,6 @@ yt-dlp \
     --audio-format opus \
     -o ./radio/new/"$filename"
 
-python embed_metadata.py ./songs/"$filename".opus "$config"
+python scripts/embed_metadata.py ./songs/"$filename".opus "$config"
 
 

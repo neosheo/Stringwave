@@ -118,7 +118,7 @@ def populateDb(text_file):
 		subscriptions.append((channel_id, channel_name, channel_url, channel_icon))
 	print('Done!')
 	print('Updating database...')
-	con = sqlite3.connect('pipefeeder/webapp/instance/subs.db')
+	con = sqlite3.connect('webapp/instance/subs.db')
 	cur = con.cursor()
 	cur.executemany('INSERT OR IGNORE INTO subs(channel_id, channel_name, channel_url, channel_icon) VALUES (?, ?, ?, ?)', subscriptions)
 	con.commit()

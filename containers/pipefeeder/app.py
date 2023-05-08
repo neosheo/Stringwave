@@ -5,6 +5,7 @@ from sqlalchemy import func
 from pipefeeder import *
 import sqlite3
 import re
+from upload import upload
 
 
 @app.route('/', methods = ['GET'])
@@ -48,14 +49,22 @@ def backup():
 
 
 @app.route('/upload_subs', methods = ['GET', 'POST'])
-def upload():
+def upload_subs():
+	with open('.upload', 'w') as f:
+		f.write('uploading')
 	file = request.files['subs']
 	if file and allowed_file(file.filename):
 		filename = secure_filename(file.filename)
 		file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 		file.save(file_path)
-	populateDb(file_path)
-	return redirect('/list_subs')
+	upload.delay(file_path)
+	return render_template('upload.html')
+
+
+@app.route('/upload_complete', methods = ['GET'])
+def upload_complete():
+	with open('.upload', 'w') as f:
+		f.write('complete')
 
 
 if __name__ == '__main__':

@@ -1,4 +1,4 @@
-cd pipefeeder
+celery --app upload worker --loglevel INFO &
 
 uwsgi \
     --socket :3031 \

@@ -7,3 +7,4 @@ flask_sqlalchemy
 tqdm
 uwsgi
 python-dotenv
+celery

@@ -1,10 +1,13 @@
 from flask import render_template, request, redirect
 from webapp import *
-from stringwave import *
 import subprocess
 import re
 import os
 from pathlib import Path
+
+
+cogmera_log = '/stringwave/logs/cogmera.log'
+pipefeeder_log = '/stringwave/logs/pipefeeder.log'
 
 
 @app.route('/tracks')

@@ -1,5 +1,3 @@
-cd cogmera
-
 uwsgi \
     --socket :3032 \
     --wsgi-file app.py \

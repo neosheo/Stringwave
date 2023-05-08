@@ -1,25 +1,27 @@
 FROM python:3.11.3-slim-bullseye
 
-RUN apt-get update && apt-get install gcc cron -y
+WORKDIR /cogmera
+
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install gcc cron -y
 
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -r requirements.txt
-
-RUN apt-get install -y curl
+RUN rm requirements.txt
 
 RUN groupadd -r --gid 1000 cogmera && useradd -r --uid 1000 -g cogmera cogmera
-RUN chsh -s /usr/sbin/nologin root
+RUN chsh --shell /usr/sbin/nologin root
 
-COPY app.py ./cogmera/
-COPY cogmera.py ./cogmera/
-COPY webapp/ ./cogmera/webapp/
-COPY start_uwsgi.sh ./cogmera/
-COPY run.py ./cogmera/
-COPY run.sh ./cogmera/
+COPY app.py .
+COPY cogmera.py .
+COPY webapp/ ./webapp/
+COPY start.sh .
+COPY run.py .
+COPY run.sh .
 
 RUN touch /cogmera/webapp/instance/configs.db
 RUN chown -R cogmera:cogmera /cogmera/
-RUN echo "0 3 * * * cd /cogmera && ./run.sh" | crontab -
+RUN echo "0 3 * * * cd /cogmera && ./run.sh" | crontab -u cogmera -
 
-ENTRYPOINT [ "sh", "./cogmera/start_uwsgi.sh" ]
+ENTRYPOINT [ "sh", "./start.sh" ]

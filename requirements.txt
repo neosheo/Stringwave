@@ -2,5 +2,4 @@ uwsgi
 flask
 flask-sqlalchemy
 yt-dlp
-python-dotenv
 requests

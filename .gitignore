@@ -16,3 +16,4 @@ containers/pipefeeder/backup/*
 .playlist
 .pid
 *.log
+.upload
