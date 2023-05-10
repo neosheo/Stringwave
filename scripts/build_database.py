@@ -11,10 +11,10 @@ for file in os.listdir(f'radio/{station}'):
     if file == '.playlist':
         continue
     track = mutagen.File(f'{os.getcwd()}/radio/{station}/{file}')
-    tracks.append((track_id, track['title'], track['artist'], track['config']))
+    tracks.append((track_id, track['title'][0], track['artist'][0], track['config'][0]))
     track_id += 1
 
 con = sqlite3.connect('webapp/instance/radio.db')
 cur = con.cursor()
-cur.executemany('INSERT OR IGNORE INTO radio(track_id, filename, artist, config) VALUES (?, ?, ?, ?)', tracks)
+cur.executemany('INSERT OR IGNORE INTO tracks(track_id, filename, artist, config) VALUES (?, ?, ?, ?)', tracks)
 con.commit()
