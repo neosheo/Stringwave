@@ -21,8 +21,8 @@ COPY upload.py .
 COPY start.sh .
 COPY run.sh .
 
-RUN touch /pipefeeder/backup/subs.txt /pipefeeder/.urls
+RUN touch /pipefeeder/backup/subs.txt /pipefeeder/.urls /pipefeeder/webapp/static/upload_status
 RUN chown -R pipefeeder:pipefeeder /pipefeeder/
-RUN echo "30 3 * * * cd /pipefeeder && ./run.sh | crontab -u pipefeeder -"
+RUN echo "30 3 * * * ./run.sh | crontab -u pipefeeder -"
 
-ENTRYPOINT [ "sh", "./start.sh" ]
+ENTRYPOINT [ "bash", "./start.sh" ]

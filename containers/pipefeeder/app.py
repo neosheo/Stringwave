@@ -8,9 +8,9 @@ import re
 from upload import upload
 
 
-@app.route('/', methods = ['GET'])
-def dashboard():
-	return render_template('index.html')
+# @app.route('/', methods = ['GET'])
+# def dashboard():
+# 	return render_template('index.html')
 
 
 @app.route('/list_subs', methods = ['GET'])
@@ -50,7 +50,7 @@ def backup():
 
 @app.route('/upload_subs', methods = ['GET', 'POST'])
 def upload_subs():
-	with open('.upload', 'w') as f:
+	with open('webapp/static/upload_status', 'w') as f:
 		f.write('uploading')
 	file = request.files['subs']
 	if file and allowed_file(file.filename):
@@ -63,7 +63,7 @@ def upload_subs():
 
 @app.route('/upload_complete', methods = ['GET'])
 def upload_complete():
-	with open('.upload', 'w') as f:
+	with open('webapp/static/upload_status', 'w') as f:
 		f.write('complete')
 
 

@@ -6,4 +6,4 @@ import requests
 @celery_app.task
 def upload(file_path):
 	populateDb(file_path)
-	requests.get('http://localhost:80/upload_complete')
+	requests.get('http://gateway/upload_complete')

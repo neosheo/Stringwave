@@ -2,9 +2,10 @@ import sys
 from mutagen.oggopus import OggOpus
 
 file = OggOpus(sys.argv[1])
-config_id = sys.argv[2]
 
-file["CONFIG"] = config_id
+file['title'] = sys.argv[1].split('/')[3]
+file['artist'] = sys.argv[2]
+file["config"] = sys.argv[3]
 file.save()
 
 

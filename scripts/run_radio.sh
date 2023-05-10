@@ -11,7 +11,7 @@ tmux new-session -d -s $session
 tmux rename-window -t $session:$window "ezstream"
 tmux send-keys -t $session:$window "cd /stringwave" C-m
 tmux send-keys -t $session:$window "/bin/monitor_port &" C-m
-tmux send-keys -t $session:$window "./scripts/ezstream.sh new || pkill monitor_port" C-m
+tmux send-keys -t $session:$window "./scripts/ezstream.sh new || pkill monitor_port && touch .pid" C-m
 #session="metadata"
 #tmux new-session -d -s $session
 #tmux rename-window -t $session:$window "metadata"

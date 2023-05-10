@@ -22,6 +22,6 @@ COPY run.sh .
 
 RUN touch /cogmera/webapp/instance/configs.db
 RUN chown -R cogmera:cogmera /cogmera/
-RUN echo "0 3 * * * cd /cogmera && ./run.sh" | crontab -u cogmera -
+RUN echo "0 3 * * * ./run.sh" | crontab -u cogmera -
 
-ENTRYPOINT [ "sh", "./start.sh" ]
+ENTRYPOINT [ "bash", "./start.sh" ]

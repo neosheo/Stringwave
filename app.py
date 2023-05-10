@@ -21,9 +21,10 @@ def download():
 	app = data['app']
 	if app == 'cogmera':
 		filename = data['filename']
+		artist = data['artist']
 		search_query = data['search_query']
 		config = data['config']
-		output = subprocess.run([f'{os.getcwd()}/scripts/cogmera-download.sh', filename, search_query, config], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		output = subprocess.run([f'{os.getcwd()}/scripts/cogmera-download.sh', filename, artist, search_query, config], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		with open(cogmera_log, 'a') as f:
 			f.write(output.stdout.decode())
 		#failed_downloads += int(str(output.stdout).count('Downloading 0 items of 0'))
@@ -33,7 +34,7 @@ def download():
 		output = subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		with open(cogmera_log, 'a') as f:
 			f.write(output.stdout.decode())
-		new_track = Tracks(filename=filename, config=config)
+		new_track = Tracks(filename=filename, artist=artist, config=config)
 		db.session.add(new_track)
 		db.session.commit()
 		return 'Complete!'

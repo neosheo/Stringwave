@@ -1,20 +1,19 @@
 #!/bin/bash
 
 filename=$1
-search_query=$2
-config=$3
+artist=$2
+search_query=$3
+config=$4
 
 yt-dlp \
     ytsearch1:"$search_query" \
     --format '[height<720]' \
-    --parse-metadata '%(uploader)s:%(meta_artist)s' \
-    --embed-metadata \
     --sponsorblock-remove all \
     --sponsorblock-api 'https://api.sponsor.ajay.app/api/' \
     --extract-audio \
     --audio-format opus \
     -o ./radio/new/"$filename"
 
-python scripts/embed_metadata.py ./songs/"$filename".opus "$config"
+python scripts/embed_metadata.py ./radio/new/"$filename".opus "$artist" "$config"
 
 

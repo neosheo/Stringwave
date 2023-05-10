@@ -4,15 +4,15 @@ station=$1
 
 cd /stringwave/radio/"$station"
 
-python /stringwave/scripts/remove_whitespaces.py 
+python /stringwave/scripts/remove_whitespaces.py new
 
 find /stringwave/radio -name "*.opus" > /stringwave/radio/"$station"/.playlist
 
-ezpid = "$(cat /stringwave/.pid)"
+ezpid="$(cat /stringwave/.pid)"
 
 if ps h --pid $ezpid
 then
     kill -1 $ezpid
 else
-    ./ezstream.sh
+    ./scripts/ezstream.sh
 fi

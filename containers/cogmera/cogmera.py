@@ -179,6 +179,7 @@ def downloadSongs(albums, num_albums_to_pick, config_stamp):
             post_data = {
                 'app': 'cogmera',
                 'filename': random_track,
+                'artist': album.tracklist_artists[random_number],
                 'search_query': f'{album.tracklist_artists[random_number].replace("*", "").replace("/", "")} {random_track.replace("*", "").replace("/", "")}"',
                 'config': config_stamp
             }
@@ -189,6 +190,7 @@ def downloadSongs(albums, num_albums_to_pick, config_stamp):
             post_data = {
                 'app': 'cogmera',
                 'filename': random_track,
+                'artist': album.artist,
                 'search_query': f'{album.artist.replace("*", "").replace("/", "")} {random_track.replace("*", "").replace("/", "")}"',
                 'config': config_stamp
             }
