@@ -10,9 +10,19 @@ cogmera_log = '/stringwave/logs/cogmera.log'
 pipefeeder_log = '/stringwave/logs/pipefeeder.log'
 
 
-@app.route('/tracks')
-def radio():
+@app.route('/tracks_main')
+def tracks_main():
 	return render_template('index.html', tracks=Tracks.query.order_by(Tracks.track_id).all())
+
+
+@app.route('/tracks_new')
+def tracks_new():
+	return render_template('index.html', tracks=Tracks.query.order_by(Tracks.track_id).all())
+
+
+@app.route('/move_to_main', methods = ['POST'])
+def move_to_main():
+	pass
 
 
 @app.route('/download', methods = ['POST'])
@@ -34,7 +44,7 @@ def download():
 		output = subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		with open(cogmera_log, 'a') as f:
 			f.write(output.stdout.decode())
-		new_track = Tracks(filename=filename, artist=artist, config=config)
+		new_track = Tracks(title=filename, artist=artist, config=config, station='new')
 		db.session.add(new_track)
 		db.session.commit()
 		return 'Complete!'
@@ -53,7 +63,7 @@ def download():
 				f.write(output.stdout.decode())
 			tracks = os.listdir('/stringwave/radio/new')
 			latest_track = Path(max(tracks, key=os.path.getctime)).stem
-			new_track = Tracks(filename=latest_track, config="pf")
+			new_track = Tracks(title=latest_track, config='pf', station='new')
 			db.session.add(new_track)
 			db.session.commit()
 			return 'Complete!'

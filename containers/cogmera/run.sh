@@ -1,6 +1,6 @@
 #!/bin/bash
 
-log=/cogmera/cogmera.log
+log=/cogmera/logs/cogmera.log
 
 echo "$(date)" > "$log"
 

@@ -3,7 +3,7 @@ FROM python:3.11.3-slim-bullseye
 WORKDIR /pipefeeder
 
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install gcc cron -y
+RUN apt-get install gcc -y
 
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip
@@ -23,6 +23,5 @@ COPY run.sh .
 
 RUN touch /pipefeeder/backup/subs.txt /pipefeeder/.urls /pipefeeder/webapp/static/upload_status
 RUN chown -R pipefeeder:pipefeeder /pipefeeder/
-RUN echo "30 3 * * * ./run.sh | crontab -u pipefeeder -"
 
 ENTRYPOINT [ "bash", "./start.sh" ]

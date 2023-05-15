@@ -8,11 +8,11 @@ python /stringwave/scripts/remove_whitespaces.py new
 
 find /stringwave/radio -name "*.opus" > /stringwave/radio/"$station"/.playlist
 
-ezpid="$(cat /stringwave/.pid)"
+ezpid="$(cat /stringwave/.pid-$station)"
 
 if ps h --pid $ezpid
 then
     kill -1 $ezpid
 else
-    ./scripts/ezstream.sh
+    ./scripts/ezstream.sh "$station"
 fi

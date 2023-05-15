@@ -1,3 +1,5 @@
+service cron start
+
 celery --app upload worker --loglevel INFO &
 
 uwsgi \

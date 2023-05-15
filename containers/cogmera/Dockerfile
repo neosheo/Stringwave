@@ -3,7 +3,7 @@ FROM python:3.11.3-slim-bullseye
 WORKDIR /cogmera
 
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install gcc cron -y
+RUN apt-get install gcc -y
 
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip
@@ -22,6 +22,5 @@ COPY run.sh .
 
 RUN touch /cogmera/webapp/instance/configs.db
 RUN chown -R cogmera:cogmera /cogmera/
-RUN echo "0 3 * * * ./run.sh" | crontab -u cogmera -
 
 ENTRYPOINT [ "bash", "./start.sh" ]

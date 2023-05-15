@@ -1,6 +1,6 @@
 #!/bin/bash
 
-log=pipefeeder.log
+log=/pipefeeder/logs/pipefeeder.log
 
 echo "$(date)" > "$log"
 

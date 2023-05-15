@@ -8,9 +8,10 @@ db = SQLAlchemy(app)
 
 class Tracks(db.Model):
 	track_id = db.Column(db.Integer, primary_key=True)
-	filename = db.Column(db.String(30))
+	title = db.Column(db.String(30))
 	artist = db.Column(db.String(30))
 	config = db.Column(db.Integer)
+	station = db.Column(db.String(4))
 
 with app.app_context():
 	db.create_all()
