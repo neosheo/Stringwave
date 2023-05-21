@@ -12,12 +12,12 @@ pipefeeder_log = '/stringwave/logs/pipefeeder.log'
 
 @app.route('/tracks_main')
 def tracks_main():
-	return render_template('index.html', tracks=Tracks.query.order_by(Tracks.track_id).all())
+	return render_template('index.html', tracks=Tracks.query.filter(Tracks.station == 'main').order_by(Tracks.track_id).all())
 
 
 @app.route('/tracks_new')
 def tracks_new():
-	return render_template('index.html', tracks=Tracks.query.order_by(Tracks.track_id).all())
+	return render_template('index.html', tracks=Tracks.query.filter(Tracks.station == 'new').order_by(Tracks.track_id).all())
 
 
 @app.route('/move_to_main', methods = ['POST'])
@@ -47,7 +47,6 @@ def download():
 		new_track = Tracks(title=filename, artist=artist, config=config, station='new')
 		db.session.add(new_track)
 		db.session.commit()
-		return 'Complete!'
 	elif app == 'pipefeeder':
 		links = data['links']
 		open(pipefeeder_log, 'w').close()
@@ -66,7 +65,6 @@ def download():
 			new_track = Tracks(title=latest_track, config='pf', station='new')
 			db.session.add(new_track)
 			db.session.commit()
-			return 'Complete!'
 	else:
 		return 'Not a valid application'
 	output = subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -76,6 +74,7 @@ def download():
 	if app == 'pipefeeder':
 		with open(pipefeeder_log, 'a') as f:
 			f.write(output.stdout.decode())
+	return "Complete!"
 	
 
 

@@ -11,16 +11,6 @@
     <h1>Uploading subscriptions. This may take a while. Please be patient.</h1>
 </body>
 
-<script>
-    async function checkUploadStatus() {
-    const response = await fetch('{{ url_for("static", filename="upload_status") }}');
-    const data = await response.text();
-    if (data === 'complete') {
-        window.location.replace('/list_subs');
-    }
-    setTimeout(checkUploadStatus, 5000);
-}
-checkUploadStatus();
-</script>
+<script src='{{ url_for("static", filename="check_upload_status.js") }}'></script>
 
 </html>

@@ -8,11 +8,6 @@ import re
 from upload import upload
 
 
-# @app.route('/', methods = ['GET'])
-# def dashboard():
-# 	return render_template('index.html')
-
-
 @app.route('/list_subs', methods = ['GET'])
 def listSubs():
 	return render_template('subs.html', subs=Subs.query.order_by(func.lower(Subs.channel_name)).all())
@@ -67,5 +62,13 @@ def upload_complete():
 		f.write('complete')
 
 
+@app.route('/upload_status', methods = ['GET'])
+def upload_status():
+	with open('webapp/static/upload_status', 'r') as f:
+		status = f.read()
+	json = f'{{ "status": "{status}"}}'
+	return json
+
+
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', debug=True)
+	app.run(host='0.0.0.0', debug=False)

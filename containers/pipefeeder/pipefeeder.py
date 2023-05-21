@@ -84,7 +84,7 @@ def getRecentUploads(feed):
 
 def buildPlaylist():
 	open('.urls', 'w').close()
-	con = sqlite3.connect('pipefeeder/webapp/instance/subs.db')
+	con = sqlite3.connect('webapp/instance/subs.db')
 	subscriptions = [x[0] for x in con.cursor().execute('SELECT channel_url FROM subs').fetchall()]
 	for subscription in subscriptions:
 		feed = getChannelFeed(subscription)
