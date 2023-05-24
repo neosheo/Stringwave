@@ -9,85 +9,74 @@
 </head>
 
 <body>
-<script>
-	$(document).ready(function() {
-		$('.select-single').select2(
-			theme: 'flat'
-		);
-	});
-</script>
 
-<script>
-	$(document).ready(function() {
-		$('.select-multiple').select2();
-	});
-</script>
+	<form method='POST' action='/config'>
+		<label for='genres'>Select a Genre:</label>
+		<br>
+		<select class='select-multiple' name='genres' multiple='multiple' id='genres'>
+			<option value='None' selected>None</option>
+			{% for genre in genres %}
+			<option value="{{ genre['genre'] }}">{{ genre['genre'] }}</option>
+			{% endfor %}
+		</select>
+		<br><br>
+		<label for='styles'>Select a Style:</label>
+		<br>
+		<select class='select-multiple' name='styles' multiple='multiple' id='styles'>
+			<option value='None' selected>None</option>
+			{% for style in styles %}
+			<option value="{{ style['style'] }}">{{ style['style'] }}</option>
+			{% endfor %}
+		</select>
+		<br><br>
+		<label for='countries'>Select a Country:</label>
+		<br>
+		<select class='select-single' name='countries' id='countries'>
+			<option value='None' selected>None</option>
+			{% for country in countries %}
+			<option value="{{ country['country'] }}">{{ country['country'] }}</option>
+			{% endfor %}
+		</select>
+		<br><br>
+		<label for='decades'>Select a Decade:</label>
+		<br>
+		<select class='select-single' name='decades' id='decades'>
+			<option value='None' selected>None</option>
+			{% for decade in decades %}
+			<option value="{{ decade['decade'] }}">{{ decade['decade'] }}</option>
+			{% endfor %}
+		</select>
+		<br><br>
+		<label for='years'>Select a Year:</label>
+		<br>
+		<select class='select-single' name='years' id='years'>
+			<option value='None' selected>None</option>
+			{% for year in years %}
+			<option value="{{ year['year'] }}">{{ year['year'] }}</option>
+			{% endfor %}
+		</select>
+		<br><br>
+		<label for='sort_methods'>Select a Sorting Method:</label>
+		<br>
+		<select class='select-single' name='sort_methods' id='sort_methods'>
+			<option value='None' selected>None</option>
+			{% for sort_method in sort_methods %}
+			<option value="{{ sort_method['sort_method'] }}">{{ sort_method['sort_method'] }}</option>
+			{% endfor %}
+		</select>
+		<br><br>
+		<label for='order'>How do you want to order the results?</label><br>
+		<input type='radio' id='order' name='order' value='A'>
+		<label for='asc'>Ascending</label><br>
+		<input type='radio' id='order' name='order' value='D'>
+		<label for='desc'>Descending</label><br>
+		<br>
+		<label for='number'>How many songs do you want to download?</label><br>
+		<input type='text' name='number'>
+		<br><br>
+		<input type='submit' value='SUBMIT'>
+	</form>
 
-<form method='POST' action='/config'>
-	<label for='genres'>Select a Genre:</label>
-	<br>
-	<select class='select-multiple' name='genres' multiple='multiple' id='genres'>
-		<option value='None' selected>None</option>
-		{% for genre in genres %}
-		<option value="{{ genre['genre'] }}">{{ genre['genre'] }}</option>
-		{% endfor %}
-	</select>
-	<br><br>
-	<label for='styles'>Select a Style:</label>
-	<br>
-	<select class='select-multiple' name='styles' multiple='multiple' id='styles'>
-		<option value='None' selected>None</option>
-		{% for style in styles %}
-		<option value="{{ style['style'] }}">{{ style['style'] }}</option>
-		{% endfor %}
-	</select>
-	<br><br>
-	<label for='countries'>Select a Country:</label>
-	<br>
-	<select class='select-single' name='countries' id='countries'>
-		<option value='None' selected>None</option>
-		{% for country in countries %}
-		<option value="{{ country['country'] }}">{{ country['country'] }}</option>
-		{% endfor %}
-	</select>
-	<br><br>
-	<label for='decades'>Select a Decade:</label>
-	<br>
-	<select class='select-single' name='decades' id='decades'>
-		<option value='None' selected>None</option>
-		{% for decade in decades %}
-		<option value="{{ decade['decade'] }}">{{ decade['decade'] }}</option>
-		{% endfor %}
-	</select>
-	<br><br>
-	<label for='years'>Select a Year:</label>
-	<br>
-	<select class='select-single' name='years' id='years'>
-		<option value='None' selected>None</option>
-		{% for year in years %}
-		<option value="{{ year['year'] }}">{{ year['year'] }}</option>
-		{% endfor %}
-	</select>
-	<br><br>
-	<label for='sort_methods'>Select a Sorting Method:</label>
-	<br>
-	<select class='select-single' name='sort_methods' id='sort_methods'>
-		<option value='None' selected>None</option>
-		{% for sort_method in sort_methods %}
-		<option value="{{ sort_method['sort_method'] }}">{{ sort_method['sort_method'] }}</option>
-		{% endfor %}
-	</select>
-	<br><br>
-	<label for='order'>How do you want to order the results?</label><br>
-	<input type='radio' id='order' name='order' value='A'>
-	<label for='asc'>Ascending</label><br>
-	<input type='radio' id='order' name='order' value='D'>
-	<label for='desc'>Descending</label><br>
-	<br>
-	<label for='number'>How many songs do you want to download?</label><br>
-    <input type='text' name='number'>
-	<br><br>
-	<input type='submit' value='SUBMIT'>
-</form>
+	<script src="{{ url_for('static', filename='jquery_classes.js') }}"></script>
 </body>
 </html>

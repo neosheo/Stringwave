@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sqlite3 webapp/instance/radio.db <<EOF
-CREATE TABLE tracks(track_id INTEGER PRIMARY KEY AUTOINCREMENT, title VARCHAR(30), artist VARCHAR(30), config INTEGER, station VARCHAR(4));
+CREATE TABLE IF NOT EXISTS tracks(track_id INTEGER PRIMARY KEY AUTOINCREMENT, title VARCHAR(30), artist VARCHAR(30), config INTEGER, station VARCHAR(4));
 EOF
 
 python scripts/build_database.py new
