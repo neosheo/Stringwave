@@ -41,9 +41,9 @@ def download():
 		#print(f'Number of failed downloads: {failed_downloads}\n')
 		#if failed_downloads > 0:
 		#	downloadSongs(albums, num_albums_to_pick - failed_downloads, config_stamp)
-		output = subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-		with open(cogmera_log, 'a') as f:
-			f.write(output.stdout.decode())
+		# output = subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		# with open(cogmera_log, 'a') as f:
+		# 	f.write(output.stdout.decode())
 		new_track = Tracks(title=filename, artist=artist, config=config, station='new')
 		db.session.add(new_track)
 		db.session.commit()
@@ -57,9 +57,9 @@ def download():
 			output = subprocess.run([f'{os.getcwd()}/scripts/pipefeeder-download.sh', link], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 			with open(pipefeeder_log, 'a') as f:
 				f.write(output.stdout.decode())
-			output = subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-			with open(cogmera_log, 'a') as f:
-				f.write(output.stdout.decode())
+			# output = subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+			# with open(cogmera_log, 'a') as f:
+			# 	f.write(output.stdout.decode())
 			tracks = os.listdir('/stringwave/radio/new')
 			latest_track = Path(max(tracks, key=os.path.getctime)).stem
 			new_track = Tracks(title=latest_track, config='pf', station='new')

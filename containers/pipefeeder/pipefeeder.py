@@ -5,6 +5,8 @@ from datetime import datetime, timedelta
 from tqdm import tqdm
 import sqlite3
 import os
+import bad_words
+import re
 
 
 def getChannelFeed(channel=None):
@@ -65,6 +67,14 @@ def getRecentUploads(feed):
 	# remove first date entry which is the channel published date
 	pub_dates = feed_soup.find_all('published')[1:]
 	videos = feed_soup.find_all('media:content')
+	titles = feed_soup.find_all('media:title')
+	# remove any videos that contain words in the bad_words.py file
+	for i, title in enumerate(titles):
+		for bad_word in bad_words:
+			if re.match(bad_word, title, flags=re.IGNORECASE):
+				titles.remove(title)
+				del pub_dates[i]
+				del videos[i]
 	# check if videos are were published before your specified period 
 	# if they are within your specified period, include them
 	index = 0
