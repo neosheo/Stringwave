@@ -17,6 +17,6 @@ containers/pipefeeder/backup/*
 .pid
 *.log
 .upload
-*.baklistener.c
+listener.c
 sender.c
 *.bak
