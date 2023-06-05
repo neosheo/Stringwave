@@ -14,5 +14,5 @@ if ps h --pid $ezpid
 then
     kill -1 $ezpid
 else
-    ./scripts/ezstream.sh "$station"
+    /stringwave/scripts/ezstream.sh "$station"
 fi

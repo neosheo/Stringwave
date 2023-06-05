@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 from tqdm import tqdm
 import sqlite3
 import os
-import bad_words
+from bad_words import bad_words
 import re
 
 
@@ -71,7 +71,7 @@ def getRecentUploads(feed):
 	# remove any videos that contain words in the bad_words.py file
 	for i, title in enumerate(titles):
 		for bad_word in bad_words:
-			if re.match(bad_word, title, flags=re.IGNORECASE):
+			if re.match(bad_word, title.text, flags=re.IGNORECASE):
 				titles.remove(title)
 				del pub_dates[i]
 				del videos[i]
@@ -96,9 +96,13 @@ def buildPlaylist():
 	open('.urls', 'w').close()
 	con = sqlite3.connect('webapp/instance/subs.db')
 	subscriptions = [x[0] for x in con.cursor().execute('SELECT channel_url FROM subs').fetchall()]
-	for subscription in subscriptions:
+	print('Fetching new video URLs...')
+	for subscription in tqdm(subscriptions):
 		feed = getChannelFeed(subscription)
 		getRecentUploads(feed)
+	with open('.urls', 'r') as f:
+		num_urls = len(f.readlines())
+	print(f'Grabbed {num_urls} URLs!')
 
 
 def downloadPlaylist():

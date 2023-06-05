@@ -73,7 +73,7 @@ def buildUrl(genre_param, style_param, time_param, sort_param, country_param, qu
         url = f"https://www.discogs.com/search/?{sort_param}ev=em_rs{genre_param}{style_param}{time_param}{country_param}"
     else:
         url = f"https://www.discogs.com/search/?{sort_param}q={query}{genre_param}{style_param}{time_param}{country_param}"
-    print(url)
+    print(f'Search URL: {url}')
     return url
 
 
@@ -170,7 +170,7 @@ def validateAlbums(albums, num_albums_to_pick):
 
 def downloadSongs(albums, num_albums_to_pick, config_stamp):
     albums = validateAlbums(albums, num_albums_to_pick)
-    [print(f'Album selected: {album.title} - {album.artist}') for album in albums]
+    [print(f'Album selected: {album.title} - {album.artist}\nDiscogs link: {album.link}') for album in albums]
     for album in albums:
         random_track, random_number = album.getRandomTrack()
         if album.tracklist_artists != None:
@@ -183,7 +183,7 @@ def downloadSongs(albums, num_albums_to_pick, config_stamp):
                 'search_query': f'{album.tracklist_artists[random_number].replace("*", "").replace("/", "")} {random_track.replace("*", "").replace("/", "")}"',
                 'config': config_stamp
             }
-            requests.post('http://gateway/download', json=post_data)
+            requests.post('http://gateway:80/download', json=post_data)
         else:
             print(f'Track selected: {random_track} - {album.artist}')
             headers = {"Content-Type": "application/json"}
@@ -194,14 +194,4 @@ def downloadSongs(albums, num_albums_to_pick, config_stamp):
                 'search_query': f'{album.artist.replace("*", "").replace("/", "")} {random_track.replace("*", "").replace("/", "")}"',
                 'config': config_stamp
             }
-            requests.post('http://gateway/download', headers=headers, json=post_data)
-        
-
-if __name__ == '__main__':
-    downloadSongs(getAlbumData(buildUrl(
-                                setGenres('None'),
-                                setStyles('modern classical', 'leftfield'),
-                                setTime(),
-                                setSortMethod('hot', 'D'),
-                                setCountry('None'))
-                            , 1), 1)
+            requests.post('http://gateway:80/download', headers=headers, json=post_data)

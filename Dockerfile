@@ -16,8 +16,7 @@ COPY radio/ ./radio/
 COPY scripts/ ./scripts/
 COPY webapp/ ./webapp/
 COPY logs/ ./logs/
-COPY config/icecast.xml ./config/
-COPY config/ezstream.xml ./config/
+COPY config/ ./config/
 COPY src/ ./src/
 COPY app.py .
 COPY start.sh .

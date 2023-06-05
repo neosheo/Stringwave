@@ -1,10 +1,8 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import os
-from dotenv import load_dotenv
 from celery import Celery, Task
 
-load_dotenv()
 
 BACKUP_LOCATION = f'{os.getcwd()}/backup'
 ALLOWED_EXTENSIONS = {'txt'}

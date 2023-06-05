@@ -15,6 +15,7 @@ RUN chsh --shell /usr/sbin/nologin root
 
 COPY app.py .
 COPY pipefeeder.py .
+COPY bad_words.py .
 COPY webapp/ ./webapp/
 COPY backup/ ./backup/
 COPY upload.py .

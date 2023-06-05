@@ -49,7 +49,6 @@ def download():
 		db.session.commit()
 	elif app == 'pipefeeder':
 		links = data['links']
-		open(pipefeeder_log, 'w').close()
 		for link in links:
 			regex = r'^(https?:\/\/)?(www\.)?youtube\.com/watch\?v=.{11}$'
 			if not re.match(regex, link):
@@ -57,9 +56,6 @@ def download():
 			output = subprocess.run([f'{os.getcwd()}/scripts/pipefeeder-download.sh', link], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 			with open(pipefeeder_log, 'a') as f:
 				f.write(output.stdout.decode())
-			# output = subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-			# with open(cogmera_log, 'a') as f:
-			# 	f.write(output.stdout.decode())
 			tracks = os.listdir('/stringwave/radio/new')
 			latest_track = Path(max(tracks, key=os.path.getctime)).stem
 			new_track = Tracks(title=latest_track, config='pf', station='new')
@@ -68,12 +64,12 @@ def download():
 	else:
 		return 'Not a valid application'
 	output = subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-	if app == 'cogmera':
-		with open(cogmera_log, 'a') as f:
-			f.write(output.stdout.decode())
-	if app == 'pipefeeder':
-		with open(pipefeeder_log, 'a') as f:
-			f.write(output.stdout.decode())
+#	if app == 'cogmera':
+#		with open(cogmera_log, 'a') as f:
+#			f.write(output.stdout.decode())
+#	if app == 'pipefeeder':
+#		with open(pipefeeder_log, 'a') as f:
+#			f.write(output.stdout.decode())
 	return "Complete!"
 	
 
