@@ -20,3 +20,4 @@ containers/pipefeeder/backup/*
 listener.c
 sender.c
 *.bak
+radio.db
