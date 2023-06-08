@@ -6,7 +6,7 @@ import os
 from pathlib import Path
 
 
-cogmera_log = '/stringwave/logs/cogmera.log'
+cogmera_log = '/stringwave/logs/cogmera_download.log'
 pipefeeder_log = '/stringwave/logs/pipefeeder.log'
 
 
@@ -56,6 +56,9 @@ def download():
 			output = subprocess.run([f'{os.getcwd()}/scripts/pipefeeder-download.sh', link], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 			with open(pipefeeder_log, 'a') as f:
 				f.write(output.stdout.decode())
+			for file in os.listdir('/stringwave/radio/new'):
+				if not os.path.isfile(file):
+					os.remove(f'/stringwave/radio/new/{file}')
 			tracks = os.listdir('/stringwave/radio/new')
 			latest_track = Path(max(tracks, key=os.path.getctime)).stem
 			new_track = Tracks(title=latest_track, config='pf', station='new')

@@ -83,7 +83,10 @@ def selectRandomAlbums(albums, num_albums_to_pick):
 	# this list is to make sure duplicate albums are not selected
     albums_selected_titles = []
     while i < num_albums_to_pick:
-        selected_album = random.randrange(len(albums))
+        try:
+            selected_album = random.randrange(len(albums))
+        except ValueError:
+            continue
         if albums[selected_album][0].lower() in albums_selected_titles:
             continue
         albums_selected.append(albums[selected_album])
@@ -174,7 +177,7 @@ def downloadSongs(albums, num_albums_to_pick, config_stamp):
     for album in albums:
         random_track, random_number = album.getRandomTrack()
         if album.tracklist_artists != None:
-            print(f'Track selected: {random_track} - {album.tracklist_artists[random_number]}')
+            print(f'Track selected: {random_track} - {album.tracklist_artists[random_number]}\n')
             headers = {"Content-Type": "application/json"}
             post_data = {
                 'app': 'cogmera',
@@ -183,9 +186,9 @@ def downloadSongs(albums, num_albums_to_pick, config_stamp):
                 'search_query': f'{album.tracklist_artists[random_number].replace("*", "").replace("/", "")} {random_track.replace("*", "").replace("/", "")}"',
                 'config': config_stamp
             }
-            requests.post('http://gateway:80/download', json=post_data)
+            requests.post('http://gateway:80/download', headers=headers, json=post_data)
         else:
-            print(f'Track selected: {random_track} - {album.artist}')
+            print(f'Track selected: {random_track} - {album.artist}\n')
             headers = {"Content-Type": "application/json"}
             post_data = {
                 'app': 'cogmera',

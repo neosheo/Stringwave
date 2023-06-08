@@ -17,7 +17,7 @@ for config in configs.fetchall():
 	print(f'Country: {config[5]}')
 	print(f'Sort Method: {config[6]}')
 	print(f'Sort Order: {config[7]}')
-	print(f'Albums to Find: {config[8]}\n')
+	print(f'Albums to Find: {config[8]}')
 
 	downloadSongs(getAlbumData(buildUrl(
                                   setGenres(*config[1].split(';')),

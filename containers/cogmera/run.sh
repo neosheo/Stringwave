@@ -1,12 +1,12 @@
 #!/bin/bash
 
-log=/cogmera/logs/cogmera.log
+download_log=/cogmera/logs/cogmera_download.log
+selection_log=/cogmera/logs/cogmera_selection.log
 
-echo "$(date)" > "$log"
+echo "$(date)" > "$download_log"
+echo "$(date)" > "$selection_log"
 
-python -m pip install -U pip | tee --append "$log" 2>&1 \
- 	&& python -m pip install -U yt-dlp | tee --append "$log" 2>&1
+python -m pip install -U pip | tee --append "$download_log" 2>&1 \
+ 	&& python -m pip install -U yt-dlp | tee --append "$download_log" 2>&1
 
-python /cogmera/run.py | tee "$log" 2>&1
-
-echo >> "$log"
+python /cogmera/run.py | tee --append "$selection_log" 2>&1
