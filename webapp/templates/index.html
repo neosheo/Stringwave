@@ -6,19 +6,30 @@
         <meta name='viewport' content='width=device-width, initial-scale=1.0'>    
     </head>
     <body>
-            <table>
-                <tr>
-                    <th>ID</th>
-                    <th>Track</th>
-                    <th>Config</th>
-                </tr>
-                {% for track in tracks %}
-                <tr>
-                    <th>{{ track.track_id }}</th>
-                    <th>{{ track.title }}</th>
-                    <th>{{ track.config }}</th>
-                </tr>
-                {% endfor %}
-            </table>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Track</th>
+                <th>Config</th>
+                <th>Move</th>
+                <th>Delete</th>
+            </tr>
+            <form method="POST" id="move" action="/move_to_main"></form>
+            <form method="POST" id="delete" action="/delete_track"></form>s
+            {% for track in tracks %}
+            <tr>
+                <td>{{ track.track_id }}</td>
+                <td>{{ track.title }}</td>
+                <td>{{ track.config }}</td>
+                <td>
+                    <button type="submit" form="move" name="move_to_main" value={{ track.track_id }}>Move</button>
+                </td>
+                <td>
+                    <button type="submit" form="delete" name="delete_track" value={{ track.track_id }}>Del</button>
+                </td>
+
+            </tr>
+            {% endfor %}
+        </table>
     </body>
 </html>

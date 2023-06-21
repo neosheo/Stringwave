@@ -23,7 +23,25 @@ def tracks_new():
 
 @app.route('/move_to_main', methods = ['POST'])
 def move_to_main():
-	pass
+	track = db.session.query(Tracks).filter_by(track_id=request.form['move_to_main']).one()
+	track = track.title.replace(' ', '_')
+	db.session.query(Tracks).filter_by(track_id=request.form['move_to_main']).station = 'main'
+	db.session.commit()
+	os.rename(f'/stringwave/radio/new/{track}', f'/stringwave/radio/main/{track}')
+	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'main'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	return redirect('/tracks_main')
+
+
+
+@app.route('/delete_track', methods = ['POST'])
+def delete_track():
+	track = db.session.query(Tracks).filter_by(track_id=request.form['delete_track']).one()
+	os.remove(f'/stringwave/radio/new/{track.title}')
+	db.session.query(Tracks).filter_by(track_id=request.form['delete_track']).delete()
+	db.session.commit()
+	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+	return redirect('/tracks_new')
 
 
 @app.route('/download', methods = ['POST'])
@@ -45,7 +63,7 @@ def download():
 		# output = subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		# with open(cogmera_log, 'a') as f:
 		# 	f.write(output.stdout.decode())
-		new_track = Tracks(title=filename, artist=artist, config=config, station='new')
+		new_track = Tracks(title=f'{filename}.opus', artist=artist, config=config, station='new')
 		db.session.add(new_track)
 		db.session.commit()
 	elif app == 'pipefeeder':
