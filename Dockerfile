@@ -22,7 +22,8 @@ COPY app.py .
 COPY start.sh .
 
 RUN touch /stringwave/logs/cogmera_download.log /stringwave/logs/cogmera_selection.log /stringwave/logs/pipefeeder.log /var/log/icecast2/access.log /var/log/icecast2/error.log
-RUN echo 99999 > /stringwave/.pid
+RUN echo 99999 > /stringwave/.pid-new
+RUN echo 99999 > /stringwave/.pid-main
 RUN chown -R stringwave:stringwave /stringwave/ /var/log/icecast2/access.log /var/log/icecast2/error.log
 RUN gcc /stringwave/src/monitor_port.c -o /bin/monitor_port
 

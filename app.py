@@ -5,6 +5,7 @@ import re
 import os
 from pathlib import Path
 import shutil
+import sys
 
 
 cogmera_log = '/stringwave/logs/cogmera_download.log'
@@ -33,7 +34,6 @@ def move_to_main():
 	return redirect('/tracks_main')
 
 
-
 @app.route('/delete_track', methods = ['POST'])
 def delete_track():
 	track = db.session.query(Tracks).filter_by(track_id=request.form['delete_track']).one()
@@ -42,6 +42,13 @@ def delete_track():
 	db.session.commit()
 	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	return redirect('/tracks_new')
+
+
+@app.route('/skip', methods = ['GET'])
+def skip():
+	station = sys.argv[1]
+	subprocess.run(['./scripts/ezstream-skip.sh', station])
+	return redirect(f'/tracks_{station}')
 
 
 @app.route('/download', methods = ['POST'])
@@ -53,16 +60,9 @@ def download():
 		artist = data['artist']
 		search_query = data['search_query']
 		config = data['config']
-		output = subprocess.run([f'{os.getcwd()}/scripts/cogmera-download.sh', filename, artist, search_query, config], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		output = subprocess.run([f'{os.getcwd()}/scripts/cogmera-download.sh', filename, artist, search_query, config])#, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		with open(cogmera_log, 'a') as f:
 			f.write(output.stdout.decode())
-		#failed_downloads += int(str(output.stdout).count('Downloading 0 items of 0'))
-		#print(f'Number of failed downloads: {failed_downloads}\n')
-		#if failed_downloads > 0:
-		#	downloadSongs(albums, num_albums_to_pick - failed_downloads, config_stamp)
-		# output = subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-		# with open(cogmera_log, 'a') as f:
-		# 	f.write(output.stdout.decode())
 		new_track = Tracks(title=f'{filename}.opus', artist=artist, config=config, station='new')
 		db.session.add(new_track)
 		db.session.commit()
@@ -73,28 +73,23 @@ def download():
 			if not re.match(regex, link):
 				print('Invalid YouTube link.')
 				return '<h1>Invalid YouTube link.</h1>'
-			output = subprocess.run([f'{os.getcwd()}/scripts/pipefeeder-download.sh', link], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+			print(f'Downloading {link}')
+			output = subprocess.run([f'{os.getcwd()}/scripts/pipefeeder-download.sh', link])#, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 			with open(pipefeeder_log, 'a') as f:
 				f.write(output.stdout.decode())
 			for file in os.listdir('/stringwave/radio/new'):
 				if os.path.isdir(f'/stringwave/radio/new/{file}'):
 					shutil.rmdir(f'/stringwave/radio/new/{file}')
 			tracks = os.listdir('/stringwave/radio/new')
-			latest_track = Path(max(tracks, key=os.path.getctime)).stem
+			tracks_with_path = [ f'/stringwave/radio/new/{track}' for track in tracks ]
+			latest_track = Path(max(tracks_with_path, key=os.path.getctime)).stem
 			new_track = Tracks(title=latest_track, config='pf', station='new')
 			db.session.add(new_track)
 			db.session.commit()
 	else:
 		return 'Not a valid application'
-	output = subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-#	if app == 'cogmera':
-#		with open(cogmera_log, 'a') as f:
-#			f.write(output.stdout.decode())
-#	if app == 'pipefeeder':
-#		with open(pipefeeder_log, 'a') as f:
-#			f.write(output.stdout.decode())
+	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 	return "Complete!"
-	
 
 
 if __name__ == '__main__':

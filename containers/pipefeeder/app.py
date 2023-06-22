@@ -18,11 +18,17 @@ def addSub():
 	channel_url = request.form['subscribe']
 	regex = r'^(((https?):\/\/)?(www\.)?youtube\.com)/(c(hannel)?/|@).+$'
 	if not re.match(regex, channel_url):
+		print(f'{channel_url} is not valid')
 		flash('Not a valid YouTube URL')
 		return redirect('/list_subs')
 	feed = getChannelFeed(channel_url)
 	new_record = Subs(channel_id=getChannelId(feed), channel_name=getChannelName(feed), channel_url=getChannelUrl(feed), channel_icon=getChannelIcon(channel_url))
-	db.session.add(new_record)
+	try:
+		db.session.add(new_record)
+	except sqlalchemy.exc.IntegrityError:
+		print('Duplicate subscription')
+		flash('Duplicate subscription')
+		return redirect('/list_subs')
 	db.session.commit()
 	return redirect('/list_subs')
 

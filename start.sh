@@ -12,6 +12,7 @@ python scripts/build_database.py main
 uwsgi \
     --socket :3033 \
     --wsgi-file app.py \
+    --master \
     --threads 2 \
     --callable app \
     --uid stringwave \

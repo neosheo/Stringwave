@@ -114,8 +114,6 @@ def downloadPlaylist():
 		"links": [url.strip() for url in urls]
 	}
 	requests.post('http://gateway:80/download', headers=headers, json=post_data)
-	#for url in urls:
-	#	subprocess.run(['./download_file.sh', f'{url.rstrip()}'])
 
 
 def populateDb(text_file):
