@@ -83,7 +83,7 @@ def download():
 	data = request.get_json()
 	app = data['app']
 	if app == 'cogmera':
-		filename = re.sub(r'(\|%|&|:|;|,|-|*|#|\\|/)', data['filename'])
+		filename = re.sub(r'(\||%|&|:|;|,|-|\*|#|\\|/)', data['filename'])
 		#filename = data['filename'].replace('|', '_').replace('%', '_').replace('&', '_').replace(':', '_').replace(';', '_').replace(',', '_').replace('-', '_').replace('*', '_').replace('#', '_').replace('/', '_').replace('\\', '_')
 		artist = data['artist']
 		search_query = data['search_query']
