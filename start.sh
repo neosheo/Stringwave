@@ -9,6 +9,8 @@ python scripts/build_database.py main
 
 ./scripts/run_radio.sh
 
+celery --app move_track worker --loglevel INFO &
+
 uwsgi \
     --socket :3033 \
     --wsgi-file app.py \

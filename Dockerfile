@@ -20,8 +20,9 @@ COPY config/ ./config/
 COPY src/ ./src/
 COPY app.py .
 COPY start.sh .
+COPY move_track.py .
 
-RUN touch /stringwave/logs/cogmera_download.log /stringwave/logs/cogmera_selection.log /stringwave/logs/pipefeeder.log /var/log/icecast2/access.log /var/log/icecast2/error.log
+RUN touch /stringwave/logs/cogmera_download.log /stringwave/logs/cogmera_selection.log /stringwave/logs/pipefeeder.log /var/log/icecast2/access.log /var/log/icecast2/error.log /stringwave/webapp/static/move_status
 RUN echo 99999 > /stringwave/.pid-new
 RUN echo 99999 > /stringwave/.pid-main
 RUN chown -R stringwave:stringwave /stringwave/ /var/log/icecast2/access.log /var/log/icecast2/error.log

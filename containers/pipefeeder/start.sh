@@ -1,3 +1,5 @@
+#!/bin/bash
+
 celery --app upload worker --loglevel INFO &
 
 uwsgi \
