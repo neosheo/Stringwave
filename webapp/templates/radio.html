@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{ station }} Radio</title>
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>    
+    </head>
+    <body>
+        <p>Now Playing:</p>
+        <h1>Coming Soon...</h1>
+        <audio controls><source src="/{{ station }}" type="audio/ogg"></audio>
+        <br>
+        <br>
+        <a href="/skip/{{ station }}">
+            <img src="{{ url_for('static', filename='skip.svg') }}" alt="Skip" width="48" height="48" />
+        </a>
+    </body>
+</html>
