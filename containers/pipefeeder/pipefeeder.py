@@ -88,32 +88,23 @@ def getRecentUploads(feed):
 	# extract video urls
 	urls = [new_video.attrs['url'].split('?')[0] for new_video in new_videos]
 	for url in urls:
-		with open('.urls', 'a') as f:
+		with open('urls/urls', 'a') as f:
 			f.write(f'{url}\n')
 
 
 def buildPlaylist():
-	open('.urls', 'w').close()
+	open('urls/urls', 'w').close()
 	con = sqlite3.connect('webapp/instance/subs.db')
 	subscriptions = [x[0] for x in con.cursor().execute('SELECT channel_url FROM subs').fetchall()]
 	print('Fetching new video URLs...')
 	for subscription in tqdm(subscriptions):
 		feed = getChannelFeed(subscription)
 		getRecentUploads(feed)
-	with open('.urls', 'r') as f:
+	with open('urls/urls', 'r') as f:
 		num_urls = len(f.readlines())
 	print(f'Grabbed {num_urls} URLs!')
-
-
-def downloadPlaylist():
-	with open('.urls', 'r') as f:
-		urls = f.readlines()
-	headers = {"Content-Type": "application/json"}
-	post_data = {
-		"app": "pipefeeder",
-		"links": [url.strip() for url in urls]
-	}
-	requests.post('http://gateway:80/download', headers=headers, json=post_data)
+	requests.get('http://gateway:80/download')
+	requests.get('http://gateway:80/check_download_completion/pipefeeder')
 
 
 def populateDb(text_file):
@@ -139,4 +130,4 @@ def populateDb(text_file):
 
 if __name__ == '__main__':
 		buildPlaylist()
-		downloadPlaylist()
+#		downloadPlaylist()

@@ -101,7 +101,16 @@ def getAlbumData(url, num_albums_to_pick, num_pages):
 	# used to track the artists on albums with various artists
     titles, artists, links, albums, tracklist_artists = [], [], [], [], []
     for page in range(1, num_pages + 1):
-        html = requests.get(f'{url}&page={page}', headers=header).text
+        i = 0
+        while True:
+            if i == 5:
+                return None
+            try:
+                html = requests.get(f'{url}&page={page}', headers=header).text
+            except requests.exceptions.ConnectionError:
+                continue
+                i += 1
+            break
         soup = BeautifulSoup(html, 'html.parser')
         [titles.append(title.text) for title in soup.find_all('a', class_='search_result_title')]
         [artists.append(artist.text.strip().replace('\n', '')) for artist in soup.find_all('div', class_='card-artist-name')]
@@ -171,7 +180,10 @@ def validateAlbums(albums, num_albums_to_pick):
     return valid_albums
 
 
-def downloadSongs(albums, num_albums_to_pick, config_stamp):
+# two parameters default to None to prevent the program from exiting if getAlbumDate returns None
+def downloadSongs(albums, num_albums_to_pick=None, config_stamp=None):
+    if albums == None:
+        return 'No album found. Timed out.'
     albums = validateAlbums(albums, num_albums_to_pick)
     [print(f'Album selected: {album.title} - {album.artist}\nDiscogs link: {album.link}') for album in albums]
     for album in albums:
@@ -180,7 +192,7 @@ def downloadSongs(albums, num_albums_to_pick, config_stamp):
             print(f'Track selected: {random_track} - {album.tracklist_artists[random_number]}\n')
             headers = {"Content-Type": "application/json"}
             post_data = {
-                'app': 'cogmera',
+                # 'app': 'cogmera',
                 'filename': random_track,
                 'artist': album.tracklist_artists[random_number],
                 'search_query': f'{album.tracklist_artists[random_number].replace("*", "").replace("/", "")} {random_track.replace("*", "").replace("/", "")}"',
@@ -191,7 +203,7 @@ def downloadSongs(albums, num_albums_to_pick, config_stamp):
             print(f'Track selected: {random_track} - {album.artist}\n')
             headers = {"Content-Type": "application/json"}
             post_data = {
-                'app': 'cogmera',
+                # 'app': 'cogmera',
                 'filename': random_track,
                 'artist': album.artist,
                 'search_query': f'{album.artist.replace("*", "").replace("/", "")} {random_track.replace("*", "").replace("/", "")}"',

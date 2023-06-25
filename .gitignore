@@ -12,12 +12,14 @@ shell*
 test-endpoint.sh
 containers/gateway
 containers/pipefeeder/backup/*
+containers/pipefeeder/urls/*
 .urls
 .playlist
-.pid
+.pid*
 *.log
 .upload
 listener.c
 sender.c
 *.bak
 radio.db
+.completed_downloads_*

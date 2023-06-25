@@ -21,9 +21,10 @@ app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:////{os.getcwd()}/webapp/instan
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 app.config.from_mapping(
     CELERY=dict(
-        broker_url='pyamqp://guest@rabbitmq//',
-        backend_url='pyamqp://guest@rabbitmq//',
-        task_ignore_result=True
+        broker_url='pyamqp://guest@rabbitmq/stringwave',
+        backend_url='pyamqp://guest@rabbitmq/stringwave',
+        task_ignore_result=True,
+        broker_connection_retry_on_startup=True
     )
 )
 celery_app = celery_init_app(app)
@@ -39,3 +40,7 @@ class Tracks(db.Model):
 
 with app.app_context():
 	db.create_all()
+
+
+cogmera_log = '/stringwave/logs/cogmera_download.log'
+pipefeeder_log = '/stringwave/logs/pipefeeder.log'

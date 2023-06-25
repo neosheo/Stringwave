@@ -31,8 +31,8 @@ app.config['UPLOAD_FOLDER'] = BACKUP_LOCATION
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 app.config.from_mapping(
     CELERY=dict(
-        broker_url='pyamqp://guest@rabbitmq//',
-        backend_url='pyamqp://guest@rabbitmq//',
+        broker_url='pyamqp://guest@rabbitmq/pipefeeder',
+        backend_url='pyamqp://guest@rabbitmq/pipefeeder',
         task_ignore_result=True
     )
 )

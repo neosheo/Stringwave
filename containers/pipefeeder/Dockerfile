@@ -3,7 +3,7 @@ FROM python:3.11.3-slim-bullseye
 WORKDIR /pipefeeder
 
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install gcc -y
+RUN apt-get install gcc tmux curl -y
 
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip
@@ -22,7 +22,8 @@ COPY upload.py .
 COPY start.sh .
 COPY run.sh .
 
-RUN touch /pipefeeder/backup/subs.txt /pipefeeder/.urls /pipefeeder/webapp/static/upload_status
-RUN chown -R pipefeeder:pipefeeder /pipefeeder/
+RUN mkdir /home/pipefeeder
+RUN touch backup/subs.txt webapp/static/upload_status
+RUN chown -R pipefeeder:pipefeeder /pipefeeder/ /home/pipefeeder
 
 ENTRYPOINT [ "bash", "./start.sh" ]

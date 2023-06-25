@@ -2,11 +2,12 @@ from cogmera import *
 from webapp import *
 import os
 import sqlite3
+import requests
 
 con = sqlite3.connect('webapp/instance/configs.db')
 cur = con.cursor()
 
-configs = cur.execute('SELECT * FROM config ORDER BY RANDOM() LIMIT 5')
+configs = cur.execute(f'SELECT * FROM config ORDER BY RANDOM() LIMIT {os.getenv("NUM_DAILY_DOWNLOADS")}')
 
 for config in configs.fetchall():
 	print(f'ID: {config[0]}')
@@ -25,5 +26,7 @@ for config in configs.fetchall():
                                   setTime(config[3], config[4]),
                                   setSortMethod(config[6], config[7]),
                                   setCountry(config[5])), config[8], 5), config[8], str(config[0])) # param between config[8]s is num of pages to scrape, last param is config stamp
-							
+
+requests.get('http://gateway:80/check_download_completion/cogmera')
+
 print('Done!')	

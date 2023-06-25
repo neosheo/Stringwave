@@ -20,7 +20,9 @@ COPY start.sh .
 COPY run.py .
 COPY run.sh .
 
-RUN touch /cogmera/webapp/instance/configs.db
-RUN chown -R cogmera:cogmera /cogmera/
+RUN export NUM_DAILY_DOWNLOADS=$NUM_DAILY_DOWNLOADS
+RUN mkdir /home/cogmera
+RUN touch webapp/instance/configs.db
+RUN chown -R cogmera:cogmera /cogmera/ /home/cogmera
 
 ENTRYPOINT [ "bash", "./start.sh" ]
