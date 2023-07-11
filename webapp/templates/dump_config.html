@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Current Configurations</title>
+	<link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='styles.css') }}">
+	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+</head>
+
+<body>
+	<table>
+		<tr>
+			<th>ID</th>
+			<th>Genres</th>
+			<th>Styles</th>
+			<th>Country</th>
+			<th>Decade</th>
+			<th>Year</th>
+			<th>Sort Method</th>
+			<th>Sort Order</th>
+			<th>Albums to Find</th>
+			<th>Delete</th>
+		</tr>	
+		{% for config in configs %}
+		<form method='POST' id='delete' action='/cogmera/delete_config'></form>
+		<tr>
+			<td>{{ config.config_id }}</td>
+			<td>{{ config.genres.replace(';', ', ') }}</td>
+			<td>{{ config.styles.replace(';', ', ') }}</td>
+			<td>{{ config.decade }}</td>
+			<td>{{ config.year }}</td>
+			<td>{{ config.country }}</td>
+			<td>{{ config.sort_method }}</td>
+			<td>{{ config.sort_order.replace('D', 'desc').replace('A', 'asc') }}</td>
+			<td>{{ config.albums_to_find }}</td>
+			<td>
+				<button type='submit' form='delete' name='delete_config' value={{ config.config_id }}>
+					<img src="{{ url_for('static', filename='images/delete.png') }}" alt="Del" width="48" height="48" />
+				</button>
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+</body>
+</html>

@@ -1,0 +1,42 @@
+FROM python:3.11.3-slim-bullseye
+
+WORKDIR /stringwave
+
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install ffmpeg -y
+
+COPY requirements-celery.txt ./requirements.txt
+RUN python -m pip install --upgrade pip
+RUN python -m pip install -r requirements.txt
+
+RUN useradd -r --uid 1000 stringwave
+RUN chsh --shell /usr/sbin/nologin root
+
+COPY radio/ ./radio/
+COPY scripts/ ./scripts/
+COPY webapp/ ./webapp/
+COPY cogmera.py .
+COPY pipefeeder.py .
+COPY bad_words.py .
+COPY backup/ ./backup/
+COPY tasks.py .
+COPY start-celery.sh ./start.sh
+
+RUN export NUM_DAILY_DOWNLOADS=$NUM_DAILY_DOWNLOADS
+RUN mkdir dl_data logs
+RUN touch backup/subs.txt \
+            webapp/static/move_status \
+            dl_data/urls \
+            dl_data/search_queries \
+            # dl_data/completed_downloads_cogmera \
+            # dl_data/completed_downloads_pipefeeder \
+            # dl_data/downloads_attempted \
+            webapp/instance/stringwave.db \
+            webapp/static/upload_status
+# RUN echo 0 > dl_data/completed_downloads_cogmera
+# RUN echo 0 > dl_data/completed_downloads_pipefeeder
+# RUN echo 0 > dl_data/downloads_attempted
+RUN chown -R stringwave .
+
+USER stringwave
+ENTRYPOINT [ "bash", "./start.sh" ]

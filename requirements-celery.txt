@@ -1,4 +1,3 @@
-uwsgi
 flask
 flask-sqlalchemy
 yt-dlp
@@ -6,5 +5,4 @@ requests
 celery
 bs4
 lxml
-python-dotenv
 tqdm

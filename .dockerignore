@@ -2,3 +2,6 @@
 **/radio/main/*
 **/radio.db
 **/postgres
+**/transfer_db.py
+#**/subs.db
+#**/configs.db

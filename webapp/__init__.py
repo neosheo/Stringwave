@@ -4,43 +4,118 @@ import os
 from celery import Celery, Task
 
 
+# PATHS
+cogmera_log = '/stringwave/logs/cogmera_download.log'
+pipefeeder_log = '/stringwave/logs/pipefeeder.log'
+db_directory = f'sqlite:////{os.getcwd()}/webapp/instance'
+
+# only allow backups that have .txt extension
+BACKUP_LOCATION = f'{os.getcwd()}/backup'
+ALLOWED_EXTENSIONS = {'txt'}
+def allowed_file(filename):
+	return '.' in filename and \
+		filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
 def celery_init_app(app: Flask) -> Celery:
-    class FlaskTask(Task):
-        def __call__(self, *args: object, **kwargs: object) -> object:
-            with app.app_context():
-                return self.run(*args, **kwargs)
-    celery_app = Celery(app.name, task_cls=FlaskTask)
-    celery_app.config_from_object(app.config['CELERY'])
-    celery_app.set_default()
-    app.extensions['celery'] = celery_app
-    return celery_app
+	class FlaskTask(Task):
+		def __call__(self, *args: object, **kwargs: object) -> object:
+			with app.app_context():
+				return self.run(*args, **kwargs)
+	celery_app = Celery(app.name, task_cls=FlaskTask)
+	celery_app.config_from_object(app.config['CELERY'])
+	celery_app.set_default()
+	app.extensions['celery'] = celery_app
+	return celery_app
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:////{os.getcwd()}/webapp/instance/radio.db'
+app.config['SQLALCHEMY_BINDS'] = {
+	'discogs': f'{db_directory}/cogmera.db',
+	'main': f'{db_directory}/stringwave.db'
+}
+app.config['UPLOAD_FOLDER'] = BACKUP_LOCATION
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 app.config.from_mapping(
-    CELERY=dict(
-        broker_url='pyamqp://guest@rabbitmq/stringwave',
-        backend_url='pyamqp://guest@rabbitmq/stringwave',
-        task_ignore_result=True,
-        broker_connection_retry_on_startup=True
-    )
+	CELERY=dict(
+		broker_url='pyamqp://guest@rabbitmq/',
+		backend_url='pyamqp://guest@rabbitmq/',
+		task_ignore_result=True,
+		broker_connection_retry_on_startup=True
+	)
 )
 celery_app = celery_init_app(app)
 db = SQLAlchemy(app)
 
 
+class Subs(db.Model):
+	__bind_key__ = 'main'
+	channel_id = db.Column(db.String(24), primary_key=True)
+	channel_name = db.Column(db.String(35))
+	channel_url = db.Column(db.String(300))
+	channel_icon = db.Column(db.String(300))
+
+
 class Tracks(db.Model):
+	__bind_key__ = 'main'
 	track_id = db.Column(db.Integer, primary_key=True)
 	title = db.Column(db.String(30))
 	artist = db.Column(db.String(30))
 	config = db.Column(db.Integer)
 	station = db.Column(db.String(4))
 
+
+class Config(db.Model):
+	__bind_key__ = 'main'
+	config_id = db.Column(db.Integer, primary_key=True)
+	genres = db.Column(db.String(21))
+	styles = db.Column(db.String(30))
+	decade = db.Column(db.String(4))
+	year = db.Column(db.String(4))
+	country = db.Column(db.String(45))
+	sort_method = db.Column(db.String(1))
+	sort_order = db.Column(db.String(4))
+	albums_to_find = db.Column(db.Integer)
+
+
+class Genres(db.Model):
+	__bind_key__ = 'discogs'
+	genre_id = db.Column(db.Integer, primary_key=True)
+	genre = db.Column(db.String(21))
+
+
+class Styles(db.Model):
+	__bind_key__ = 'discogs'
+	style_id = db.Column(db.Integer, primary_key=True)
+	style = db.Column(db.String(30))
+
+
+class Countries(db.Model):
+	__bind_key__ = 'discogs'
+	country_id = db.Column(db.Integer, primary_key=True)
+	country = db.Column(db.String(45))
+
+
+class Decades(db.Model):
+	__bind_key__ = 'discogs'
+	decade_id = db.Column(db.Integer, primary_key=True)
+	decade = db.Column(db.String(4))
+
+
+class Years(db.Model):
+	__bind_key__ = 'discogs'
+	year_id = db.Column(db.Integer, primary_key=True)
+	year = db.Column(db.String(4))
+
+
+class SortMethods(db.Model):
+	__bind_key__ = 'discogs'
+	sort_method_id = db.Column(db.Integer, primary_key=True)
+	sort_method = db.Column(db.String(1))
+
+
 with app.app_context():
-	db.create_all()
+	db.create_all('main')
+	db.create_all('discogs')
 
 
-cogmera_log = '/stringwave/logs/cogmera_download.log'
-pipefeeder_log = '/stringwave/logs/pipefeeder.log'

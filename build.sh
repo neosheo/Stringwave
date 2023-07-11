@@ -2,7 +2,7 @@
 
 echo FLASK_SECRET_KEY=\""$(< /dev/random tr -dc _A-Z-a-z-0-9 | head -c 25;)"\" > .env
 
-NUM_DAILY_DOWNLOADS=5
+echo NUM_DAILY_DOWNLOADS=5 >> .env
 
 if [ "$1" = "rebuild" ]
 then 
@@ -10,8 +10,7 @@ then
     then
         docker compose down
         docker image rm stringwave
-        docker image rm pipefeeder:dev
-        docker image rm cogmera:dev
+        docker image rm stringwave-celery
     else
         for image in "${@:2}"
         do

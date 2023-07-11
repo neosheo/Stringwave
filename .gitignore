@@ -10,9 +10,6 @@ configs.db
 docker-run.sh
 shell*
 test-endpoint.sh
-containers/gateway
-containers/pipefeeder/backup/*
-containers/pipefeeder/urls/*
 .urls
 .playlist
 .pid*
@@ -23,3 +20,13 @@ sender.c
 *.bak
 radio.db
 .completed_downloads_*
+transfer_db.py
+containers/*
+nohup.out
+dl_data
+run.py
+run.sh
+stringwave.db
+subs.db
+move_status
+containers

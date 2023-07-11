@@ -7,17 +7,7 @@ EOF
 python scripts/build_database.py new
 python scripts/build_database.py main
 
-curl --user guest:guest \
-    -H "content-type:application/json" \
-    -X PUT http://rabbitmq:15672/api/vhosts/stringwave/
-
 ./scripts/run_radio.sh
-
-session="celery"
-window=0
-tmux new-session -d -s $session
-tmux rename-window -t $session:$window $session
-tmux send-keys -t $session:$window "celery --app tasks worker -n stringwave@%h --loglevel INFO" C-m
 
 uwsgi \
     --socket :3033 \
