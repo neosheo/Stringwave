@@ -1,7 +1,6 @@
 uwsgi
 flask
 flask-sqlalchemy
-yt-dlp
 requests
 celery
 bs4

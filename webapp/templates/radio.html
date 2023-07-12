@@ -6,12 +6,19 @@
     </head>
     <body>
         <p>Now Playing:</p>
-        <h1>Coming Soon...</h1>
+        <h1 class='now_playing'></h1>
         <audio controls><source src="/{{ station }}" type="audio/ogg"></audio>
         <br>
         <br>
         <a href="/skip/{{ station }}">
-            <img src="{{ url_for('static', filename='skip.svg') }}" alt="Skip" width="48" height="48" />
+            <img src="{{ url_for('static', filename='images/skip.svg') }}" alt="Skip" width="48" height="48" />
         </a>
     </body>
+
+    <script src='{{ url_for("static", filename="now_playing.js") }}'></script>
+
+    {% if autoplay == 'true' %}
+        <script src='{{ url_for("static", filename="autoplay.js") }}'></script>
+    {% endif %}
+
 </html>

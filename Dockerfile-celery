@@ -28,14 +28,8 @@ RUN touch backup/subs.txt \
             webapp/static/move_status \
             dl_data/urls \
             dl_data/search_queries \
-            # dl_data/completed_downloads_cogmera \
-            # dl_data/completed_downloads_pipefeeder \
-            # dl_data/downloads_attempted \
             webapp/instance/stringwave.db \
             webapp/static/upload_status
-# RUN echo 0 > dl_data/completed_downloads_cogmera
-# RUN echo 0 > dl_data/completed_downloads_pipefeeder
-# RUN echo 0 > dl_data/downloads_attempted
 RUN chown -R stringwave .
 
 USER stringwave

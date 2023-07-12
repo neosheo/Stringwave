@@ -12,14 +12,19 @@ import sqlite3
 import re
 
 
-@app.route('/tracks/<station>', methods = ['GET'])
+@app.route('/tracks/<string:station>', methods = ['GET'])
 def tracks_main(station):
 	return render_template('index.html', tracks=Tracks.query.filter(Tracks.station == station).order_by(Tracks.track_id).all())
 
 
-@app.route('/radio/<station>', methods = ['GET'])
+@app.route('/radio/<string:station>', methods = ['GET'])
 def radio_main(station):
-	return render_template('radio.html', station=station)
+	# skip function should cause station to autoplay
+	if request.args.get('autoplay') == 'true':
+		autoplay = 'true'
+	else:
+		autoplay = 'false'
+	return render_template('radio.html', station=station, autoplay=autoplay)
 
 
 @app.route('/move_to_main', methods = ['POST'])
@@ -50,24 +55,24 @@ def move_status():
 @app.route('/delete_track', methods = ['POST'])
 def delete_track():
 	track = db.session.query(Tracks).filter_by(track_id=request.form['delete_track']).one()
-	os.remove(f'/stringwave/radio/new/{track.title.replace(" ", "_")}')
+	os.remove(f'/stringwave/radio/new/{track.title.replace(" ", "_")}.opus')
 	db.session.query(Tracks).filter_by(track_id=request.form['delete_track']).delete()
 	db.session.commit()
 	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'])
-	return redirect('/tracks_new')
+	return redirect('/tracks/new')
 
 
-@app.route('/skip/<station>', methods = ['GET'])
+@app.route('/skip/<string:station>', methods = ['GET'])
 def skip(station):
 	if station != 'new' and station != 'main':
 		flash('Invalid Station')
 		return redirect(f'/radio_{station}')
 	else:
 		subprocess.run(['./scripts/ezstream-skip.sh', station])
-		return redirect(f'/radio_{station}')
+		return redirect(f'/radio/{station}?autoplay=true')
 
 
-@app.route('/download/<app>', methods = ['GET'])
+@app.route('/download/<string:app>', methods = ['GET'])
 def download(app):
 	download_track.delay(app)
 		# with open('urls/urls', 'r') as f:

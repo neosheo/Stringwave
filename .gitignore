@@ -25,8 +25,9 @@ containers/*
 nohup.out
 dl_data
 run.py
-run.sh
 stringwave.db
 subs.db
 move_status
 containers
+scripts/get_track_info.py
+now_playing

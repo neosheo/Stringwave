@@ -3,7 +3,7 @@ FROM python:3.11.3-slim-bullseye
 WORKDIR /stringwave
 
 RUN apt-get update && apt-get upgrade -y 
-RUN apt-get install ffmpeg icecast2 ezstream gcc tmux procps sqlite3 curl -y
+RUN apt-get install icecast2 ezstream gcc tmux procps sqlite3 -y
 
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip
@@ -35,17 +35,12 @@ RUN touch logs/cogmera_download.log \
             webapp/static/move_status \
             dl_data/urls \
             dl_data/search_queries \
-            # dl_data/completed_downloads_cogmera \
-            # dl_data/completed_downloads_pipefeeder \
-            # dl_data/downloads_attempted \
             webapp/instance/stringwave.db \
             webapp/static/upload_status \
+            webapp/static/now_playing \
             backup/subs.txt
 RUN echo 99999 > .pid-new
 RUN echo 99999 > .pid-main
-# RUN echo 0 > dl_data/completed_downloads_cogmera
-# RUN echo 0 > dl_data/completed_downloads_pipefeeder
-# RUN echo 0 > dl_data/downloads_attempted
 RUN chown -R stringwave:stringwave \
             /stringwave/ \
             /var/log/icecast2/access.log \

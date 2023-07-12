@@ -24,7 +24,7 @@ for file in os.listdir(f'radio/{station}'):
     track_id += 1
         
 
-con = sqlite3.connect('webapp/instance/radio.db')
+con = sqlite3.connect('webapp/instance/stringwave.db')
 cur = con.cursor()
 cur.executemany('INSERT OR IGNORE INTO tracks(track_id, title, artist, config, station) VALUES (?, ?, ?, ?, ?)', tracks)
 con.commit()
