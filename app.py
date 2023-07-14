@@ -69,6 +69,7 @@ def skip(station):
 		return redirect(f'/radio_{station}')
 	else:
 		subprocess.run(['./scripts/ezstream-skip.sh', station])
+		time.sleep(5)
 		return redirect(f'/radio/{station}?autoplay=true')
 
 
