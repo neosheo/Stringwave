@@ -31,3 +31,4 @@ move_status
 containers
 scripts/get_track_info.py
 now_playing
+retag.py

@@ -13,7 +13,7 @@ fi
 
 python /stringwave/scripts/remove_whitespaces.py new
 
-find /stringwave/radio -name "*.opus" > /stringwave/radio/"$station"/.playlist
+find /stringwave/radio/"$station" -name "*.opus" > /stringwave/radio/"$station"/.playlist
 
 ezpid="$(cat /stringwave/.pid-$station)"
 

@@ -3,7 +3,7 @@ async function checkMoveStatus() {
     const data = await response.text();
     const json_data = JSON.parse(data);
     if (json_data['status'] === 'complete') {
-        window.location.replace('/tracks_new');
+        window.location.replace('/tracks/new');
     }
     setTimeout(checkMoveStatus, 5000);
 }

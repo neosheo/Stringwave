@@ -3,10 +3,10 @@ from mutagen.oggopus import OggOpus
 
 file = OggOpus(sys.argv[1])
 
-file['title'] = sys.argv[1].split('/')[3]
+# clip off path and extension
+file['title'] = sys.argv[1].split('/')[3][:-5]
 file['artist'] = sys.argv[2]
 file['config'] = sys.argv[3]
-file['station'] = 'new'
 file['album'] = ''
 file['data'] = ''
 file['language'] = ''

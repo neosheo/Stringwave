@@ -3,6 +3,7 @@ import os
 import sys
 import sqlite3
 import shutil
+import re
 
 station = sys.argv[1]
 tracks = []
@@ -11,6 +12,9 @@ track_id = 1
 for file in os.listdir(f'radio/{station}'):
     # this file may be present but shouldn't be added to the database
     if file == '.playlist':
+        continue
+    regex = r'.+\.part$'
+    if re.match(regex, file):
         continue
     # sometimes downloads fail and create a directory with a file inside, this cleans them up
     if os.path.isdir(f'radio/{station}/{file}'):

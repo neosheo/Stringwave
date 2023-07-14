@@ -14,8 +14,10 @@ def move_track(track):
 	if track[-5:] != '.opus':
 		track = f'{track}.opus'
 	subprocess.run(['mv', f'/stringwave/radio/new/{track}', f'/stringwave/radio/main/{track}'])
-	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'])
-	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'main'])
+#	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'])
+#	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'main'])
+	requests.get('http://gateway/reread/new')
+	requests.get('http://gateway/reread/main')
 	requests.get('http://gateway/move_complete')
 
 
@@ -43,9 +45,7 @@ def download_track(app):
 			output = subprocess.run([f'{os.getcwd()}/scripts/cogmera-download.sh', filename, artist, search_query, config])#, capture_output=True)
 			# with open(cogmera_log, 'a') as f:
 			# 	f.write(output.stdout.decode())
-			if os.path.isfile(f'/stringwave/radio/new/{filename}.opus'):
-				print(f'{filename}.opus exists!')
-			new_track = Tracks(title=f'{filename}.opus', artist=artist, config=config, station='new')
+			new_track = Tracks(title=filename, artist=artist, config=config, station='new')
 			db.session.add(new_track)
 			db.session.commit()
 			# with open('dl_data/completed_downloads_cogmera', 'r+') as f:

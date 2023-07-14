@@ -112,12 +112,12 @@ def download(app):
 # 				print('Downloads complete!')
 # 				break
 # 			time.sleep(5)
-# 	return redirect('/reread')
+# 	return redirect('/reread/new')
 
 
-@app.route('/reread', methods = ['GET'])
-def reread():
-	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'])
+@app.route('/reread/<string:station>', methods = ['GET'])
+def reread(station):
+	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', station])
 	return 'Playlist reread.'
 
 

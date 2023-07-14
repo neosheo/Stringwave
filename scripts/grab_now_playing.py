@@ -11,13 +11,13 @@ def grab_now_playing(station):
 
 	targets = []
 	for line in reversed(output):
-		if 'streaming: ' in line and '(/h' in line:
+		if 'streaming: ' in line and '(./' in line:
 			targets.append(line)
 			break
-		elif 'streaming: ' in line and '(/h' not in line:
+		elif 'streaming: ' in line and '(./' not in line:
 			targets.append(line)
 			break
-		elif 'streaming: ' not in line and '(/h' in line:
+		elif 'streaming: ' not in line and '(./' in line:
 			targets.append(line)
 
 	if len(targets) > 1:
@@ -25,7 +25,7 @@ def grab_now_playing(station):
 	else:
 		target = targets[0]
 
-	target = target.split('streaming: ')[1].split('(/h')[0]
+	target = target.split('streaming: ')[1].split('(./')[0]
 
 	print(target)
 	with open('/stringwave/webapp/static/now_playing', 'w') as f:
