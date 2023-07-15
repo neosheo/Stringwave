@@ -5,8 +5,7 @@ DROP TABLE IF EXISTS tracks;
 CREATE TABLE IF NOT EXISTS tracks(track_id INTEGER PRIMARY KEY AUTOINCREMENT, title VARCHAR(30), artist VARCHAR(30), config INTEGER, station VARCHAR(4));
 EOF
 
-python scripts/build_database.py new
-python scripts/build_database.py main
+python scripts/build_database.py new main
 
 ./scripts/run_radio.sh
 

@@ -9,7 +9,7 @@ COPY requirements-celery.txt ./requirements.txt
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -r requirements.txt
 
-RUN useradd -r --uid 1000 stringwave
+RUN groupadd -r --gid 1000 stringwave && useradd -r --uid 1000 -g stringwave stringwave
 RUN chsh --shell /usr/sbin/nologin root
 
 COPY radio/ ./radio/

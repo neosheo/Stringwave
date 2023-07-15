@@ -3,7 +3,6 @@ radio/main/*
 venv
 .env
 __pycache__
-compose.yaml
 config/*
 logs/*
 configs.db

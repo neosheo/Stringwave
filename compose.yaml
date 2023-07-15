@@ -1,0 +1,79 @@
+version: '3.9'
+
+services:
+  stringwave:
+    build: .
+    image: stringwave:latest
+    container_name: stringwave
+    restart: unless-stopped
+    user: stringwave
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - stringwave
+    volumes:
+      - ./backup:/stringwave/backup 
+      - ./radio:/stringwave/radio
+      - logs:/stringwave/logs
+      - ./dl_data:/stringwave/dl_data/
+    environment:
+        - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+        - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
+
+  gateway:
+    image: nginxinc/nginx-unprivileged:latest
+    container_name: stringwave-nginx
+    depends_on:
+      - stringwave
+    networks:
+      - stringwave
+    restart: unless-stopped
+    ports:
+      - 10004:8080
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile-celery
+    image: stringwave-celery:latest
+    container_name: stringwave-celery 
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - stringwave
+    restart: unless-stopped
+    volumes:
+      - ./backup:/backup 
+      - ./radio:/stringwave/radio
+      - logs:/stringwave/logs
+      - ./dl_data:/stringwave/dl_data/
+    environment:
+      - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
+
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: stringwave-rabbitmq
+    hostname: rabbitmq
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q check_virtual_hosts"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
+    networks:
+      stringwave:
+    restart: unless-stopped
+    
+networks:
+  stringwave:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.10.10.0/24
+
+volumes:
+  logs:

@@ -8,7 +8,7 @@ async function nowPlaying() {
 		const node = document.createTextNode(data);
 		track.appendChild(node);
 		const element = document.getElementById("now_playing");
-		element.replaceWith(para);
+		element.replaceWith(track);
 	}
 	setTimeout(nowPlaying, 5000);
 }
