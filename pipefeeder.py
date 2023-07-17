@@ -7,6 +7,7 @@ import sqlite3
 import os
 from bad_words import bad_words
 import re
+import time
 
 
 def getChannelFeed(channel=None):
@@ -103,8 +104,8 @@ def buildPlaylist():
 	with open('dl_data/urls', 'r') as f:
 		num_urls = len(f.readlines())
 	print(f'Grabbed {num_urls} URLs!')
-	requests.get('http://gateway:80/download/pipefeeder')
-	requests.get('http://gateway:80/check_download_completion/pipefeeder')
+	requests.get('http://gateway:8080/download/pipefeeder')
+	requests.get('http://gateway:8080/check_download_completion/pipefeeder')
 
 
 def populateDb(text_file):
@@ -131,5 +132,5 @@ def populateDb(text_file):
 if __name__ == '__main__':
 		buildPlaylist()
 		time.sleep(600)
-		requests.get('http://gateway:80/reread')
+		requests.get('http://gateway:8080/reread')
 #		downloadPlaylist()

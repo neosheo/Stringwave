@@ -219,7 +219,7 @@ def downloadSongs(albums, num_albums_to_pick=None, config_stamp=None):
         }
         with open('dl_data/search_queries', 'a') as f:
             json.dump(data, f, indent=4)
-        requests.get('http://gateway:80/download/cogmera')
+        requests.get('http://gateway:8080/download/cogmera')
 
 
             #print(f'Track selected: {random_track} - {album.tracklist_artists[random_number]}\n')
@@ -231,7 +231,7 @@ def downloadSongs(albums, num_albums_to_pick=None, config_stamp=None):
                 #'search_query': f'{album.tracklist_artists[random_number].replace("*", "").replace("/", "")} {random_track.replace("*", "").replace("/", "")}"',
                 #'config': config_stamp
             #}
-            #requests.post('http://gateway:80/download', headers=headers, json=post_data)
+            #requests.post('http://gateway:8080/download', headers=headers, json=post_data)
         #else:
             #print(f'Track selected: {random_track} - {album.artist}\n')
             #headers = {"Content-Type": "application/json"}
@@ -243,7 +243,7 @@ def downloadSongs(albums, num_albums_to_pick=None, config_stamp=None):
                 #'config': config_stamp
             #}
 
-            #requests.post('http://gateway:80/download', headers=headers, json=post_data)
+            #requests.post('http://gateway:8080/download', headers=headers, json=post_data)
 
 
 def run_cogmera():
@@ -280,9 +280,9 @@ def run_cogmera():
         albums = getAlbumData(url, num_albums_to_scrape, num_daily_downloads)
         downloadSongs(albums, num_albums_to_scrape, str(config_stamp))
 
-    #requests.get('http://gateway:80/check_download_completion/cogmera')
+    #requests.get('http://gateway:8080/check_download_completion/cogmera')
     time.sleep(300)
-    requests.get('http://gateway:80/reread')
+    requests.get('http://gateway:8080/reread')
 
     print('Done!')	
     # return redirect('/download/cogmera')

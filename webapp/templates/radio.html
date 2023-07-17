@@ -2,23 +2,25 @@
 <html>
     <head>
         <title>{{ station }} Radio</title>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>    
+        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     </head>
     <body>
+        <script src='{{ url_for("static", filename="skip_song.js") }}'></script>
         <p>Now Playing:</p>
         <h1 id='now_playing'></h1>
         <audio controls><source src="/{{ station }}" type="audio/ogg"></audio>
         <br>
         <br>
-        <a href="/skip/{{ station }}">
+        <a id="skip">
             <img src="{{ url_for('static', filename='images/skip.svg') }}" alt="Skip" width="48" height="48" />
         </a>
     </body>
 
     <script src='{{ url_for("static", filename="now_playing.js") }}'></script>
-
+ <!----
     {% if autoplay == 'true' %}
         <script src='{{ url_for("static", filename="autoplay.js") }}'></script>
     {% endif %}
+--->
 
 </html>

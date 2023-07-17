@@ -1,4 +1,4 @@
-from flask import render_template, request, redirect, flash
+from flask import render_template, request, redirect, flash, jsonify
 from werkzeug.utils import secure_filename
 from sqlalchemy import func
 from webapp import *
@@ -14,7 +14,7 @@ import re
 
 @app.route('/tracks/<string:station>', methods = ['GET'])
 def tracks_main(station):
-	return render_template('index.html', tracks=Tracks.query.filter(Tracks.station == station).order_by(Tracks.track_id).all())
+	return render_template('tracks.html', tracks=Tracks.query.filter(Tracks.station == station).order_by(Tracks.track_id).all(), station=station)
 
 
 @app.route('/radio/<string:station>', methods = ['GET'])
@@ -35,7 +35,7 @@ def move_to_main():
 	entry.station = 'main'
 	db.session.commit()
 	move_track.delay(track)
-	return render_template('/move.html')
+	return render_template('move.html')
 
 
 @app.route('/move_complete', methods = ['GET'])
@@ -52,14 +52,14 @@ def move_status():
 	return json
 
 
-@app.route('/delete_track', methods = ['POST'])
-def delete_track():
+@app.route('/delete_track/<string:station>', methods = ['POST'])
+def delete_track(station):
 	track = db.session.query(Tracks).filter_by(track_id=request.form['delete_track']).one()
-	os.remove(f'/stringwave/radio/new/{track.title.replace(" ", "_")}.opus')
+	os.remove(f'/stringwave/radio/{station}/{track.title.replace(" ", "_")}.opus')
 	db.session.query(Tracks).filter_by(track_id=request.form['delete_track']).delete()
 	db.session.commit()
-	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', 'new'])
-	return redirect('/tracks/new')
+	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', station])
+	return redirect(f'/tracks/{station}')
 
 
 @app.route('/skip/<string:station>', methods = ['GET'])
@@ -69,51 +69,15 @@ def skip(station):
 		return redirect(f'/radio_{station}')
 	else:
 		subprocess.run(['./scripts/ezstream-skip.sh', station])
-		time.sleep(5)
-		return redirect(f'/radio/{station}?autoplay=true')
+		return jsonify({'station_skipped': station})
+		#time.sleep(5)
+		#return redirect(f'/radio/{station}?autoplay=true')
 
 
 @app.route('/download/<string:app>', methods = ['GET'])
 def download(app):
 	download_track.delay(app)
-		# with open('urls/urls', 'r') as f:
-		# 	links = f.readlines()
-		# if links == []: 
-		# 	print('No videos to download')
-		# 	return 'No links to download.'
-		# for line, link in enumerate(links):
-		# 	link = link.strip()
-		# 	download_pf_track.delay(line, link)
-		# 	return 'Download queued.'
-	# if request.method == 'POST':
-	# 	data = request.get_json()
-	# 	download_cm_track.delay(data)
-	# 	return 'Download queued.'
 	return 'Complete!'
-
-
-# @app.route('/check_download_completion/<app>', methods = ['GET'])
-# def check_downloads_completion(app):
-# 	match app:
-# 		case 'cogmera':
-# 			with open('dl_data/downloads_attempted', 'r') as f:
-# 				number_of_downloads = f.read().strip()
-# 				# to prevent program from erroring if cogmera is editing file at same time as reading
-# 				if number_of_downloads == '': return
-# 		case 'pipefeeder':
-# 			with open('dl_data/urls', 'r') as f:
-# 				number_of_downloads = len(f.readlines())
-# 	print(f'Number of downloads: {number_of_downloads}')
-# 	with open(f'dl_data/completed_downloads_{app}', 'w') as f:
-# 		f.write('0')
-# 	while True:
-# 		with open(f'dl_data/completed_downloads_{app}', 'r') as f:
-# 			completed_downloads = f.read()
-# 			if int(completed_downloads) == number_of_downloads:
-# 				print('Downloads complete!')
-# 				break
-# 			time.sleep(5)
-# 	return redirect('/reread/new')
 
 
 @app.route('/reread/<string:station>', methods = ['GET'])
@@ -190,9 +154,9 @@ def delSub():
 def backup():
 	con = sqlite3.connect('webapp/instance/subs.db')
 	urls = con.cursor().execute('SELECT channel_url FROM subs')
-	with open('backup/subs.txt', 'w') as f:
+	with open('webapp/static/subs.txt', 'w') as f:
 		[f.write(f'{url[0]}\n') for url in urls.fetchall()]
-	return '<a href="/pipefeeder/list_subs">Done!</a>'
+	return '<a href="/static/subs.txt" download>Download</a><br><a href="/pipefeeder/list_subs">Return to Subs</a>'
 
 
 @app.route('/pipefeeder/upload_subs', methods = ['GET', 'POST'])
@@ -212,6 +176,7 @@ def upload_subs():
 def upload_complete():
 	with open('webapp/static/upload_status', 'w') as f:
 		f.write('complete')
+		return('complete')
 
 
 @app.route('/pipefeeder/upload_status', methods = ['GET'])

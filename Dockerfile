@@ -21,7 +21,6 @@ COPY app.py .
 COPY cogmera.py .
 COPY pipefeeder.py .
 COPY bad_words.py .
-COPY backup/ ./backup/
 COPY start.sh .
 COPY tasks.py .
 COPY run.sh .
@@ -37,8 +36,9 @@ RUN touch logs/cogmera_download.log \
             dl_data/search_queries \
             webapp/instance/stringwave.db \
             webapp/static/upload_status \
-            webapp/static/now_playing \
-            backup/subs.txt
+            webapp/static/now_playing_main \
+            webapp/static/now_playing_new \
+            webapp/static/subs.txt
 RUN echo 99999 > .pid-new
 RUN echo 99999 > .pid-main
 RUN chown -R stringwave:stringwave \

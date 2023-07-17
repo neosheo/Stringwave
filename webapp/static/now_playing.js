@@ -1,5 +1,7 @@
 async function nowPlaying() {
-    const response = await fetch('/static/now_playing');
+	const url = window.location.href.split("/");
+	const station = url[url.length - 1];
+    const response = await fetch(`/static/now_playing_${station}`);
     const data = await response.text();
     console.log(data);
     if (data !== "") {
@@ -9,6 +11,7 @@ async function nowPlaying() {
 		track.appendChild(node);
 		const element = document.getElementById("now_playing");
 		element.replaceWith(track);
+		document.title = track.text;
 	}
 	setTimeout(nowPlaying, 5000);
 }
