@@ -18,13 +18,12 @@ COPY webapp/ ./webapp/
 COPY cogmera.py .
 COPY pipefeeder.py .
 COPY bad_words.py .
-COPY backup/ ./backup/
 COPY tasks.py .
 COPY start-celery.sh ./start.sh
 
 RUN export NUM_DAILY_DOWNLOADS=$NUM_DAILY_DOWNLOADS
 RUN mkdir dl_data logs
-RUN touch backup/subs.txt \
+RUN touch webapp/static/subs.txt \
             webapp/static/move_status \
             dl_data/urls \
             dl_data/search_queries \

@@ -42,6 +42,7 @@ def move_to_main():
 def move_complete():
 	with open('webapp/static/move_status', 'w') as f:
 		f.write('complete')
+		print('complete')
 
 
 @app.route('/move_status', methods = ['GET'])
@@ -70,8 +71,6 @@ def skip(station):
 	else:
 		subprocess.run(['./scripts/ezstream-skip.sh', station])
 		return jsonify({'station_skipped': station})
-		#time.sleep(5)
-		#return redirect(f'/radio/{station}?autoplay=true')
 
 
 @app.route('/download/<string:app>', methods = ['GET'])

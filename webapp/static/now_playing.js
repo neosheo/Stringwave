@@ -11,7 +11,7 @@ async function nowPlaying() {
 		track.appendChild(node);
 		const element = document.getElementById("now_playing");
 		element.replaceWith(track);
-		document.title = track.text;
+		document.title = track.innerHTML;
 	}
 	setTimeout(nowPlaying, 5000);
 }
