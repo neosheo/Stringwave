@@ -28,9 +28,3 @@ tmux new-session -d -s $session
 tmux rename-window -t $session:$window "metadata-main"
 tmux send-keys -t $session:$window "sleep 30" C-m
 tmux send-keys -t $session:$window "python scripts/grab_now_playing.py main" C-m
-
-#session="metadata"
-#tmux new-session -d -s $session
-#tmux rename-window -t $session:$window "metadata"
-#sleep 5 
-#tmux send-keys -t $session:$window "cd stringwave/Radio && python stringwave/scripts/get_track_info.py" C-m

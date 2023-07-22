@@ -10,7 +10,7 @@ pipefeeder_log = '/stringwave/logs/pipefeeder.log'
 db_directory = f'sqlite:////{os.getcwd()}/webapp/instance'
 
 # only allow backups that have .txt extension
-BACKUP_LOCATION = f'{os.getcwd()}/backup'
+BACKUP_LOCATION = f'{os.getcwd()}/webapp/static'
 ALLOWED_EXTENSIONS = {'txt'}
 def allowed_file(filename):
 	return '.' in filename and \
@@ -30,6 +30,7 @@ def celery_init_app(app: Flask) -> Celery:
 
 
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 app.config['SQLALCHEMY_BINDS'] = {
 	'discogs': f'{db_directory}/cogmera.db',
 	'main': f'{db_directory}/stringwave.db'

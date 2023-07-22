@@ -1,13 +1,11 @@
 from flask import render_template, request, redirect, flash, jsonify
 from werkzeug.utils import secure_filename
-from sqlalchemy import func
-from webapp import *
+from sqlalchemy import func, exc
+from webapp import app, db, allowed_file, Config, Tracks, Subs, Genres, Styles, Countries, Decades, Years, SortMethods
 import subprocess
 import os
 from tasks import move_track, download_track, upload
-import time
-from cogmera import *
-from pipefeeder import *
+from pipefeeder import getChannelFeed, getChannelId, getChannelName, getChannelUrl, getChannelIcon
 import sqlite3
 import re
 
@@ -19,12 +17,7 @@ def tracks_main(station):
 
 @app.route('/radio/<string:station>', methods = ['GET'])
 def radio_main(station):
-	# skip function should cause station to autoplay
-	if request.args.get('autoplay') == 'true':
-		autoplay = 'true'
-	else:
-		autoplay = 'false'
-	return render_template('radio.html', station=station, autoplay=autoplay)
+	return render_template('radio.html', station=station)
 
 
 @app.route('/move_to_main', methods = ['POST'])
@@ -98,10 +91,25 @@ def config():
         sort_method = request.form['sort_methods']
         sort_order = request.form['order']
         albums_to_find = request.form['number']
-        new_config = Config(genres=genres, styles=styles, decade=decade, year=year, country=country, sort_method=sort_method, sort_order=sort_order, albums_to_find=albums_to_find)
+        new_config = Config(
+						genres=genres, 
+						styles=styles, 
+						decade=decade, 
+						year=year, 
+						country=country, 
+						sort_method=sort_method, 
+						sort_order=sort_order, 
+						albums_to_find=albums_to_find)
         db.session.add(new_config)
         db.session.commit()
-    return render_template('config.html', genres=Genres.query.order_by(Genres.genre_id).all(), styles=Styles.query.order_by(Styles.style_id).all(), decades=Decades.query.order_by(Decades.decade_id).all(), countries=Countries.query.order_by(Countries.country_id).all(), years=Years.query.order_by(Years.year_id).all(), sort_methods=SortMethods.query.order_by(SortMethods.sort_method_id).all())
+    return render_template(
+							'config.html', 
+							genres=Genres.query.order_by(Genres.genre_id).all(), 
+							styles=Styles.query.order_by(Styles.style_id).all(), 
+							decades=Decades.query.order_by(Decades.decade_id).all(), 
+							countries=Countries.query.order_by(Countries.country_id).all(), 
+							years=Years.query.order_by(Years.year_id).all(), 
+							sort_methods=SortMethods.query.order_by(SortMethods.sort_method_id).all())
 
 
 @app.route('/cogmera/dump_config', methods=['GET'])
@@ -115,6 +123,19 @@ def delete():
 	db.session.query(Config).filter_by(config_id=request.form['delete_config']).delete()
 	db.session.commit()
 	return redirect('/cogmera/dump_config')	
+
+
+@app.route('/cogmera/backup_configs', methods = ['GET'])
+def backup_configs():
+	con = sqlite3.connect('webapp/instance/stringwave.db')
+	configs = con.cursor().execute('SELECT * FROM config')
+	with open('webapp/static/configs.txt', 'w') as f:
+		#[f.write(f'{"|".join(config[1:])}\n') for config in configs.fetchall()]
+		for config in configs.fetchall():
+			config = [str(item) for item in config[1:]]
+			config = '|'.join(config)
+			f.write(config + '\n')
+	return '<a href="/static/configs.txt" download>Download</a><br><a href="/cogmera/dump_config">Return to Configs</a>'
 
 
 @app.route('/pipefeeder/list_subs', methods = ['GET'])
@@ -131,10 +152,14 @@ def addSub():
 		flash('Not a valid YouTube URL')
 		return redirect('/pipefeeder/list_subs')
 	feed = getChannelFeed(channel_url)
-	new_record = Subs(channel_id=getChannelId(feed), channel_name=getChannelName(feed), channel_url=getChannelUrl(feed), channel_icon=getChannelIcon(channel_url))
+	new_record = Subs(
+					channel_id=getChannelId(feed), 
+					channel_name=getChannelName(feed), 
+					channel_url=getChannelUrl(feed), 
+					channel_icon=getChannelIcon(channel_url))
 	try:
 		db.session.add(new_record)
-	except sqlalchemy.exc.IntegrityError:
+	except exc.IntegrityError:
 		print('Duplicate subscription')
 		flash('Duplicate subscription')
 		return redirect('/pipefeeder/list_subs')
@@ -151,7 +176,7 @@ def delSub():
 
 @app.route('/pipefeeder/backup_subs', methods = ['GET'])
 def backup():
-	con = sqlite3.connect('webapp/instance/subs.db')
+	con = sqlite3.connect('webapp/instance/stringwave.db')
 	urls = con.cursor().execute('SELECT channel_url FROM subs')
 	with open('webapp/static/subs.txt', 'w') as f:
 		[f.write(f'{url[0]}\n') for url in urls.fetchall()]

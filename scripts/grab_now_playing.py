@@ -42,6 +42,9 @@ def grab_now_playing(station):
 	except NameError:
 		return
 
+	if 'ezstream.sh' in target:
+		target = 'No tracks found'
+
 	if '(./' in target:
 		try:
 			target = target.split('streaming: ')[1].split('(./')[0]

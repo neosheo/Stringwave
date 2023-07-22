@@ -1,4 +1,4 @@
-version: '3.9'
+version: "3.9"
 
 services:
   stringwave:
@@ -13,13 +13,13 @@ services:
     networks:
       - stringwave
     volumes:
-      - ./backup:/stringwave/backup 
       - ./radio:/stringwave/radio
       - logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
+      - ./webapp/instance/stringwave.db:/stringwave/webapp/instance/stringwave.db
     environment:
-        - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
-        - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+      - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
 
   gateway:
     image: nginxinc/nginx-unprivileged:latest
@@ -39,7 +39,7 @@ services:
       context: .
       dockerfile: Dockerfile-celery
     image: stringwave-celery:latest
-    container_name: stringwave-celery 
+    container_name: stringwave-celery
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -47,10 +47,10 @@ services:
       - stringwave
     restart: unless-stopped
     volumes:
-      - ./backup:/backup 
       - ./radio:/stringwave/radio
       - logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
+      - ./webapp/instance/stringwave.db:/stringwave/webapp/instance/stringwave.db
     environment:
       - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
 
@@ -67,7 +67,7 @@ services:
     networks:
       stringwave:
     restart: unless-stopped
-    
+
 networks:
   stringwave:
     driver: bridge

@@ -1,40 +1,44 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <title>Radio</title>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>    
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
     </head>
     <body>
         <table>
-            <tr>
-                <th>ID</th>
-                <th>Track</th>
-                <th>Config</th>
+            <tbody>
+                <tr>
+                    <th scope="col" class="box header">ID</th>
+                    <th scope="col" class="box header">Config</th>
+                    {% if station == 'new' %}
+                    <th scope="col" class="box header">Move</th>
+                    {% endif %}
+                    <th scope="col" class="box header">Delete</th>
+                    <th scope="col" class="box header track-title">Track</th>
+                </tr>
                 {% if station == 'new' %}
-                <th>Move</th>
+                <form method="POST" id="move" action="/move_to_main"></form>
                 {% endif %}
-                <th>Delete</th>
-            </tr>
-			{% if station == 'new' %}
-            <form method="POST" id="move" action="/move_to_main"></form>
-			{% endif %}
-            <form method="POST" id="delete" action="/delete_track/{{ station }}"></form>s
-            {% for track in tracks %}
-            <tr>
-                <td>{{ track.track_id }}</td>
-                <td>{{ track.title }}</td>
-                <td>{{ track.config }}</td>
-                <td>
-					{% if station == 'new' %}
-                    <button type="submit" form="move" name="move_to_main" value="{{ track.track_id }}">Move</button>
-					{% endif %}
-                </td>
-                <td>
-                    <button type="submit" form="delete" name="delete_track" value="{{ track.track_id }}">Del</button>
-                </td>
-
-            </tr>
-            {% endfor %}
+                <form method="POST" id="delete" action="/delete_track/{{ station }}"></form>
+                {% for track in tracks %}
+                <tr>
+                    <td class="box">{{ track.track_id }}</td>
+                    <td class="box">{{ track.config }}</td>
+                    {% if station == 'new' %}
+                    <td class="box">
+                        <button type="submit" form="move" name="move_to_main" value="{{ track.track_id }}">Move</button>
+                    </td>
+                    {% endif %}
+                    <td class="box">
+                        <!-- <button type="submit" form="delete" name="delete_track" value="{{ track.track_id }}">Del</button> -->
+                        <button type="submit" form="delete" name="delete_track" value="{{ track.track_id }}">
+                            <img src="{{ url_for('static', filename='images/delete.png') }}" alt="Del" width="30" height="30">
+                        </button>                </td>
+                    <td class="box track-title">{{ track.title }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
         </table>
     </body>
 </html>

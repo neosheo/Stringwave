@@ -3,7 +3,8 @@
 <head>
 	<title>Your Subscriptions</title>
     <link rel='icon' type='img/png' href='img/favicon.png'/>
-	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+	<link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='styles.css') }}">
+	<meta name='viewport' content='width=device-width'>
 </head>
 
 <body>
@@ -38,7 +39,7 @@
 	<h1 align='center'>Channels you've subscribed to:</h1>
 	{% if subs %}
 		{% for sub in subs %}
-			<div class='entry' style='border-style: groove;'>
+			<div class='box'>
 				<div class='title'>
 					<form method='POST' action='/pipefeeder/del_sub'>
 						<h2 align='center'>{{ sub['channel_name'] }}</h2>

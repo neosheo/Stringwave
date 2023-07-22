@@ -3,38 +3,40 @@
 <head>
 	<title>Current Configurations</title>
 	<link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='styles.css') }}">
-	<meta name='viewport' content='width=device-width, initial-scale=1.0'>
+	<meta name='viewport' content="width=device-width">
 </head>
 
 <body>
+	<a href='/cogmera/backup_configs'>Backup</a>
+	<br>
 	<table>
 		<tr>
-			<th>ID</th>
-			<th>Genres</th>
-			<th>Styles</th>
-			<th>Country</th>
-			<th>Decade</th>
-			<th>Year</th>
-			<th>Sort Method</th>
-			<th>Sort Order</th>
-			<th>Albums to Find</th>
-			<th>Delete</th>
-		</tr>	
+			<th scope="col" class="box header">ID</th>
+			<th scope="col" class="box header">Genres</th>
+			<th scope="col" class="box header">Styles</th>
+			<th scope="col" class="box header">Country</th>
+			<th scope="col" class="box header">Decade</th>
+			<th scope="col" class="box header">Year</th>
+			<th scope="col" class="box header">Sort Method</th>
+			<th scope="col" class="box header">Sort Order</th>
+			<th scope="col" class="box header">Albums to Find</th>
+			<th scope="col" class="box header">Delete</th>
+		</tr>
 		{% for config in configs %}
 		<form method='POST' id='delete' action='/cogmera/delete_config'></form>
 		<tr>
-			<td>{{ config.config_id }}</td>
-			<td>{{ config.genres.replace(';', ', ') }}</td>
-			<td>{{ config.styles.replace(';', ', ') }}</td>
-			<td>{{ config.decade }}</td>
-			<td>{{ config.year }}</td>
-			<td>{{ config.country }}</td>
-			<td>{{ config.sort_method }}</td>
-			<td>{{ config.sort_order.replace('D', 'desc').replace('A', 'asc') }}</td>
-			<td>{{ config.albums_to_find }}</td>
-			<td>
+			<td class="box">{{ config.config_id }}</td>
+			<td class="box">{{ config.genres.replace(';', ', ') }}</td>
+			<td class="box">{{ config.styles.replace(';', ', ') }}</td>
+			<td class="box">{{ config.decade }}</td>
+			<td class="box">{{ config.year }}</td>
+			<td class="box">{{ config.country }}</td>
+			<td class="box">{{ config.sort_method }}</td>
+			<td class="box">{{ config.sort_order.replace('D', 'desc').replace('A', 'asc') }}</td>
+			<td class="box">{{ config.albums_to_find }}</td>
+			<td class="box">
 				<button type='submit' form='delete' name='delete_config' value={{ config.config_id }}>
-					<img src="{{ url_for('static', filename='images/delete.png') }}" alt="Del" width="48" height="48" />
+					<img src="{{ url_for('static', filename='images/delete.png') }}" alt="Del" width="30" height="30" />
 				</button>
 			</td>
 		</tr>

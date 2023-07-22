@@ -1,4 +1,4 @@
 bad_words = [
     r"#shorts",
-    r"\[?full (album|ep)\]?"
+    r"(\[|\()?full (album|ep)(\]|\))?"
 ]

@@ -1,10 +1,8 @@
 import requests
 from bs4 import BeautifulSoup
-import subprocess
 from datetime import datetime, timedelta
 from tqdm import tqdm
 import sqlite3
-import os
 from bad_words import bad_words
 import re
 import time
@@ -133,4 +131,3 @@ if __name__ == '__main__':
 		buildPlaylist()
 		time.sleep(600)
 		requests.get('http://gateway:8080/reread')
-#		downloadPlaylist()

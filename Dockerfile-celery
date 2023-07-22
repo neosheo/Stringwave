@@ -24,11 +24,10 @@ COPY start-celery.sh ./start.sh
 RUN export NUM_DAILY_DOWNLOADS=$NUM_DAILY_DOWNLOADS
 RUN mkdir dl_data logs
 RUN touch webapp/static/subs.txt \
-            webapp/static/move_status \
-            dl_data/urls \
-            dl_data/search_queries \
-            webapp/instance/stringwave.db \
-            webapp/static/upload_status
+    webapp/static/move_status \
+    dl_data/urls \
+    dl_data/search_queries \
+    webapp/static/upload_status
 RUN chown -R stringwave .
 
 USER stringwave

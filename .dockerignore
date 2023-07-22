@@ -1,7 +1,8 @@
 **/radio/new/*
 **/radio/main/*
-**/radio.db
-**/postgres
+**/stringwave.db
 **/transfer_db.py
-#**/subs.db
-#**/configs.db
+**/subs.db
+**/configs.db
+**/*.bak
+**/radio.db

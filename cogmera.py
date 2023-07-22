@@ -1,8 +1,5 @@
-from webapp import *
-from flask import redirect
 import requests
 from bs4 import BeautifulSoup
-import subprocess 
 import random
 import os
 import json
@@ -74,7 +71,7 @@ def setCountry(country='None'):
 
 
 def buildUrl(genre_param, style_param, time_param, sort_param, country_param, query=None):
-    if query == None:
+    if query is None:
         url = f"https://www.discogs.com/search/?{sort_param}ev=em_rs{genre_param}{style_param}{time_param}{country_param}"
     else:
         url = f"https://www.discogs.com/search/?{sort_param}q={query}{genre_param}{style_param}{time_param}{country_param}"
@@ -187,7 +184,7 @@ def validateAlbums(albums, num_albums_to_pick):
             print(f'EMPTY TRACKLIST: {album.link}')
             continue
         else:
-            if album.tracklist_artists != None:
+            if album.tracklist_artists is not None:
                 if len(album.tracklist_artists) != len(album.tracklist):
                     continue    
             valid_albums.append(album)
@@ -198,13 +195,13 @@ def validateAlbums(albums, num_albums_to_pick):
 # two parameters default to None to prevent the program from exiting if getAlbumDate returns None
 def downloadSongs(albums, num_albums_to_pick=None, config_stamp=None):
     open('dl_data/search_queries', 'w').close()
-    if albums == None:
+    if albums is None:
         return 'No album found. Timed out.'
     albums = validateAlbums(albums, num_albums_to_pick)
     [print(f'Album selected: {album.title} - {album.artist}\nDiscogs link: {album.link}') for album in albums]
     for album in albums:
         random_track, random_number = album.getRandomTrack()
-        if album.tracklist_artists != None:
+        if album.tracklist_artists is not None:
             selected_artist = album.tracklist_artists[random_number]
         else:
             selected_artist = album.artist
@@ -220,30 +217,6 @@ def downloadSongs(albums, num_albums_to_pick=None, config_stamp=None):
         with open('dl_data/search_queries', 'a') as f:
             json.dump(data, f, indent=4)
         requests.get('http://gateway:8080/download/cogmera')
-
-
-            #print(f'Track selected: {random_track} - {album.tracklist_artists[random_number]}\n')
-            #headers = {"Content-Type": "application/json"}
-            #post_data = {
-                # 'app': 'cogmera',
-                #'filename': random_track,
-                #'artist': album.tracklist_artists[random_number],
-                #'search_query': f'{album.tracklist_artists[random_number].replace("*", "").replace("/", "")} {random_track.replace("*", "").replace("/", "")}"',
-                #'config': config_stamp
-            #}
-            #requests.post('http://gateway:8080/download', headers=headers, json=post_data)
-        #else:
-            #print(f'Track selected: {random_track} - {album.artist}\n')
-            #headers = {"Content-Type": "application/json"}
-            #post_data = {
-                # 'app': 'cogmera',
-                #'filename': random_track,
-                #'artist': album.artist,
-                #'search_query': f'{album.artist.replace("*", "").replace("/", "")} {random_track.replace("*", "").replace("/", "")}"',
-                #'config': config_stamp
-            #}
-
-            #requests.post('http://gateway:8080/download', headers=headers, json=post_data)
 
 
 def run_cogmera():
@@ -280,12 +253,10 @@ def run_cogmera():
         albums = getAlbumData(url, num_albums_to_scrape, num_daily_downloads)
         downloadSongs(albums, num_albums_to_scrape, str(config_stamp))
 
-    #requests.get('http://gateway:8080/check_download_completion/cogmera')
     time.sleep(300)
     requests.get('http://gateway:8080/reread')
 
     print('Done!')	
-    # return redirect('/download/cogmera')
 
 
 if __name__ == '__main__':
