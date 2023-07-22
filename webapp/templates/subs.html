@@ -1,58 +1,99 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<title>Your Subscriptions</title>
-    <link rel='icon' type='img/png' href='img/favicon.png'/>
-	<link rel="stylesheet" type='text/css' href="{{ url_for('static', filename='styles.css') }}">
-	<meta name='viewport' content='width=device-width'>
-</head>
+<html lang="en">
+	<head>
+		<title>Your Subscriptions</title>
+		<link rel="icon" type="img/png" href="img/favicon.png"/>
+		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+		<meta name="viewport" content="width=device-width">
+	</head>
 
-<body>
-	<!--Alerts user if they enter invalid URL-->
-	{% with messages = get_flashed_messages() %}
-		{% if messages %}
-	   		{% for message in messages %}
-		  		<script>function invalidUrl() {
-					alert("{{ message }}");
-				}
-				invalidUrl();
-				</script>
-	   		{% endfor %}
-		{% endif %}
- 	{% endwith %}
+	<body>
+        <header class="main-header">
+            <h1>S T R I N G W A V E</h1>
+            <nav class="nav main-nav">
+                <ul>
+                    <li>
+                        <a href="/radio/new">NEW MUSIC</a>
+                    </li>
+                    <li>
+                        <a href="/tracks/new">NEW TRACKS</a>
+                    </li>
+                    <li>
+                        <a href="/radio/main">MY MUSIC</a>
+                    </li>
+                    <li>
+                        <a href="/tracks/main">MY TRACKS</a>
+                    </li>
+                    <li>
+                        <a href="/pipefeeder/list_subs">MY SUBSCRIPTIONS</a>
+                    </li>
+                    <li>
+                        <a href="/cogmera/dump_config">MY CONFIGURATIONS</a>
+                    </li>
+                    <li>
+                        <a href="/cogmera/config">NEW CONFIGURATION</a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
 
-	<form method='POST' action='/pipefeeder/add_sub'>
-		<h1 align='center'>Add a channel's URL to subscribe</h1>
-		<center><input type='text' name='subscribe'></input></center>
-		<br>
-		<center><button type='submit'>Subscribe</button><center>
-	</form>
-	<br>
-	<form method='POST' action='/pipefeeder/upload_subs' enctype='multipart/form-data'>
-		<center><input type='file' id='subs' name='subs'></center>
-		<br>
-		<center><input type='submit' value='Upload'><center>
-	</form>
-	<br><br>
-	<center><a href='/pipefeeder/backup_subs'>Backup</a></center>
-	<br>
-	<h1 align='center'>Channels you've subscribed to:</h1>
-	{% if subs %}
-		{% for sub in subs %}
-			<div class='box'>
-				<div class='title'>
-					<form method='POST' action='/pipefeeder/del_sub'>
-						<h2 align='center'>{{ sub['channel_name'] }}</h2>
-						<center><img src={{ sub['channel_icon'] }} width='200' height='200'></img></center>
-						<center><button type='submit' name='unsubscribe' value={{ sub['channel_id'] }}>Unsubscribe</button></center>
-						<br>
-					</form>
-				</div>
-			</div>
+		<!--Alerts user if they enter invalid URL-->
+		{% with messages = get_flashed_messages() %}
+			{% if messages %}
+				{% for message in messages %}
+					<script>function invalidUrl() {
+						alert("{{ message }}");
+					}
+					invalidUrl();
+					</script>
+				{% endfor %}
+			{% endif %}
+		{% endwith %}
+
+		<form class="subs-manager" method="POST" action="/pipefeeder/add_sub">
+			<h1>Add a channel's URL to subscribe</h1>
+			<input class="text-box" type="text" name="subscribe"></input>
 			<br>
-		{% endfor %}
-	{% else %}
-		<h2 align='center'>No subs to display</h2>
-	{% endif %}
-</body>
+			<center><button class="button" type="submit">Subscribe</button><center>
+		</form>
+		<br>
+		<form class="subs-manager" method="POST" action="/pipefeeder/upload_subs" enctype="multipart/form-data">
+			<center><input type="file" id="subs" name="subs"></center>
+			<br>
+			<center><input class="button" type="submit" value="Upload"><center>
+		</form>
+		<br><br>
+		<a href="/pipefeeder/backup_subs">Backup</a>
+		<h1>Channels you've subscribed to:</h1>
+		{% if subs %}
+			{% for sub in subs %}
+				<div>
+					<div class="title">
+						<form method="POST" action="/pipefeeder/del_sub">
+							<h2 class="channel-name">{{ sub['channel_name'] }}</h2>
+							<center><img src="{{ sub['channel_icon'] }}"" width="200" height="200"></img></center>
+							<center><button class="button" type="submit" name="unsubscribe" value="{{ sub['channel_id'] }}">Unsubscribe</button></center>
+							<br>
+						</form>
+					</div>
+				</div>
+				<br>
+			{% endfor %}
+		{% else %}
+			<h2>No subs to display</h2>
+		{% endif %}
+
+		<footer class="main-footer">
+            <div class="container">
+                <div class="created-by">
+                    <p>Created by neosheo</p>
+                </div>
+                <div class="github">
+                    <a href="https://github.com/neosheo/Stringwave">
+                        <img src="{{ url_for('static', filename='images/github.png') }}" alt="github" width="25" height="25">
+                    </a>
+                </div>
+            </div>
+        </footer>
+	</body>
 </html>

@@ -10,6 +10,11 @@ import sqlite3
 import re
 
 
+@app.route('/', methods = ['GET'])
+def index():
+	return render_template('index.html')
+
+
 @app.route('/tracks/<string:station>', methods = ['GET'])
 def tracks_main(station):
 	return render_template('tracks.html', tracks=Tracks.query.filter(Tracks.station == station).order_by(Tracks.track_id).all(), station=station)

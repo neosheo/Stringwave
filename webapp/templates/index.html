@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>{{ station|title }} Radio</title>
+        <title>Radio</title>
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
     </head>
@@ -35,16 +35,6 @@
             </nav>
         </header>
 
-        <script src='{{ url_for("static", filename="skip_song.js") }}'></script>
-        <p>Now Playing:</p>
-        <h1 id="now_playing"></h1>
-        <audio controls><source src="/{{ station }}" type="audio/ogg"></audio>
-        <br>
-        <br>
-        <a id="skip">
-            <img src="{{ url_for('static', filename='images/skip.svg') }}" alt="Skip" width="48" height="48">
-        </a>
-        
         <footer class="main-footer">
             <div class="container">
                 <div class="created-by">
@@ -58,6 +48,4 @@
             </div>
         </footer>
     </body>
-
-    <script src='{{ url_for("static", filename="now_playing.js") }}'></script>
 </html>

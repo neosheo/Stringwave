@@ -1,13 +1,92 @@
-body {
-	background-color: #3d6b4b;
-	color: darkblue;
-	font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-	font-weight: bold;
-	text-align: center;
+@font-face {
+    font-family: "Pixel Musketeer";
+    src: url("fonts/Pixel Musketeer.otf");
+}
+
+* {
+    box-sizing: border-box;
+    font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    color: #cabdbd;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    background-color: black;
+    text-align: center;
+}
+
+.button, .text-box {
+    color: black;
+}
+
+.channel-name {
+    color: #cabdbd;
+}
+
+.nav ul {
+    margin: 0;
+}
+
+.nav li {
+    display: inline;
+}
+
+.nav a {
+    display: inline-block;
+    padding: 0.5em;
+    text-decoration: none;
+}
+
+.main-nav {
+    font-size: 1.1em;
+    font-weight: lighter;
+}
+
+.main-nav li {
+    padding: 0 1%;
+    font-size: 14px;
+}
+
+.nav a:hover {
+    background-color: rgba(255, 255, 255, .3);
+}
+
+.main-header {
+    text-align: center;
+    background-color: rgba(0, 0, 0, .6);
+    background-image: url("images/radio.jpg");
+    background-blend-mode: multiply;
+    background-size: contain;
+    color: #cabdbd;
+    padding-bottom: 8px;
+    padding-top: 8px;
+}
+
+.main-header h1 {
+    font-family: "Pixel Musketeer";
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+    margin: 0;
+    border-bottom: 3px ridge rgba(255, 255, 255, .3);
+}
+
+.main-footer {
+    text-align: center;
+}
+
+.main-footer p {
+    font-size: 10px;
+    display: inline;
+}
+
+.main-footer a img {
+    filter: invert(100%);
 }
 
 table {
-	background-color: #a2dd97;
+	background-color: rgb(201, 57, 32);
 	margin: auto;
 	border-collapse: collapse;
 }
@@ -24,7 +103,8 @@ tr, th, td {
 }
 
 .box {
-	border: 4px groove;
+	border: 4px solid;
+    color:rgb(49, 49, 49) 
 }
 
 .radio {
@@ -36,3 +116,17 @@ tr, th, td {
 	text-align: left;
 }
 
+.subs-manager {
+    text-align: center;
+}
+
+.select2-selection__rendered, 
+.select2-selection__choice__display, 
+.select2-results__option,
+.select2-results__option--selectable {
+    color: black;
+}
+
+.select2-selection__choice__remove span {
+    color: black;
+}

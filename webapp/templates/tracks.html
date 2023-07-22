@@ -6,6 +6,35 @@
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
     </head>
     <body>
+        <header class="main-header">
+            <h1>S T R I N G W A V E</h1>
+            <nav class="nav main-nav">
+                <ul>
+                    <li>
+                        <a href="/radio/new">NEW MUSIC</a>
+                    </li>
+                    <li>
+                        <a href="/tracks/new">NEW TRACKS</a>
+                    </li>
+                    <li>
+                        <a href="/radio/main">MY MUSIC</a>
+                    </li>
+                    <li>
+                        <a href="/tracks/main">MY TRACKS</a>
+                    </li>
+                    <li>
+                        <a href="/pipefeeder/list_subs">MY SUBSCRIPTIONS</a>
+                    </li>
+                    <li>
+                        <a href="/cogmera/dump_config">MY CONFIGURATIONS</a>
+                    </li>
+                    <li>
+                        <a href="/cogmera/config">NEW CONFIGURATION</a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
         <table>
             <tbody>
                 <tr>
@@ -27,7 +56,7 @@
                     <td class="box">{{ track.config }}</td>
                     {% if station == 'new' %}
                     <td class="box">
-                        <button type="submit" form="move" name="move_to_main" value="{{ track.track_id }}">Move</button>
+                        <button class="button" type="submit" form="move" name="move_to_main" value="{{ track.track_id }}">Move</button>
                     </td>
                     {% endif %}
                     <td class="box">
@@ -40,5 +69,20 @@
                 {% endfor %}
             </tbody>
         </table>
+        
+        <footer class="main-footer">
+            <div class="container">
+                <div class="created-by">
+                    <p>Created by neosheo</p>
+                </div>
+                <div class="github">
+                    <a href="https://github.com/neosheo/Stringwave">
+                        <img src="{{ url_for('static', filename='images/github.png') }}" alt="github" width="25" height="25">
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </body>
+
     </body>
 </html>
