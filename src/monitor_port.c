@@ -18,7 +18,7 @@ void respond_to_ping(int* sockfd) {
 }
 
 
-void main() {
+void main(int argc) {
 	// create socket
 	int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	int option = 1;
@@ -30,7 +30,7 @@ void main() {
 	struct sockaddr_in addr;
 	addr.sin_family = AF_INET;
 	addr.sin_addr.s_addr = inet_addr("0.0.0.0");
-	addr.sin_port = htons(5800);
+	addr.sin_port = htons(argc);
 	if (bind(sockfd, (struct sockaddr*)&addr, sizeof(addr)) < 0)
 		puts("Error binding socket.");
 

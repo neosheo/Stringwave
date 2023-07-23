@@ -20,6 +20,9 @@ services:
     environment:
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
       - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
+    ports:
+      - 5801:5801
+      - 5802:5802
 
   gateway:
     image: nginxinc/nginx-unprivileged:latest

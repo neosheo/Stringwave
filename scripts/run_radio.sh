@@ -10,13 +10,13 @@ session="ezstream-new"
 tmux new-session -d -s $session
 tmux rename-window -t $session:$window "ezstream-new"
 tmux send-keys -t $session:$window "cd /stringwave" C-m
-tmux send-keys -t $session:$window "/bin/monitor_port &" C-m
+tmux send-keys -t $session:$window "/bin/monitor_port 5801 &" C-m
 tmux send-keys -t $session:$window "./scripts/ezstream.sh new || pkill monitor_port && touch .pid-new" C-m
 session="ezstream-main"
 tmux new-session -d -s $session
 tmux rename-window -t $session:$window "ezstream-main"
 tmux send-keys -t $session:$window "cd /stringwave" C-m
-tmux send-keys -t $session:$window "/bin/monitor_port &" C-m
+tmux send-keys -t $session:$window "/bin/monitor_port 5802 &" C-m
 tmux send-keys -t $session:$window "./scripts/ezstream.sh main || pkill monitor_port && touch .pid-main" C-m
 session="metadata-new"
 tmux new-session -d -s $session
