@@ -130,3 +130,7 @@ tr, th, td {
 .select2-selection__choice__remove span {
     color: black;
 }
+
+.now-playing {
+	word-break: break-all;
+}
