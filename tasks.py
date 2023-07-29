@@ -7,6 +7,7 @@ import re
 from pathlib import Path
 import shutil
 import json
+from mutagen.oggopus import OggOpus
 
 
 @celery_app.task
@@ -63,8 +64,10 @@ def download_track(app):
 						continue
 				tracks_with_path = [ f'/stringwave/radio/new/{track}' for track in tracks ]
 				latest_track = Path(max(tracks_with_path, key=os.path.getctime)).stem
-				print(f'Latest track: {latest_track}')
-				new_track = Tracks(title=latest_track, config='pf', station='new')
+				latest_track_formatted = re.sub(r'_+', ' ', latest_track)
+				OggOpus(latest_track)['title'] = latest_track_formatted
+				print(f'Latest track: {latest_track_formatted}')
+				new_track = Tracks(title=latest_track_formatted, config='pf', station='new')
 				db.session.add(new_track)
 				db.session.commit()
 

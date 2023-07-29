@@ -123,11 +123,9 @@ tr, th, td {
 .select2-selection__rendered, 
 .select2-selection__choice__display, 
 .select2-results__option,
-.select2-results__option--selectable {
-    color: black;
-}
-
-.select2-selection__choice__remove span {
+.select2-results__option--selectable,
+.select2-selection__choice__remove span, 
+td p {
     color: black;
 }
 

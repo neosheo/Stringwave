@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<title>Your Subscriptions</title>
-		<link rel="icon" type="img/png" href="img/favicon.png"/>
+		<link rel="icon" type="img/png" href="img/favicon.png">
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 		<meta name="viewport" content="width=device-width">
 	</head>
@@ -52,15 +52,15 @@
 
 		<form class="subs-manager" method="POST" action="/pipefeeder/add_sub">
 			<h1>Add a channel's URL to subscribe</h1>
-			<input class="text-box" type="text" name="subscribe"></input>
+			<input class="text-box" type="text" name="subscribe">
 			<br>
-			<center><button class="button" type="submit">Subscribe</button><center>
+			<center><button class="button" type="submit">Subscribe</button></center>
 		</form>
 		<br>
 		<form class="subs-manager" method="POST" action="/pipefeeder/upload_subs" enctype="multipart/form-data">
 			<center><input type="file" id="subs" name="subs"></center>
 			<br>
-			<center><input class="button" type="submit" value="Upload"><center>
+			<center><input class="button" type="submit" value="Upload"></center>
 		</form>
 		<br><br>
 		<a href="/pipefeeder/backup_subs">Backup</a>
@@ -71,7 +71,7 @@
 					<div class="title">
 						<form method="POST" action="/pipefeeder/del_sub">
 							<h2 class="channel-name">{{ sub['channel_name'] }}</h2>
-							<center><img src="{{ sub['channel_icon'] }}"" width="200" height="200"></img></center>
+							<center><img src="{{ sub['channel_icon'] }}" alt="{{ sub['channel_name'] }}" width="200" height="200"></center>
 							<center><button class="button" type="submit" name="unsubscribe" value="{{ sub['channel_id'] }}">Unsubscribe</button></center>
 							<br>
 						</form>

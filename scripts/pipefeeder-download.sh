@@ -12,3 +12,5 @@ yt-dlp \
 	--audio-format opus \
 	-o '/stringwave/radio/new/%(title)s.%(ext)s' \
 	$link | tee --append /stringwave/logs/pipefeeder.log
+
+python /stringwave/scripts/update_filename.py

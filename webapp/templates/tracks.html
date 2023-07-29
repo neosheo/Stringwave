@@ -50,9 +50,11 @@
                 <form method="POST" id="move" action="/move_to_main"></form>
                 {% endif %}
                 <form method="POST" id="delete" action="/delete_track/{{ station }}"></form>
+                <script src="{{ url_for('static', filename='edit_track_title.js') }}"></script>
+                <form method="POST" id="update-title" action="/update_title"></form>
                 {% for track in tracks %}
                 <tr>
-                    <td class="box">{{ track.track_id }}</td>
+                    <td class="track-id box">{{ track.track_id }}</td>
                     <td class="box">{{ track.config }}</td>
                     {% if station == 'new' %}
                     <td class="box">
@@ -60,16 +62,21 @@
                     </td>
                     {% endif %}
                     <td class="box">
-                        <!-- <button type="submit" form="delete" name="delete_track" value="{{ track.track_id }}">Del</button> -->
                         <button type="submit" form="delete" name="delete_track" value="{{ track.track_id }}">
                             <img src="{{ url_for('static', filename='images/delete.png') }}" alt="Del" width="30" height="30">
-                        </button>                </td>
-                    <td class="box track-title">{{ track.title }}</td>
+                        </button>
+                    </td>
+                    <td class="box">
+                        <button class="edit-button button" type="submit">Edit</button>
+                        <button class="done-button button" type="submit">Done</button>
+                        <button class="update-button button" type="submit" form="update-title" name="update-title" value="">Save</button>
+                        <p class="track-id" hidden>{{ track.track_id }}</p>
+                        <p class="track-title">{{ track.title }}</p>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-        
         <footer class="main-footer">
             <div class="container">
                 <div class="created-by">
@@ -82,7 +89,5 @@
                 </div>
             </div>
         </footer>
-    </body>
-
     </body>
 </html>

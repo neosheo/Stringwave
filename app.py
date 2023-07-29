@@ -17,12 +17,31 @@ def index():
 
 @app.route('/tracks/<string:station>', methods = ['GET'])
 def tracks_main(station):
-	return render_template('tracks.html', tracks=Tracks.query.filter(Tracks.station == station).order_by(Tracks.track_id).all(), station=station)
+	tracks = db.session.query(Tracks).filter(Tracks.station == station).order_by(Tracks.track_id).all()
+	for track in tracks:
+		track.title = re.sub(r'_+', ' ', track.title)
+		track.title = re.sub(r'\s{2,}', ' ', track.title)
+	db.session.commit()
+	return render_template('tracks.html', tracks=tracks, station=station)
 
 
 @app.route('/radio/<string:station>', methods = ['GET'])
 def radio_main(station):
 	return render_template('radio.html', station=station)
+
+
+@app.route('/update_title', methods = ['POST'])
+def update_title():
+	data = request.form['update-title'].split(';')
+	track_id = data[0]
+	old_name = db.session.query(Tracks).filter_by(track_id=track_id).one().title
+	new_name = data[1]
+	station = data[2]
+	track = db.session.query(Tracks).filter_by(track_id=track_id).one()
+	track.title = new_name
+	db.session.commit()
+	os.rename(f'/stringwave/radio/{station}/{old_name.replace(" ", "_")}.opus', f'/stringwave/radio/{station}/{new_name.replace(" ", "_")}.opus')
+	return redirect(f'/tracks/{station}')
 
 
 @app.route('/move_to_main', methods = ['POST'])

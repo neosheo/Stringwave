@@ -24,6 +24,11 @@ for station in stations[1: ]:
         if os.path.isdir(f'radio/{station}/{file}'):
             shutil.rmtree(f'radio/{station}/{file}')
             continue
+        # remove non-breaking spaces from file names
+        if u'\xa0' in file:
+            new_name = file.replace(u'\xa0', '')
+            os.rename(f'{os.getcwd()}/radio/{station}/{file}', f'{os.getcwd()}/radio/{station}/{new_name}')
+            file = new_name
         track = mutagen.File(f'{os.getcwd()}/radio/{station}/{file}')
         # pipefeeder doesn't add a config tag to the file, if these lines aren't included you get a KeyError
         if 'config' not in track:

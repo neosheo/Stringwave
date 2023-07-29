@@ -55,6 +55,7 @@ def grab_now_playing(station):
 			target = target.split('streaming: ')[1].split('(/s')[0]
 		except IndexError:
 			pass		
+	target = re.sub(r'_+', ' ', target)
 	subprocess.run(['clear'])
 	print(f'Now playing: {target}')
 	with open(f'/stringwave/webapp/static/now_playing_{station}', 'w') as f:
