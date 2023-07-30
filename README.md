@@ -9,7 +9,7 @@ Stringwave is an automated, self-hosted radio platform designed to emulate the '
 
 # How to get started.
 
-Simply git clone the repository and then cd into the new directory and run build.sh. Windows and Mac users may need to modify the build.sh file to make it work on your OS. If you are using a domain name make sure to add it to nginx.conf before running.
+Simply git clone the repository and then cd into the new directory. You will need to create 3 files in here: icecast.xml, ezstream-new.xml, and ezstream-main.xml (examples are provided in repo) and run build.sh. Windows and Mac users may need to modify the build.sh file to make it work on your OS. If you are using a domain name make sure to add it to nginx.conf before running.
 
 # How to use.
 
