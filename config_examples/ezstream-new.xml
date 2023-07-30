@@ -1,0 +1,41 @@
+<ezstream>
+	<servers>
+		<server>
+			<name>Icecast</name>
+			<protocol>HTTP</protocol>
+			<hostname>127.0.0.1</hostname>
+			<port>8000</port>
+			<user>source</user>
+			<password></password>
+			<tls>None</tls>
+			<reconnect_attempts>20</reconnect_attempts>
+		</server>
+	</servers>
+	
+	<intakes>
+		<intake>
+			<name>new</name>
+			<type>playlist</type>
+			<filename>.playlist</filename>
+			<shuffle>Yes</shuffle>
+			<stream_once>0</stream_once>
+		</intake>
+	</intakes>
+
+	<streams>
+		<stream>
+			<mountpoint>/new</mountpoint>
+			<intake>new</intake>
+			<server>Icecast</server>
+			<public>No</public>
+			<format>ogg</format>
+		</stream>
+	</streams>
+
+	<metadata>
+		<format_str>@a@ - @t@</format_str>
+		<refresh_interval>10</refresh_interval>
+		<normalize_strings>Yes</normalize_strings>
+		<no_updates>No</no_updates>
+	</metadata>
+</ezstream>
