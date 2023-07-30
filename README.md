@@ -1,7 +1,7 @@
-<img src="/git/neosheo/Stringwave/raw/branch/main/screenshots/Screenshot_20230729-185203_1.png" width="300" height="550" />
-<img src="/git/neosheo/Stringwave/raw/branch/main/screenshots/Screenshot_20230729-185141_1.png" width="300" height="550" />
-<img src="/git/neosheo/Stringwave/raw/branch/main/screenshots/Screenshot_20230729-185245_1.png" width="300" height="550" />
-<img src="/git/neosheo/Stringwave/raw/branch/main/screenshots/Screenshot_20230729-185308_1.png" width="300" height="550" />
+<img src="https://github.com/neosheo/Stringwave/blob/main/screenshots/Screenshot_20230729-185203_1.png?raw=true" width="300" height="550" />
+<img src="https://github.com/neosheo/Stringwave/blob/main/screenshots/Screenshot_20230729-185141_1.png?raw=true" width="300" height="550" />
+<img src="https://github.com/neosheo/Stringwave/blob/main/screenshots/Screenshot_20230729-185245_1.png?raw=true" width="300" height="550" />
+<img src="https://github.com/neosheo/Stringwave/blob/main/screenshots/Screenshot_20230729-185308_1.png?raw=true" width="300" height="550" />
 
 # What it is.
 
