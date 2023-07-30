@@ -1,3 +1,8 @@
+<img src="/git/neosheo/Stringwave/raw/branch/main/screenshots/Screenshot_20230729-185203_1.png" width="300" height="550" />
+<img src="/git/neosheo/Stringwave/raw/branch/main/screenshots/Screenshot_20230729-185141_1.png" width="300" height="550" />
+<img src="/git/neosheo/Stringwave/raw/branch/main/screenshots/Screenshot_20230729-185245_1.png" width="300" height="550" />
+<img src="/git/neosheo/Stringwave/raw/branch/main/screenshots/Screenshot_20230729-185308_1.png" width="300" height="550" />
+
 # What it is.
 
 Stringwave is an automated, self-hosted radio platform designed to emulate the 'Release Radar', 'Discover Weekly', and 'Liked Songs' playlists from Spotify. There are 2 python programs within it, Cogmera and Pipefeeder. Cogmera allows users to create 'Configs' which allow you to select genres, styles, decade, year, country, etc to find new music. Pipefeeder will allow you to subscribe to a youtube channel and get new music when it comes out. StringWave has 2 stations, new and main. All newly downloaded songs are automatically streamed to your new station. If you like a song you can move it to your main station.
