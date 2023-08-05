@@ -67,6 +67,7 @@ def getRecentUploads(feed):
 	pub_dates = feed_soup.find_all('published')[1:]
 	videos = feed_soup.find_all('media:content')
 	titles = feed_soup.find_all('media:title')
+	channel = feed_soup.find('title')
 	# remove any videos that contain words in the bad_words.py file
 	for i, title in enumerate(titles):
 		for bad_word in bad_words:
@@ -88,7 +89,7 @@ def getRecentUploads(feed):
 	urls = [new_video.attrs['url'].split('?')[0] for new_video in new_videos]
 	for url in urls:
 		with open('dl_data/urls', 'a') as f:
-			f.write(f'{url}\n')
+			f.write(f'{url};{channel}\n')
 
 
 def buildPlaylist():
@@ -97,8 +98,13 @@ def buildPlaylist():
 	subscriptions = [x[0] for x in con.cursor().execute('SELECT channel_url FROM subs').fetchall()]
 	print('Fetching new video URLs...')
 	for subscription in tqdm(subscriptions):
-		feed = getChannelFeed(subscription)
-		getRecentUploads(feed)
+		try:
+			feed = getChannelFeed(subscription)
+			getRecentUploads(feed)
+			time.sleep(3)
+		except requests.exceptions.ConnectionError:
+			time.sleep(3)
+			continue
 	with open('dl_data/urls', 'r') as f:
 		num_urls = len(f.readlines())
 	print(f'Grabbed {num_urls} URLs!')
@@ -134,5 +140,9 @@ def populateDb(text_file):
 
 if __name__ == '__main__':
 		buildPlaylist()
-		time.sleep(600)
-		requests.get('http://gateway:8080/reread')
+		while True:
+			with open('dl_data/pf_download_status', 'r') as f:
+				if f.read() == 'Done':
+					requests.get('http://gateway:8080/reread')
+					break
+				time.sleep(5)

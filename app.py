@@ -8,6 +8,7 @@ from tasks import move_track, download_track, upload
 from pipefeeder import getChannelFeed, getChannelId, getChannelName, getChannelUrl, getChannelIcon
 import sqlite3
 import re
+from mutagen.oggopus import OggOpus
 
 
 @app.route('/', methods = ['GET'])
@@ -40,7 +41,10 @@ def update_title():
 	track = db.session.query(Tracks).filter_by(track_id=track_id).one()
 	track.title = new_name
 	db.session.commit()
-	os.rename(f'/stringwave/radio/{station}/{old_name.replace(" ", "_")}.opus', f'/stringwave/radio/{station}/{new_name.replace(" ", "_")}.opus')
+	file_path = f'/stringwave/radio/{station}/{old_name.replace(" ", "_")}.opus'
+	file = OggOpus(file_path)
+	file['track'] = new_name
+	os.rename(file_path, f'/stringwave/radio/{station}/{new_name.replace(" ", "_")}.opus')
 	return redirect(f'/tracks/{station}')
 
 
@@ -53,6 +57,9 @@ def update_artist():
 	track = db.session.query(Tracks).filter_by(track_id=track_id).one()
 	track.artist = new_name
 	db.session.commit()
+	file = db.session.query(Tracks).filter_by(track_id=track_id).one().artist
+	file = OggOpus(f'/stringwave/radio/{station}/{file}')
+	file['artist'] = new_name
 	return redirect(f'/tracks/{station}')
 
 

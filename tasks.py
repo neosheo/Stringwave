@@ -38,7 +38,12 @@ def download_track(app):
 
 		case 'pipefeeder':
 			with open('dl_data/urls', 'r') as f:
-				links = f.readlines()
+				lines = f.readlines()
+				downloads = 1
+				num_links = len(links)
+				links = []
+				for line in lines:
+					links.append((line.split(';')[0], line.split(';')[1]))
 			if links == []: 
 				print('No videos to download')
 				return
@@ -49,7 +54,8 @@ def download_track(app):
 					shutil.rmdir(f'/stringwave/radio/new/{file}')
 			print('Done!')
 			for line, link in enumerate(links):
-				link = link.strip()
+				link = link[0].strip()
+				artist = link[1].strip()
 				regex = r'^(https?:\/\/)?(www\.)?youtube\.com\/(watch\?)?v(=|\/).{11}$'
 				if not re.match(regex, link):
 					print(f'Invalid YouTube link at line {line}: {link}.')
@@ -68,11 +74,18 @@ def download_track(app):
 				latest_track_formatted = re.sub(r'_+', ' ', latest_track)
 				if latest_track_formatted in os.listdir():
 					print(f'Match found: {latest_track_formatted}')
-				OggOpus(f'/stringwave/radio/new/{latest_track}.opus')['title'] = latest_track_formatted
+				track = OggOpus(f'/stringwave/radio/new/{latest_track}.opus')
+				track['title'] = latest_track_formatted
+				track['artist'] = artist
 				print(f'Latest track: {latest_track_formatted}')
-				new_track = Tracks(title=latest_track_formatted, config='pf', station='new')
+				new_track = Tracks(title=latest_track_formatted, artist=artist, config='pf', station='new')
 				db.session.add(new_track)
 				db.session.commit()
+				if downloads == num_links:
+					with open('dl_data/pf_download_status' 'w') as f:
+						f.write('Done')
+				else:
+					downloads += 1
 
 
 @celery_app.task
