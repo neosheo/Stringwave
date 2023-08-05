@@ -44,6 +44,18 @@ def update_title():
 	return redirect(f'/tracks/{station}')
 
 
+@app.route('/update_artist', methods = ['POST'])
+def update_artist():
+	data = request.form['update-artist'].split(';')
+	track_id = data[0]
+	new_name = data[1]
+	station = data[2]
+	track = db.session.query(Tracks).filter_by(track_id=track_id).one()
+	track.artist = new_name
+	db.session.commit()
+	return redirect(f'/tracks/{station}')
+
+
 @app.route('/move_to_main', methods = ['POST'])
 def move_to_main():
 	track = db.session.query(Tracks).filter_by(track_id=request.form['move_to_main']).one()

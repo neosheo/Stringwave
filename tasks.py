@@ -1,4 +1,4 @@
-from webapp import celery_app, db, Tracks, cogmera_log, pipefeeder_log
+from webapp import celery_app, db, Tracks
 from pipefeeder import populateDb
 import requests
 import os
@@ -26,11 +26,12 @@ def download_track(app):
 		case 'cogmera':
 			with open('dl_data/search_queries', 'r') as f:
 				data = json.load(f)
-			filename = re.sub(r'(\||%|&|:|;|,|-|\*|#|\\|/|\[|\|"])', '', data['filename'])
+			filename = re.sub(r'(\||%|&|:|;|,|!|-|\*|#|\\|/|\[|\|"])', '', data['filename'])
+			title = data['filename']
 			artist = data['artist']
 			search_query = data['search_query']
 			config = data['config']
-			subprocess.run([f'{os.getcwd()}/scripts/cogmera-download.sh', filename, artist, search_query, config])
+			subprocess.run([f'{os.getcwd()}/scripts/cogmera-download.sh', filename, title, artist, search_query, config])
 			new_track = Tracks(title=filename, artist=artist, config=config, station='new')
 			db.session.add(new_track)
 			db.session.commit()
@@ -58,14 +59,16 @@ def download_track(app):
 				# add most recent track to radio database
 				tracks = os.listdir('/stringwave/radio/new')
 				# remove .playlist from list incase it somehow is most recently created file
-				for track in tracks:
-					if track == '.playlist':
-						del track
-						continue
+				tracks.remove('.playlist')
 				tracks_with_path = [ f'/stringwave/radio/new/{track}' for track in tracks ]
+				for track in tracks_with_path:
+					if '.opus' not in track:
+						tracks_with_path.remove(track)
 				latest_track = Path(max(tracks_with_path, key=os.path.getctime)).stem
 				latest_track_formatted = re.sub(r'_+', ' ', latest_track)
-				OggOpus(latest_track)['title'] = latest_track_formatted
+				if latest_track_formatted in os.listdir():
+					print(f'Match found: {latest_track_formatted}')
+				OggOpus(f'/stringwave/radio/new/{latest_track}.opus')['title'] = latest_track_formatted
 				print(f'Latest track: {latest_track_formatted}')
 				new_track = Tracks(title=latest_track_formatted, config='pf', station='new')
 				db.session.add(new_track)

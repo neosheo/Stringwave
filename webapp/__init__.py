@@ -42,7 +42,8 @@ app.config.from_mapping(
 		broker_url='pyamqp://guest@rabbitmq/',
 		backend_url='pyamqp://guest@rabbitmq/',
 		task_ignore_result=True,
-		broker_connection_retry_on_startup=True
+		broker_connection_retry_on_startup=True,
+		worker_cancel_long_running_tasks_on_connection_loss=False
 	)
 )
 celery_app = celery_init_app(app)

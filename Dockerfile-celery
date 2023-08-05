@@ -22,13 +22,15 @@ COPY tasks.py .
 COPY start-celery.sh ./start.sh
 
 RUN export NUM_DAILY_DOWNLOADS=$NUM_DAILY_DOWNLOADS
-RUN mkdir dl_data logs
+RUN mkdir dl_data logs /home/stringwave
 RUN touch webapp/static/subs.txt \
     webapp/static/move_status \
     dl_data/urls \
     dl_data/search_queries \
     webapp/static/upload_status
-RUN chown -R stringwave .
+RUN chown -R stringwave:stringwave \
+	/home/stringwave \
+	/stringwave
 
 USER stringwave
 ENTRYPOINT [ "bash", "./start.sh" ]

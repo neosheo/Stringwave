@@ -112,12 +112,17 @@ def populateDb(text_file):
 	subscriptions = []
 	print('Gathering subscriptions...')
 	for sub in tqdm(subs):
-		feed = getChannelFeed(sub)
-		channel_id = getChannelId(feed)
-		channel_name = getChannelName(feed)
-		channel_url = getChannelUrl(feed)
-		channel_icon = getChannelIcon(channel_url)
-		subscriptions.append((channel_id, channel_name, channel_url, channel_icon))
+		try:
+			feed = getChannelFeed(sub)
+			channel_id = getChannelId(feed)
+			channel_name = getChannelName(feed)
+			channel_url = getChannelUrl(feed)
+			channel_icon = getChannelIcon(channel_url)
+			subscriptions.append((channel_id, channel_name, channel_url, channel_icon))
+			time.sleep(3)
+		except requests.exceptions.ConnectionError:
+			time.sleep(3)
+			continue	
 	print('Done!')
 	print('Updating database...')
 	con = sqlite3.connect('webapp/instance/stringwave.db')

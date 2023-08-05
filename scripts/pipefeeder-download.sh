@@ -3,9 +3,11 @@
 link=$1
 
 yt-dlp \
+	--format '[height<720]' \
 	--parse-metadata '%(uploader)s:%(meta_artist)s' \
 	--embed-metadata \
-	--replace-in-metadata title '[|%& :;,-/#\*\\"]' '_' \
+	--replace-in-metadata title '[|% :;,-/#\*\\"!]' '_' \
+	--replace-in-metadata title "[']" '_' \
 	--sponsorblock-remove all \
 	--sponsorblock-api 'https://api.sponsor.ajay.app/api/' \
 	--extract-audio \

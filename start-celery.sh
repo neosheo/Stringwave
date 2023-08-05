@@ -1,3 +1,3 @@
 #!/bin/bash
 
-celery --app tasks worker --loglevel INFO
+celery --app tasks worker --concurrency 1 --loglevel INFO
