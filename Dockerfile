@@ -34,12 +34,13 @@ RUN touch logs/cogmera_download.log \
     webapp/static/move_status \
     dl_data/urls \
     dl_data/search_queries \
+    dl_data/pf_download_status \
     webapp/static/upload_status \
     webapp/static/now_playing_main \
     webapp/static/now_playing_new \
     webapp/static/subs.txt \
     webapp/static/configs.txt
-RUN [ -f webapp/static/stringwave.db ] || touch webapp/static/stringwave.db
+RUN [ -f webapp/instance/stringwave.db ] || touch webapp/instance/stringwave.db
 RUN echo 99999 > .pid-new
 RUN echo 99999 > .pid-main
 RUN chown -R stringwave:stringwave \

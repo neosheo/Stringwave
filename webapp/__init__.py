@@ -8,6 +8,7 @@ from celery import Celery, Task
 cogmera_log = '/stringwave/logs/cogmera_download.log'
 pipefeeder_log = '/stringwave/logs/pipefeeder.log'
 db_directory = f'sqlite:////{os.getcwd()}/webapp/instance'
+radio_path = '/stringwave/radio'
 
 # only allow backups that have .txt extension
 BACKUP_LOCATION = f'{os.getcwd()}/webapp/static'
@@ -61,10 +62,11 @@ class Subs(db.Model):
 class Tracks(db.Model):
 	__bind_key__ = 'main'
 	track_id = db.Column(db.Integer, primary_key=True)
-	title = db.Column(db.String(30))
+	title = db.Column(db.String(100))
 	artist = db.Column(db.String(30))
 	config = db.Column(db.Integer)
 	station = db.Column(db.String(4))
+	file_path = db.Column(db.String(300))
 
 
 class Config(db.Model):

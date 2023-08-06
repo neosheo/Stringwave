@@ -27,10 +27,11 @@ RUN touch webapp/static/subs.txt \
     webapp/static/move_status \
     dl_data/urls \
     dl_data/search_queries \
+    dl_data/pf_download_status \
     webapp/static/upload_status
 RUN chown -R stringwave:stringwave \
-	/home/stringwave \
-	/stringwave
+    /home/stringwave \
+    /stringwave
 
 USER stringwave
 ENTRYPOINT [ "bash", "./start.sh" ]

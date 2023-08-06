@@ -29,11 +29,12 @@ for station in stations[1:]:
             new_name = file.replace(u'\xa0', '')
             os.rename(f'{os.getcwd()}/radio/{station}/{file}', f'{os.getcwd()}/radio/{station}/{new_name}')
             file = new_name
+        file_path = f'/stringwave/radio/{station}/{file}'
         track = mutagen.File(f'{os.getcwd()}/radio/{station}/{file}')
         # pipefeeder doesn't add a config tag to the file, if these lines aren't included you get a KeyError
         if 'config' not in track:
             track['config'] = 'na'
-        tracks.append((track_id, track['title'][0], track['artist'][0], track['config'][0], station))
+        tracks.append((track_id, track['title'][0], track['artist'][0], track['config'][0], station, file_path))
         track_id += 1
     station_tracks.append(tracks)
     
@@ -41,5 +42,5 @@ for station in stations[1:]:
     con = sqlite3.connect('webapp/instance/stringwave.db')
     cur = con.cursor()
     for tracks in station_tracks:
-        cur.executemany('INSERT OR IGNORE INTO tracks(track_id, title, artist, config, station) VALUES (?, ?, ?, ?, ?)', tracks)
+        cur.executemany('INSERT OR IGNORE INTO tracks(track_id, title, artist, config, station, file_path) VALUES (?, ?, ?, ?, ?, ?)', tracks)
     con.commit()

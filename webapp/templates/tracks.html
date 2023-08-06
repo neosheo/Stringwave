@@ -38,7 +38,6 @@
         <table>
             <tbody>
                 <tr>
-                    <th scope="col" class="box header">ID</th>
                     <th scope="col" class="box header">Config</th>
                     {% if station == 'new' %}
                     <th scope="col" class="box header">Move</th>
@@ -57,7 +56,6 @@
                 <form method="POST" id="update-artist" action="/update_artist"></form>
                 {% for track in tracks %}
                 <tr>
-                    <td class="track-id box">{{ track.track_id }}</td>
                     <td class="box">{{ track.config }}</td>
                     {% if station == 'new' %}
                     <td class="box">

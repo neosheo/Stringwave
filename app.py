@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, flash, jsonify
 from werkzeug.utils import secure_filename
 from sqlalchemy import func, exc
-from webapp import app, db, allowed_file, Config, Tracks, Subs, Genres, Styles, Countries, Decades, Years, SortMethods
+from webapp import app, db, radio_path, allowed_file, Config, Tracks, Subs, Genres, Styles, Countries, Decades, Years, SortMethods
 import subprocess
 import os
 from tasks import move_track, download_track, upload
@@ -35,16 +35,15 @@ def radio_main(station):
 def update_title():
 	data = request.form['update-title'].split(';')
 	track_id = data[0]
-	old_name = db.session.query(Tracks).filter_by(track_id=track_id).one().title
-	new_name = data[1]
+	new_name = data[1].strip()
 	station = data[2]
 	track = db.session.query(Tracks).filter_by(track_id=track_id).one()
 	track.title = new_name
 	db.session.commit()
-	file_path = f'/stringwave/radio/{station}/{old_name.replace(" ", "_")}.opus'
+	file_path = db.session.query(Tracks).filter_by(track_id=track_id).one().file_path
 	file = OggOpus(file_path)
 	file['track'] = new_name
-	os.rename(file_path, f'/stringwave/radio/{station}/{new_name.replace(" ", "_")}.opus')
+	os.rename(file_path, f'{radio_path}/{station}/{new_name.replace(" ", "_")}.opus')
 	return redirect(f'/tracks/{station}')
 
 
@@ -52,13 +51,14 @@ def update_title():
 def update_artist():
 	data = request.form['update-artist'].split(';')
 	track_id = data[0]
-	new_name = data[1]
+	new_name = data[1].strip()
 	station = data[2]
 	track = db.session.query(Tracks).filter_by(track_id=track_id).one()
 	track.artist = new_name
 	db.session.commit()
-	file = db.session.query(Tracks).filter_by(track_id=track_id).one().artist
-	file = OggOpus(f'/stringwave/radio/{station}/{file}')
+	file_path = db.session.query(Tracks).filter_by(track_id=track_id).one().file_path
+	file = db.session.query(Tracks).filter_by(track_id=track_id).one().title.replace(' ', '_')
+	file = OggOpus(file_path)
 	file['artist'] = new_name
 	return redirect(f'/tracks/{station}')
 
@@ -69,6 +69,9 @@ def move_to_main():
 	track = track.title.replace(' ', '_')
 	entry = db.session.query(Tracks).filter_by(track_id=request.form['move_to_main']).one()
 	entry.station = 'main'
+	old_file_path = db.session.query(Tracks).filter_by(track_id=request.form['move_to_main']).one().file_path
+	new_file_path = old_file_path.replace('/new/', '/main/')
+	entry.file_path = new_file_path
 	db.session.commit()
 	move_track.delay(track)
 	return render_template('move.html')
@@ -92,7 +95,7 @@ def move_status():
 @app.route('/delete_track/<string:station>', methods = ['POST'])
 def delete_track(station):
 	track = db.session.query(Tracks).filter_by(track_id=request.form['delete_track']).one()
-	os.remove(f'/stringwave/radio/{station}/{track.title.replace(" ", "_")}.opus')
+	os.remove(f'{radio_path}/{station}/{track.title.replace(" ", "_")}.opus')
 	db.session.query(Tracks).filter_by(track_id=request.form['delete_track']).delete()
 	db.session.commit()
 	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', station])

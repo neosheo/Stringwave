@@ -19,6 +19,7 @@ sender.c
 *.bak
 radio.db
 .completed_downloads_*
+pf_download_status
 transfer_db.py
 containers/*
 nohup.out

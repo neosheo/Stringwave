@@ -112,7 +112,7 @@ tr, th, td {
 	margin: 0px;
 }
 
-.track-title {
+.track-title, .track-artist {
 	text-align: left;
 }
 
