@@ -18,7 +18,7 @@ def index():
 
 @app.route('/tracks/<string:station>', methods = ['GET'])
 def tracks_main(station):
-	tracks = db.session.query(Tracks).filter(Tracks.station == station).order_by(Tracks.track_id).all()
+	tracks = db.session.query(Tracks).filter(Tracks.station == station).order_by(Tracks.title).all()
 	for track in tracks:
 		track.title = re.sub(r'_+', ' ', track.title)
 		track.title = re.sub(r'\s{2,}', ' ', track.title)
@@ -43,7 +43,6 @@ def update_title():
 	file_path = db.session.query(Tracks).filter_by(track_id=track_id).one().file_path
 	file = OggOpus(file_path)
 	file['track'] = new_name
-	os.rename(file_path, f'{radio_path}/{station}/{new_name.replace(" ", "_")}.opus')
 	return redirect(f'/tracks/{station}')
 
 
