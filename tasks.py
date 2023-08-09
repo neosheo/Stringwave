@@ -53,7 +53,7 @@ def download_track(app):
 			for file in os.listdir(f'{radio_path}/new'):
 				# delete directories with files in them which are created by failed downloads
 				if os.path.isdir(f'{radio_path}/new/{file}'):
-					shutil.rmdir(f'{radio_path}/new/{file}')
+					shutil.rmtree(f'{radio_path}/new/{file}')
 			print('Done!')
 			for line, link in enumerate(links):
 				link = link[0].strip()
@@ -85,7 +85,7 @@ def download_track(app):
 				db.session.add(new_track)
 				db.session.commit()
 				if downloads == num_links:
-					with open('dl_data/pf_download_status' 'w') as f:
+					with open('dl_data/pf_download_status', 'w') as f:
 						f.write('Done')
 				else:
 					downloads += 1

@@ -146,3 +146,4 @@ if __name__ == '__main__':
 					requests.get('http://gateway:8080/reread')
 					break
 				time.sleep(5)
+		open('dl_data/pf_download_status', 'w').close()
