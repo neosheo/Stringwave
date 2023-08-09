@@ -14,7 +14,9 @@ track_id = 1
 for station in stations[1:]:
     for file in os.listdir(f'radio/{station}'):
         # this file may be present but shouldn't be added to the database
-        if file == '.playlist':
+        # don't try to add hidden files
+        regex = r'^\..+'
+        if re.match(regex, file):
             continue
         regex = r'.+\.part$'
         if re.match(regex, file):
@@ -32,6 +34,9 @@ for station in stations[1:]:
         file_path = f'/stringwave/radio/{station}/{file}'
         track = mutagen.File(f'{os.getcwd()}/radio/{station}/{file}')
         # pipefeeder doesn't add a config tag to the file, if these lines aren't included you get a KeyError
+        if track is None:
+            print(f'ERROR: {file}')
+            continue
         if 'config' not in track:
             track['config'] = 'na'
         tracks.append((track_id, track['title'][0], track['artist'][0], track['config'][0], station, file_path))
