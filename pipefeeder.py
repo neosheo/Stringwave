@@ -67,7 +67,7 @@ def getRecentUploads(feed):
 	pub_dates = feed_soup.find_all('published')[1:]
 	videos = feed_soup.find_all('media:content')
 	titles = feed_soup.find_all('media:title')
-	channel = feed_soup.find('title')
+	channel = feed_soup.find('title').text.rstrip()
 	# remove any videos that contain words in the bad_words.py file
 	for i, title in enumerate(titles):
 		for bad_word in bad_words:
@@ -86,9 +86,10 @@ def getRecentUploads(feed):
 			new_videos.append(videos[index])
 		index += 1
 	# extract video urls
-	urls = [new_video.attrs['url'].split('?')[0] for new_video in new_videos]
+	urls = [new_video.attrs['url'].split('?')[0].rstrip() for new_video in new_videos]
 	for url in urls:
 		with open('dl_data/urls', 'a') as f:
+			print(f'Link found: {url} by {channel}')
 			f.write(f'{url};{channel}\n')
 
 

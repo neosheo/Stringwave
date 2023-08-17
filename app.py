@@ -43,6 +43,7 @@ def update_title():
 	file_path = db.session.query(Tracks).filter_by(track_id=track_id).one().file_path
 	file = OggOpus(file_path)
 	file['track'] = new_name
+	file.save()
 	return redirect(f'/tracks/{station}')
 
 
@@ -59,6 +60,7 @@ def update_artist():
 	file = db.session.query(Tracks).filter_by(track_id=track_id).one().title.replace(' ', '_')
 	file = OggOpus(file_path)
 	file['artist'] = new_name
+	file.save()
 	return redirect(f'/tracks/{station}')
 
 

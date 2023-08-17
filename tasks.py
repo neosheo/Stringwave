@@ -51,6 +51,10 @@ def download_track(app):
 				return
 			print('Cleaning broken downloads...')
 			for file in os.listdir(f'{radio_path}/new'):
+				# don't include hidden files
+				regex = r'^\..+'
+				if re.match(regex, file):
+					continue
 				# delete directories with files in them which are created by failed downloads
 				if os.path.isdir(f'{radio_path}/new/{file}'):
 					shutil.rmtree(f'{radio_path}/new/{file}')
@@ -66,10 +70,12 @@ def download_track(app):
 				subprocess.run([f'{os.getcwd()}/scripts/pipefeeder-download.sh', link])
 				# add most recent track to radio database
 				tracks = os.listdir(f'{radio_path}/new')
-				# remove .playlist from list incase it somehow is most recently created file
-				tracks.remove('.playlist')
 				tracks_with_path = [ f'{radio_path}/new/{track}' for track in tracks ]
 				for track in tracks_with_path:
+				# remove hidden files from list incase one somehow is most recently created file
+					regex = r'^\..+'
+					if re.match(regex, track):
+						tracks_with_path.remove(track)
 					if '.opus' not in track:
 						tracks_with_path.remove(track)
 				latest_track = Path(max(tracks_with_path, key=os.path.getctime)).stem

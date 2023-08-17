@@ -6,3 +6,4 @@
 **/configs.db
 **/*.bak
 **/radio.db
+**/.st*
