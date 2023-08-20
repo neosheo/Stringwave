@@ -59,12 +59,13 @@ def download_track(app):
 				if os.path.isdir(f'{radio_path}/new/{file}'):
 					shutil.rmtree(f'{radio_path}/new/{file}')
 			print('Done!')
-			for line, link in enumerate(links):
-				link = link[0].strip()
-				artist = link[1].strip()
+			for line, link_and_artist in enumerate(links):
+				link = link_and_artist[0].strip()
+				artist = link_and_artist[1].strip()
 				regex = r'^(https?:\/\/)?(www\.)?youtube\.com\/(watch\?)?v(=|\/).{11}$'
 				if not re.match(regex, link):
 					print(f'Invalid YouTube link at line {line}: {link}.')
+					downloads += 1
 					continue
 				print(f'Downloading {link}')
 				subprocess.run([f'{os.getcwd()}/scripts/pipefeeder-download.sh', link])
@@ -86,6 +87,8 @@ def download_track(app):
 				track = OggOpus(file_path)
 				track['title'] = latest_track_formatted
 				track['artist'] = artist
+				track.save()
+				file_path = f'{radio_path}/new/{latest_track_formatted}.opus'
 				print(f'Latest track: {latest_track_formatted}')
 				new_track = Tracks(title=latest_track_formatted, artist=artist, config='pf', station='new', file_path=file_path)
 				db.session.add(new_track)
