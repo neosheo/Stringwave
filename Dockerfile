@@ -29,6 +29,7 @@ RUN mkdir dl_data logs /home/stringwave
 RUN touch logs/cogmera_download.log \
     logs/cogmera_selection.log \
     logs/pipefeeder.log \
+    logs/bad_words.log \
     /var/log/icecast2/access.log \
     /var/log/icecast2/error.log \
     webapp/static/move_status \

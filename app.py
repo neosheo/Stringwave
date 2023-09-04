@@ -1,14 +1,67 @@
-from flask import render_template, request, redirect, flash, jsonify
+from flask import render_template, request, redirect, flash, jsonify, url_for
+from flask_login import login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
 from sqlalchemy import func, exc
-from webapp import app, db, radio_path, allowed_file, Config, Tracks, Subs, Genres, Styles, Countries, Decades, Years, SortMethods
+from webapp import (app, 
+					db,
+					bcrypt, 
+					Users, 
+					LoginForm,
+					login_manager,
+					allowed_file, 
+					Config, 
+					Tracks, 
+					Subs, 
+					Genres, 
+					Styles, 
+					Countries, 
+					Decades, 
+					Years, 
+					SortMethods)
 import subprocess
 import os
 from tasks import move_track, download_track, upload
-from pipefeeder import getChannelFeed, getChannelId, getChannelName, getChannelUrl, getChannelIcon
+from pipefeeder import (getChannelFeed, 
+						getChannelId, 
+						getChannelName, 
+						getChannelUrl, 
+						getChannelIcon)
 import sqlite3
 import re
 from mutagen.oggopus import OggOpus
+
+
+@app.route('/login', methods = ['GET', 'POST'])
+def login():
+	form = LoginForm()
+	if request.method == 'POST':
+		if form.validate_on_submit():
+			print(form.username.data)
+			user = db.session.query(Users).filter(Users.username == form.username.data).one()
+			if user and bcrypt.check_password_hash(user.password, form.password.data):
+				login_user(user, remember=True)
+				next = request.args.get('next')
+				return redirect(next or url_for('index'))
+			else:
+				flash("Login unsuccessful.")
+				return render_template("login.html", form=form)
+	else:
+		return render_template('login.html', form=form)
+
+
+@app.route("/logout", methods=["GET"])
+@login_required
+def logout():
+    logout_user()
+    return redirect('/login')
+
+
+@login_manager.user_loader
+def load_user(username):
+	user = db.session.query(Users).filter(Users.username == username).one()
+	if not user:
+		return None
+	return user
 
 
 @app.route('/', methods = ['GET'])
@@ -17,6 +70,7 @@ def index():
 
 
 @app.route('/tracks/<string:station>', methods = ['GET'])
+@login_required
 def tracks_main(station):
 	tracks = db.session.query(Tracks).filter(Tracks.station == station).order_by(Tracks.title).all()
 	for track in tracks:
@@ -32,6 +86,7 @@ def radio_main(station):
 
 
 @app.route('/update_title', methods = ['POST'])
+@login_required
 def update_title():
 	data = request.form['update-title'].split(';')
 	track_id = data[0]
@@ -48,6 +103,7 @@ def update_title():
 
 
 @app.route('/update_artist', methods = ['POST'])
+@login_required
 def update_artist():
 	data = request.form['update-artist'].split(';')
 	track_id = data[0]
@@ -65,20 +121,17 @@ def update_artist():
 
 
 @app.route('/move_to_main', methods = ['POST'])
+@login_required
 def move_to_main():
-	track = db.session.query(Tracks).filter_by(track_id=request.form['move_to_main']).one()
-	track = track.title.replace(' ', '_')
-	entry = db.session.query(Tracks).filter_by(track_id=request.form['move_to_main']).one()
-	entry.station = 'main'
-	old_file_path = db.session.query(Tracks).filter_by(track_id=request.form['move_to_main']).one().file_path
+	track_id = request.form['move_to_main']
+	old_file_path = db.session.query(Tracks).filter_by(track_id=track_id).one().file_path
 	new_file_path = old_file_path.replace('/new/', '/main/')
-	entry.file_path = new_file_path
-	db.session.commit()
-	move_track.delay(track)
+	move_track.delay(track_id, old_file_path, new_file_path)
 	return render_template('move.html')
 
 
 @app.route('/move_complete', methods = ['GET'])
+@login_required
 def move_complete():
 	with open('webapp/static/move_status', 'w') as f:
 		f.write('complete')
@@ -86,6 +139,7 @@ def move_complete():
 
 
 @app.route('/move_status', methods = ['GET'])
+@login_required
 def move_status():
 	with open('webapp/static/move_status', 'r') as f:
 		status = f.read()
@@ -94,9 +148,10 @@ def move_status():
 
 
 @app.route('/delete_track/<string:station>', methods = ['POST'])
+@login_required
 def delete_track(station):
-	track = db.session.query(Tracks).filter_by(track_id=request.form['delete_track']).one()
-	os.remove(f'{radio_path}/{station}/{track.title.replace(" ", "_")}.opus')
+	file_path = db.session.query(Tracks).filter_by(track_id=request.form['delete_track']).one().file_path
+	os.remove(file_path)
 	db.session.query(Tracks).filter_by(track_id=request.form['delete_track']).delete()
 	db.session.commit()
 	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', station])
@@ -104,6 +159,7 @@ def delete_track(station):
 
 
 @app.route('/skip/<string:station>', methods = ['GET'])
+@login_required
 def skip(station):
 	if station != 'new' and station != 'main':
 		flash('Invalid Station')
@@ -114,18 +170,21 @@ def skip(station):
 
 
 @app.route('/download/<string:app>', methods = ['GET'])
+@login_required
 def download(app):
 	download_track.delay(app)
 	return 'Complete!'
 
 
 @app.route('/reread/<string:station>', methods = ['GET'])
+@login_required
 def reread(station):
 	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', station])
 	return 'Playlist reread.'
 
 
 @app.route('/cogmera/config', methods=['GET', 'POST'])
+@login_required
 def config():
     if request.method == 'POST':
         genres = request.form.getlist('genres')
@@ -150,22 +209,24 @@ def config():
         db.session.add(new_config)
         db.session.commit()
     return render_template(
-							'config.html', 
-							genres=Genres.query.order_by(Genres.genre_id).all(), 
-							styles=Styles.query.order_by(Styles.style_id).all(), 
-							decades=Decades.query.order_by(Decades.decade_id).all(), 
-							countries=Countries.query.order_by(Countries.country_id).all(), 
-							years=Years.query.order_by(Years.year_id).all(), 
-							sort_methods=SortMethods.query.order_by(SortMethods.sort_method_id).all())
+						'config.html', 
+						genres=Genres.query.order_by(Genres.genre_id).all(), 
+						styles=Styles.query.order_by(Styles.style_id).all(), 
+						decades=Decades.query.order_by(Decades.decade_id).all(), 
+						countries=Countries.query.order_by(Countries.country_id).all(), 
+						years=Years.query.order_by(Years.year_id).all(), 
+						sort_methods=SortMethods.query.order_by(SortMethods.sort_method_id).all())
 
 
 @app.route('/cogmera/dump_config', methods=['GET'])
+@login_required
 def dump():
 	configs = Config.query.order_by(Config.config_id).all()
 	return render_template('dump_config.html', configs=configs) 
 
 
 @app.route('/cogmera/delete_config', methods=['POST'])
+@login_required
 def delete():
 	db.session.query(Config).filter_by(config_id=request.form['delete_config']).delete()
 	db.session.commit()
@@ -173,6 +234,7 @@ def delete():
 
 
 @app.route('/cogmera/backup_configs', methods = ['GET'])
+@login_required
 def backup_configs():
 	con = sqlite3.connect('webapp/instance/stringwave.db')
 	configs = con.cursor().execute('SELECT * FROM config')
@@ -186,11 +248,13 @@ def backup_configs():
 
 
 @app.route('/pipefeeder/list_subs', methods = ['GET'])
+@login_required
 def listSubs():
 	return render_template('subs.html', subs=Subs.query.order_by(func.lower(Subs.channel_name)).all())
 
 
 @app.route('/pipefeeder/add_sub', methods = ['POST'])
+@login_required
 def addSub():
 	channel_url = request.form['subscribe']
 	regex = r'^(((https?):\/\/)?(www\.)?youtube\.com)/(c(hannel)?/|@).+$'
@@ -215,6 +279,7 @@ def addSub():
 
 
 @app.route('/pipefeeder/del_sub', methods = ['POST'])
+@login_required
 def delSub():
 	db.session.query(Subs).filter_by(channel_id=request.form['unsubscribe']).delete()
 	db.session.commit()
@@ -222,6 +287,7 @@ def delSub():
 
 
 @app.route('/pipefeeder/backup_subs', methods = ['GET'])
+@login_required
 def backup():
 	con = sqlite3.connect('webapp/instance/stringwave.db')
 	urls = con.cursor().execute('SELECT channel_url FROM subs')
@@ -231,6 +297,7 @@ def backup():
 
 
 @app.route('/pipefeeder/upload_subs', methods = ['GET', 'POST'])
+@login_required
 def upload_subs():
 	with open('webapp/static/upload_status', 'w') as f:
 		f.write('uploading')
@@ -244,6 +311,7 @@ def upload_subs():
 
 
 @app.route('/pipefeeder/upload_complete', methods = ['GET'])
+@login_required
 def upload_complete():
 	with open('webapp/static/upload_status', 'w') as f:
 		f.write('complete')
@@ -251,6 +319,7 @@ def upload_complete():
 
 
 @app.route('/pipefeeder/upload_status', methods = ['GET'])
+@login_required
 def upload_status():
 	with open('webapp/static/upload_status', 'r') as f:
 		status = f.read()

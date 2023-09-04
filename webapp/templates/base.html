@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>{% block title %}{% endblock %}</title>
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    </head>
+
+    <body>
+        <header class="main-header">
+            {% for message in get_flashed_messages() %}
+                <div class="flash">{{ message }}</div>
+            {% endfor %}
+            <h1>S T R I N G W A V E</h1>
+            <nav class="nav main-nav">
+                <ul>
+                    <li>
+                        <a href="/radio/new">NEW MUSIC</a>
+                    </li>
+                    <li>
+                        <a href="/tracks/new">NEW TRACKS</a>
+                    </li>
+                    <li>
+                        <a href="/radio/main">MY MUSIC</a>
+                    </li>
+                    <li>
+                        <a href="/tracks/main">MY TRACKS</a>
+                    </li>
+                    <li>
+                        <a href="/pipefeeder/list_subs">MY SUBSCRIPTIONS</a>
+                    </li>
+                    <li>
+                        <a href="/cogmera/dump_config">MY CONFIGURATIONS</a>
+                    </li>
+                    <li>
+                        <a href="/cogmera/config">NEW CONFIGURATION</a>
+                    </li>
+                </ul>
+            </nav>
+        </header>
+
+        {% block content %}{% endblock %}
+        
+        <footer class="main-footer">
+            <div class="container">
+                <div class="created-by">
+                    <p>Created by neosheo</p>
+                </div>
+                <div class="github">
+                    <a href="https://github.com/neosheo/Stringwave">
+                        <img src="{{ url_for('static', filename='images/github.png') }}" alt="github" width="25" height="25">
+                    </a>
+                </div>
+            </div>
+        </footer>
+    </body>
+
+    {% block scripts %}{% endblock %}
+</html>

@@ -1,5 +1,9 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import LoginManager
+from flask_wtf import FlaskForm
+from flask_bcrypt import Bcrypt
+from wtforms import StringField, PasswordField, SubmitField
 import os
 from celery import Celery, Task
 
@@ -7,6 +11,7 @@ from celery import Celery, Task
 # PATHS
 cogmera_log = '/stringwave/logs/cogmera_download.log'
 pipefeeder_log = '/stringwave/logs/pipefeeder.log'
+bad_word_log = '/stringwave/logs/bad_words.log'
 db_directory = f'sqlite:////{os.getcwd()}/webapp/instance'
 radio_path = '/stringwave/radio'
 
@@ -47,8 +52,49 @@ app.config.from_mapping(
 		worker_cancel_long_running_tasks_on_connection_loss=False
 	)
 )
+
 celery_app = celery_init_app(app)
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
+
+
+def create_admin_user(bcrypt_obj):
+	password = os.getenv('ADMIN_PASSWORD')
+	hashed_pw = bcrypt_obj.generate_password_hash(password)
+	print(f"USERS: {db.session.query(Users).filter(Users.user_id == 1).first()}")
+	if db.session.query(Users).filter(Users.user_id == 1).first() is None:
+		admin_user = Users(
+						user_id=1,
+						username="admin",
+						password=hashed_pw,
+		)
+		db.session.add(admin_user)
+		db.session.commit()
+
+
+class LoginForm(FlaskForm):
+    username = StringField('Username')
+    password = PasswordField('Password')
+    submit = SubmitField('Submit')
+
+
+class Users(db.Model):
+	__bind_key__ = 'main'
+	user_id = db.Column(db.Integer, primary_key=True)
+	username = db.Column(db.String, nullable=False, unique=True)
+	password = db.Column(db.String, nullable=False)
+	def is_authenticated(self):
+		return self.authenticated
+	def is_active(self):
+		return True
+	def get_id(self):
+		return self.username
+	def is_anonymous(self):
+		return False
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 
 class Subs(db.Model):
@@ -121,5 +167,5 @@ class SortMethods(db.Model):
 with app.app_context():
 	db.create_all('main')
 	db.create_all('discogs')
-
+	create_admin_user(bcrypt)
 

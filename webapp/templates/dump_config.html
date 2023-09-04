@@ -1,90 +1,45 @@
-<!DOCTYPE html>
-<html lang="en">
-	<head>
-		<title>Current Configurations</title>
-		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-		<meta name="viewport" content="width=device-width">
-	</head>
+{% extends 'base.html' %}
 
-	<body>
-		<header class="main-header">
-			<h1>S T R I N G W A V E</h1>
-			<nav class="nav main-nav">
-				<ul>
-					<li>
-						<a href="/radio/new">NEW MUSIC</a>
-					</li>
-					<li>
-						<a href="/tracks/new">NEW TRACKS</a>
-					</li>
-					<li>
-						<a href="/radio/main">MY MUSIC</a>
-					</li>
-					<li>
-						<a href="/tracks/main">MY TRACKS</a>
-					</li>
-					<li>
-						<a href="/pipefeeder/list_subs">MY SUBSCRIPTIONS</a>
-					</li>
-					<li>
-						<a href="/cogmera/dump_config">MY CONFIGURATIONS</a>
-					</li>
-					<li>
-						<a href="/cogmera/config">NEW CONFIGURATION</a>
-					</li>
-				</ul>
-			</nav>
-		</header>
+{% block title %}
+Current Configurations
+{% endblock %}
 
-		<a href="/cogmera/backup_configs">Backup</a>
-		<br>
-		<table>
-			<tbody>
-				<tr>
-					<th scope="col" class="box header">ID</th>
-					<th scope="col" class="box header">Genres</th>
-					<th scope="col" class="box header">Styles</th>
-					<th scope="col" class="box header">Decade</th>
-					<th scope="col" class="box header">Year</th>
-					<th scope="col" class="box header">Country</th>
-					<th scope="col" class="box header">Sort Method</th>
-					<th scope="col" class="box header">Sort Order</th>
-					<th scope="col" class="box header">Albums to Find</th>
-					<th scope="col" class="box header">Delete</th>
-				</tr>
-			</tbody>
-			{% for config in configs %}
-			<form method="POST" id="delete" action="/cogmera/delete_config"></form>
+{% block content %}
+	<a href="/cogmera/backup_configs">Backup</a>
+	<br>
+	<table>
+		<tbody>
 			<tr>
-				<td class="box">{{ config.config_id }}</td>
-				<td class="box">{{ config.genres.replace(';', ', ') }}</td>
-				<td class="box">{{ config.styles.replace(';', ', ') }}</td>
-				<td class="box">{{ config.decade }}</td>
-				<td class="box">{{ config.year }}</td>
-				<td class="box">{{ config.country }}</td>
-				<td class="box">{{ config.sort_method }}</td>
-				<td class="box">{{ config.sort_order.replace('D', 'desc').replace('A', 'asc') }}</td>
-				<td class="box">{{ config.albums_to_find }}</td>
-				<td class="box">
-					<button type="submit" form="delete" name="delete_config" value="{{ config.config_id }}">
-						<img src="{{ url_for('static', filename='images/delete.png') }}" alt="Del" width="30" height="30">
-					</button>
-				</td>
+				<th scope="col" class="box header">ID</th>
+				<th scope="col" class="box header">Genres</th>
+				<th scope="col" class="box header">Styles</th>
+				<th scope="col" class="box header">Decade</th>
+				<th scope="col" class="box header">Year</th>
+				<th scope="col" class="box header">Country</th>
+				<th scope="col" class="box header">Sort Method</th>
+				<th scope="col" class="box header">Sort Order</th>
+				<th scope="col" class="box header">Albums to Find</th>
+				<th scope="col" class="box header">Delete</th>
 			</tr>
-			{% endfor %}
-		</table>
-
-		<footer class="main-footer">
-			<div class="container">
-				<div class="created-by">
-					<p>Created by neosheo</p>
-				</div>
-				<div class="github">
-					<a href="https://github.com/neosheo/Stringwave">
-						<img src="{{ url_for('static', filename='images/github.png') }}" alt="github" width="25" height="25">
-					</a>
-				</div>
-			</div>
-		</footer>
-	</body>
-</html>
+		</tbody>
+		{% for config in configs %}
+		<form method="POST" id="delete" action="/cogmera/delete_config"></form>
+		<tr>
+			<td class="box">{{ config.config_id }}</td>
+			<td class="box">{{ config.genres.replace(';', ', ') }}</td>
+			<td class="box">{{ config.styles.replace(';', ', ') }}</td>
+			<td class="box">{{ config.decade }}</td>
+			<td class="box">{{ config.year }}</td>
+			<td class="box">{{ config.country }}</td>
+			<td class="box">{{ config.sort_method }}</td>
+			<td class="box">{{ config.sort_order.replace('D', 'desc').replace('A', 'asc') }}</td>
+			<td class="box">{{ config.albums_to_find }}</td>
+			<td class="box">
+				<button type="submit" form="delete" name="delete_config" value="{{ config.config_id }}">
+					<img src="{{ url_for('static', filename='images/delete.png') }}" alt="Del" width="30" height="30">
+				</button>
+			</td>
+		</tr>
+		{% endfor %}
+	</table>
+{% endblock %}

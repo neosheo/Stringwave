@@ -15,12 +15,17 @@ python /stringwave/scripts/remove_whitespaces.py new
 
 find /stringwave/radio/"$station" -name "*.opus" > /stringwave/radio/"$station"/.playlist
 
-ezpid="$(cat /stringwave/.pid-$station)"
-
-# checks if station is run and starts it if it wasn't running, otherwise triggers a reread
-if ps h --pid $ezpid
+if [ -f /stringwave/.pid-$station ]
 then
-    kill -1 $ezpid
+	ezpid="$(cat /stringwave/.pid-$station)"
+	# checks if station is run and starts it if it wasn't running, otherwise triggers a reread
+	if ps h --pid $ezpid
+	then
+	    kill -1 $ezpid
+	else
+	    /stringwave/scripts/ezstream.sh "$station"
+	fi
+
 else
-    /stringwave/scripts/ezstream.sh "$station"
+	/stringwave/scripts/ezstream.sh "$station"
 fi

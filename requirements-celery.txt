@@ -1,5 +1,8 @@
 flask
 flask-sqlalchemy
+flask-login
+flask-wtf
+flask-bcrypt
 yt-dlp
 requests
 celery

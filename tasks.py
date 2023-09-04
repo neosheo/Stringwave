@@ -12,10 +12,12 @@ from webapp import radio_path
 
 
 @celery_app.task
-def move_track(track):
-	if track[-5:] != '.opus':
-		track = f'{track}.opus'
-	subprocess.run(['mv', f'{radio_path}/new/{track}', f'{radio_path}/main/{track}'])
+def move_track(track_id, old_file_path, new_file_path):
+	subprocess.run(['mv', old_file_path, new_file_path])
+	entry = db.session.query(Tracks).filter_by(track_id=track_id).one()
+	entry.station = 'main'
+	entry.file_path = new_file_path
+	db.session.commit()
 	requests.get('http://gateway:8080/reread/new')
 	requests.get('http://gateway:8080/reread/main')
 	requests.get('http://gateway:8080/move_complete')
@@ -32,7 +34,7 @@ def download_track(app):
 			artist = data['artist']
 			search_query = data['search_query']
 			config = data['config']
-			file_path = f'{radio_path}/new/{title}.opus'
+			file_path = f'{radio_path}/new/{title.replace(" ", "_")}.opus'
 			subprocess.run([f'{os.getcwd()}/scripts/cogmera-download.sh', filename, title, artist, search_query, config])
 			new_track = Tracks(title=filename, artist=artist, config=config, station='new', file_path=file_path)
 			db.session.add(new_track)
@@ -88,7 +90,7 @@ def download_track(app):
 				track['title'] = latest_track_formatted
 				track['artist'] = artist
 				track.save()
-				file_path = f'{radio_path}/new/{latest_track_formatted}.opus'
+				file_path = f'{radio_path}/new/{latest_track_formatted.replace(" ", "_")}.opus'
 				print(f'Latest track: {latest_track_formatted}')
 				new_track = Tracks(title=latest_track_formatted, artist=artist, config='pf', station='new', file_path=file_path)
 				db.session.add(new_track)

@@ -124,7 +124,8 @@ tr, th, td {
 .select2-selection__choice__display, 
 .select2-results__option,
 .select2-results__option--selectable,
-.select2-selection__choice__remove span, 
+.select2-selection__choice__remove span,
+.input,
 td p {
     color: black;
 }

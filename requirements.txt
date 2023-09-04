@@ -1,6 +1,9 @@
 uwsgi
 flask
 flask-sqlalchemy
+flask-login
+flask-wtf
+flask-bcrypt
 requests
 celery
 bs4

@@ -14,6 +14,10 @@ def grab_now_playing(station):
 	regex = r'\s*\[\s+\d+\/\d+\s+]\s{2}\[\s+\d+h\d+m\d+s\/\d+h\d+m\d+s]\s{2}\[\s+\d+\.\d+\s\Dbps]'
 	targets = []
 	for line in reversed(output):
+		if 'too many errors; giving up' in line:
+			with open(f'/stringwave/webapp/static/now_playing_{station}', 'w') as f:
+				f.write('No more tracks in playlist')
+			continue
 		# ignore playlist reread and skip notification
 		if 'USR1 signal received' in line or 'HUP signal received' in line or 'rereading playlist' in line:
 			continue

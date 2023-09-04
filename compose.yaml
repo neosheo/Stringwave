@@ -2,7 +2,8 @@ version: "3.9"
 
 services:
   stringwave:
-    build: .
+    build: 
+      context: .
     image: stringwave:latest
     container_name: stringwave
     restart: unless-stopped
@@ -20,6 +21,7 @@ services:
     environment:
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
       - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
     ports:
       - 5801:5801
       - 5802:5802

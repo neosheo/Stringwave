@@ -54,3 +54,5 @@ dist-ssr
 *.sw?
 now_playing_*
 tests
+generate_pw_sk.sh
+*-old.html

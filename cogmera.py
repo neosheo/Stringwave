@@ -215,7 +215,7 @@ def downloadSongs(albums, num_albums_to_pick=None, config_stamp=None):
             'config': config_stamp
         }
         with open('dl_data/search_queries', 'a') as f:
-            json.dump(data, f, indent=4)
+            json.dump(data, f)
         requests.get('http://gateway:8080/download/cogmera')
 
 
@@ -257,6 +257,10 @@ def run_cogmera():
     requests.get('http://gateway:8080/reread')
 
     print('Done!')	
+
+    # with open('dl_data/search_queries', 'r') as f:
+    #     for line in f.readlines():
+    #         print(line)
 
 
 if __name__ == '__main__':

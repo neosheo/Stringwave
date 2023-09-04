@@ -1,101 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Radio</title>
-        <meta name="viewport" content="width=device-width">
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
-    </head>
-    <body>
-        <header class="main-header">
-            <h1>S T R I N G W A V E</h1>
-            <nav class="nav main-nav">
-                <ul>
-                    <li>
-                        <a href="/radio/new">NEW MUSIC</a>
-                    </li>
-                    <li>
-                        <a href="/tracks/new">NEW TRACKS</a>
-                    </li>
-                    <li>
-                        <a href="/radio/main">MY MUSIC</a>
-                    </li>
-                    <li>
-                        <a href="/tracks/main">MY TRACKS</a>
-                    </li>
-                    <li>
-                        <a href="/pipefeeder/list_subs">MY SUBSCRIPTIONS</a>
-                    </li>
-                    <li>
-                        <a href="/cogmera/dump_config">MY CONFIGURATIONS</a>
-                    </li>
-                    <li>
-                        <a href="/cogmera/config">NEW CONFIGURATION</a>
-                    </li>
-                </ul>
-            </nav>
-        </header>
+{% extends 'base.html' %}
 
-        <table>
-            <tbody>
-                <tr>
-                    <th scope="col" class="box header">Config</th>
-                    {% if station == 'new' %}
-                    <th scope="col" class="box header">Move</th>
-                    {% endif %}
-                    <th scope="col" class="box header">Delete</th>
-                    <th scope="col" class="box header track-title">Track</th>
-                    <th scope="col" class="box header track-artist">Artist</th>
-                </tr>
+{% block title %}
+{{ station|capitalize }} Tracks
+{% endblock %}
+
+{% block content %}
+    <table>
+        <tbody>
+            <tr>
+                <th scope="col" class="box header">Config</th>
                 {% if station == 'new' %}
-                <form method="POST" id="move" action="/move_to_main"></form>
+                <th scope="col" class="box header">Move</th>
                 {% endif %}
-                <form method="POST" id="delete" action="/delete_track/{{ station }}"></form>
-                <script src="{{ url_for('static', filename='edit_track_title.js') }}"></script>
-                <form method="POST" id="update-title" action="/update_title"></form>
-                <script src="{{ url_for('static', filename='edit_track_artist.js') }}"></script>
-                <form method="POST" id="update-artist" action="/update_artist"></form>
-                {% for track in tracks %}
-                <tr>
-                    <td class="box">{{ track.config }}</td>
-                    {% if station == 'new' %}
-                    <td class="box">
-                        <button class="button" type="submit" form="move" name="move_to_main" value="{{ track.track_id }}">Move</button>
-                    </td>
-                    {% endif %}
-                    <td class="box">
-                        <button type="submit" form="delete" name="delete_track" value="{{ track.track_id }}">
-                            <img src="{{ url_for('static', filename='images/delete.png') }}" alt="Del" width="30" height="30">
-                        </button>
-                    </td>
-                    <td class="box">
-                        <button class="edit-button button" type="submit">Edit</button>
-                        <button class="done-button button" type="submit">Done</button>
-                        <button class="update-button button" type="submit" form="update-title" name="update-title" value="">Save</button>
-                        <p class="track-id" hidden>{{ track.track_id }}</p>
-                        <p class="track-title">{{ track.title }}</p>
-                    </td>
-                    <td class="box">
-                        <button class="edit-button button" type="submit">Edit</button>
-                        <button class="done-button button" type="submit">Done</button>
-                        <button class="update-button button" type="submit" form="update-artist" name="update-artist" value="">Save</button>
-                        <p class="track-id" hidden>{{ track.track_id }}</p>
-                        <p class="track-title">{{ track.artist }}</p>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        <footer class="main-footer">
-            <div class="container">
-                <div class="created-by">
-                    <p>Created by neosheo</p>
-                </div>
-                <div class="github">
-                    <a href="https://github.com/neosheo/Stringwave">
-                        <img src="{{ url_for('static', filename='images/github.png') }}" alt="github" width="25" height="25">
-                    </a>
-                </div>
-            </div>
-        </footer>
-    </body>
-</html>
+                <th scope="col" class="box header">Delete</th>
+                <th scope="col" class="box header track-title">Track</th>
+                <th scope="col" class="box header track-artist">Artist</th>
+            </tr>
+            {% if station == 'new' %}
+            <form method="POST" id="move" action="/move_to_main"></form>
+            {% endif %}
+            <form method="POST" id="delete" action="/delete_track/{{ station }}"></form>
+            <script src="{{ url_for('static', filename='edit_track_title.js') }}"></script>
+            <form method="POST" id="update-title" action="/update_title"></form>
+            <script src="{{ url_for('static', filename='edit_track_artist.js') }}"></script>
+            <form method="POST" id="update-artist" action="/update_artist"></form>
+            {% for track in tracks %}
+            <tr>
+                <td class="box">{{ track.config }}</td>
+                {% if station == 'new' %}
+                <td class="box">
+                    <button class="button" type="submit" form="move" name="move_to_main" value="{{ track.track_id }}">Move</button>
+                </td>
+                {% endif %}
+                <td class="box">
+                    <button class="button" type="submit" form="delete" name="delete_track" value="{{ track.track_id }}">
+                        <img src="{{ url_for('static', filename='images/delete.png') }}" alt="Del" width="30" height="30">
+                    </button>
+                </td>
+                <td class="box">
+                    <button class="edit-button button" type="submit">Edit</button>
+                    <button class="done-button button" type="submit">Done</button>
+                    <button class="update-button button" type="submit" form="update-title" name="update-title" value="">Save</button>
+                    <p class="track-id" hidden>{{ track.track_id }}</p>
+                    <p class="track-title">{{ track.title }}</p>
+                </td>
+                <td class="box">
+                    <button class="edit-button button" type="submit">Edit</button>
+                    <button class="done-button button" type="submit">Done</button>
+                    <button class="update-button button" type="submit" form="update-artist" name="update-artist" value="">Save</button>
+                    <p class="track-id" hidden>{{ track.track_id }}</p>
+                    <p class="track-title">{{ track.artist }}</p>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

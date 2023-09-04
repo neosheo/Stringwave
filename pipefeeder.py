@@ -1,4 +1,5 @@
 import requests
+from webapp import bad_word_log
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from tqdm import tqdm
@@ -69,12 +70,16 @@ def getRecentUploads(feed):
 	titles = feed_soup.find_all('media:title')
 	channel = feed_soup.find('title').text.rstrip()
 	# remove any videos that contain words in the bad_words.py file
+	with open(bad_word_log, 'w') as f:
+		f.write(f'{datetime.now()}\n')
 	for i, title in enumerate(titles):
 		for bad_word in bad_words:
 			if re.match(bad_word, title.text, flags=re.IGNORECASE):
 				titles.remove(title)
-				del pub_dates[i]
-				del videos[i]
+				pub_dates.remove(pub_dates[i])
+				videos.remove(videos[i])
+				with open(bad_word_log, 'a') as f:
+					f.write(f'BAD WORD FOUND: {title}\n')
 	# check if videos are were published before your specified period 
 	# if they are within your specified period, include them
 	index = 0

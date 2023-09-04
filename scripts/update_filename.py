@@ -11,11 +11,13 @@ latest_track = Path(max(tracks_with_path, key=os.path.getctime)).stem
 print(f'THE LATEST TRACK IS: {latest_track}')
 
 
-new_filename = re.sub(r'_+', '_', latest_track)
-new_filename = re.sub(u'\s{2,}', ' ', new_filename)
-new_filename = new_filename.strip()
+new_filename = re.sub(r'\s{2,}', ' ', latest_track)
+new_filename = re.sub(r'(^_|_$)', '', new_filename)
+new_filename = new_filename.replace(' ', '_')
 # to remove no breaking spaces
 new_filename = new_filename.replace(u'\xa0', '')
+new_filename = new_filename.strip()
+new_filename = re.sub(r'_+', '_', new_filename)
 os.rename(f'/stringwave/radio/new/{latest_track}.opus', f'/stringwave/radio/new/{new_filename}.opus')
 
 file = OggOpus(f'/stringwave/radio/new/{new_filename}.opus')
