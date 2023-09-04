@@ -58,6 +58,8 @@ services:
       - ./webapp/instance/stringwave.db:/stringwave/webapp/instance/stringwave.db
     environment:
       - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+
 
   rabbitmq:
     image: rabbitmq:latest

@@ -61,7 +61,6 @@ bcrypt = Bcrypt(app)
 def create_admin_user(bcrypt_obj):
 	password = os.getenv('ADMIN_PASSWORD')
 	hashed_pw = bcrypt_obj.generate_password_hash(password)
-	print(f"USERS: {db.session.query(Users).filter(Users.user_id == 1).first()}")
 	if db.session.query(Users).filter(Users.user_id == 1).first() is None:
 		admin_user = Users(
 						user_id=1,
@@ -168,4 +167,3 @@ with app.app_context():
 	db.create_all('main')
 	db.create_all('discogs')
 	create_admin_user(bcrypt)
-
