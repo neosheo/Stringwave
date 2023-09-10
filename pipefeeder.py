@@ -115,7 +115,6 @@ def buildPlaylist():
 		num_urls = len(f.readlines())
 	print(f'Grabbed {num_urls} URLs!')
 	requests.get('http://gateway:8080/download/pipefeeder')
-	requests.get('http://gateway:8080/check_download_completion/pipefeeder')
 
 
 def populateDb(text_file):

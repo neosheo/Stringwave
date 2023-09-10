@@ -18,13 +18,14 @@ for station in stations[1:]:
         regex = r'^\..+'
         if re.match(regex, file):
             continue
-        regex = r'.+\.part$'
-        if re.match(regex, file):
-            os.remove(f'radio/{station}/{file}')
-            continue
         # sometimes downloads fail and create a directory with a file inside, this cleans them up
         if os.path.isdir(f'radio/{station}/{file}'):
             shutil.rmtree(f'radio/{station}/{file}')
+            continue
+        # delete files that don't end in .opus
+        regex = r'.+\.opus$'
+        if not re.match(regex, file):
+            os.remove(f'radio/{station}/{file}')
             continue
         # remove non-breaking spaces from file names
         if u'\xa0' in file:
@@ -39,7 +40,11 @@ for station in stations[1:]:
             continue
         if 'config' not in track:
             track['config'] = 'na'
-        tracks.append((track_id, track['title'][0], track['artist'][0], track['config'][0], station, file_path))
+        try:
+            tracks.append((track_id, track['title'][0], track['artist'][0], track['config'][0], station, file_path))
+        except KeyError:
+            print(f'KEY ERROR on {file_path}')
+            continue
         track_id += 1
     station_tracks.append(tracks)
     

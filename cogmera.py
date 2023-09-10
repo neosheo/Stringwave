@@ -84,6 +84,8 @@ def selectRandomAlbums(albums, num_albums_to_pick):
     albums_selected = []
 	# this list is to make sure duplicate albums are not selected
     albums_selected_titles = []
+    if type(num_albums_to_pick) == 'str':
+        num_albums_to_pick = int(num_albums_to_pick)
     while i < num_albums_to_pick:
         try:
             selected_album = random.randrange(len(albums))

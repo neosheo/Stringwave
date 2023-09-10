@@ -97,7 +97,7 @@ def update_title():
 	db.session.commit()
 	file_path = db.session.query(Tracks).filter_by(track_id=track_id).one().file_path
 	file = OggOpus(file_path)
-	file['track'] = new_name
+	file['title'] = new_name
 	file.save()
 	return redirect(f'/tracks/{station}')
 
@@ -131,7 +131,6 @@ def move_to_main():
 
 
 @app.route('/move_complete', methods = ['GET'])
-@login_required
 def move_complete():
 	with open('webapp/static/move_status', 'w') as f:
 		f.write('complete')
@@ -139,7 +138,6 @@ def move_complete():
 
 
 @app.route('/move_status', methods = ['GET'])
-@login_required
 def move_status():
 	with open('webapp/static/move_status', 'r') as f:
 		status = f.read()
@@ -170,14 +168,12 @@ def skip(station):
 
 
 @app.route('/download/<string:app>', methods = ['GET'])
-@login_required
 def download(app):
 	download_track.delay(app)
 	return 'Complete!'
 
 
 @app.route('/reread/<string:station>', methods = ['GET'])
-@login_required
 def reread(station):
 	subprocess.run([f'{os.getcwd()}/scripts/ezstream-reread.sh', station])
 	return 'Playlist reread.'
@@ -311,7 +307,6 @@ def upload_subs():
 
 
 @app.route('/pipefeeder/upload_complete', methods = ['GET'])
-@login_required
 def upload_complete():
 	with open('webapp/static/upload_status', 'w') as f:
 		f.write('complete')
@@ -319,7 +314,6 @@ def upload_complete():
 
 
 @app.route('/pipefeeder/upload_status', methods = ['GET'])
-@login_required
 def upload_status():
 	with open('webapp/static/upload_status', 'r') as f:
 		status = f.read()
