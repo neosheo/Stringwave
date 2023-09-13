@@ -80,6 +80,9 @@ def buildUrl(genre_param, style_param, time_param, sort_param, country_param, qu
 
 
 def selectRandomAlbums(albums, num_albums_to_pick):
+    if len(albums) == 0:
+        print('NO ALBUMS FOUND')
+        return 'error: no albums'
     i = 0
     albums_selected = []
 	# this list is to make sure duplicate albums are not selected
@@ -196,6 +199,8 @@ def validateAlbums(albums, num_albums_to_pick):
 
 # two parameters default to None to prevent the program from exiting if getAlbumDate returns None
 def downloadSongs(albums, num_albums_to_pick=None, config_stamp=None):
+    if albums == 'error: no albums':
+        return
     if albums is None:
         return 'No album found. Timed out.'
     albums = validateAlbums(albums, num_albums_to_pick)
@@ -260,17 +265,12 @@ def run_cogmera():
     requests.get('http://gateway:8080/download/cogmera')
     while True:
         with open('dl_data/cm_download_status', 'r') as f:
-            if f.read() == 'Done':
+            if f.read().rstrip() == 'Done':
                 requests.get('http://gateway:8080/reread')
                 break
-            time.sleep(5)
-        open('dl_data/cm_download_status', 'w').close()
-    
+        time.sleep(5)
+    open('dl_data/cm_download_status', 'w').close() 
     print('Done!')	
-
-    # with open('dl_data/search_queries', 'r') as f:
-    #     for line in f.readlines():
-    #         print(line)
 
 
 if __name__ == '__main__':

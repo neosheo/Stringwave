@@ -153,3 +153,4 @@ if __name__ == '__main__':
 					break
 				time.sleep(5)
 		open('dl_data/pf_download_status', 'w').close()
+		print('Done!')

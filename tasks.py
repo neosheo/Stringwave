@@ -43,7 +43,6 @@ def download_track(app):
 					new_track = Tracks(title=filename, artist=artist, config=config, station='new', file_path=file_path)
 					db.session.add(new_track)
 					db.session.commit()
-					print(f'{filename} downloaded!')
 					if downloads == num_queries:
 						with open('dl_data/cm_download_status', 'w') as f:
 							f.write('Done')
