@@ -36,6 +36,7 @@ RUN touch logs/cogmera_download.log \
     dl_data/urls \
     dl_data/search_queries \
     dl_data/pf_download_status \
+    dl_data/cm_download_status \
     webapp/static/upload_status \
     webapp/static/now_playing_main \
     webapp/static/now_playing_new \

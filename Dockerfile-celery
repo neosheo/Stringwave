@@ -28,6 +28,7 @@ RUN touch webapp/static/subs.txt \
     dl_data/urls \
     dl_data/search_queries \
     dl_data/pf_download_status \
+    dl_data/cm_download_status \
     webapp/static/upload_status
 RUN chown -R stringwave:stringwave \
     /home/stringwave \

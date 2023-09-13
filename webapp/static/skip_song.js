@@ -5,6 +5,8 @@ function skipSong() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('skip')
-    .addEventListener('click', skipSong);
+    if (document.getElementById('skip')) {
+        document.getElementById('skip')
+        .addEventListener('click', skipSong);
+    }
 });

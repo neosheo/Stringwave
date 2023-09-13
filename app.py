@@ -72,7 +72,7 @@ def index():
 @app.route('/tracks/<string:station>', methods = ['GET'])
 @login_required
 def tracks_main(station):
-	tracks = db.session.query(Tracks).filter(Tracks.station == station).order_by(Tracks.title).all()
+	tracks = db.session.query(Tracks).filter(Tracks.station == station).order_by(func.lower(Tracks.title)).all()
 	for track in tracks:
 		track.title = re.sub(r'_+', ' ', track.title)
 		track.title = re.sub(r'\s{2,}', ' ', track.title)

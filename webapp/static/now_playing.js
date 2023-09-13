@@ -3,7 +3,7 @@ async function nowPlaying() {
 	const station = url[url.length - 1];
     const response = await fetch(`/static/now_playing_${station}`);
     const data = await response.text();
-    console.log(data);
+    // console.log(data);
     if (data !== "") {
 		const track = document.createElement("h1");
 		track.id = "now_playing";

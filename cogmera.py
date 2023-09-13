@@ -196,7 +196,6 @@ def validateAlbums(albums, num_albums_to_pick):
 
 # two parameters default to None to prevent the program from exiting if getAlbumDate returns None
 def downloadSongs(albums, num_albums_to_pick=None, config_stamp=None):
-    open('dl_data/search_queries', 'w').close()
     if albums is None:
         return 'No album found. Timed out.'
     albums = validateAlbums(albums, num_albums_to_pick)
@@ -218,7 +217,7 @@ def downloadSongs(albums, num_albums_to_pick=None, config_stamp=None):
         }
         with open('dl_data/search_queries', 'a') as f:
             json.dump(data, f)
-        requests.get('http://gateway:8080/download/cogmera')
+            f.write('\n')
 
 
 def run_cogmera():
@@ -227,6 +226,8 @@ def run_cogmera():
 
     configs = cur.execute(f'SELECT * FROM config ORDER BY RANDOM() LIMIT {os.getenv("NUM_DAILY_DOWNLOADS")}')
 
+    # clear old search queries
+    open('dl_data/search_queries', 'w').close()
 
     for config in configs.fetchall():
         print(f'ID: {config[0]}')
@@ -255,9 +256,16 @@ def run_cogmera():
         albums = getAlbumData(url, num_albums_to_scrape, num_daily_downloads)
         downloadSongs(albums, num_albums_to_scrape, str(config_stamp))
 
-    time.sleep(300)
-    requests.get('http://gateway:8080/reread')
-
+    # initiate download and check status until all downloads complete
+    requests.get('http://gateway:8080/download/cogmera')
+    while True:
+        with open('dl_data/cm_download_status', 'r') as f:
+            if f.read() == 'Done':
+                requests.get('http://gateway:8080/reread')
+                break
+            time.sleep(5)
+        open('dl_data/cm_download_status', 'w').close()
+    
     print('Done!')	
 
     # with open('dl_data/search_queries', 'r') as f:

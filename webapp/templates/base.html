@@ -20,12 +20,15 @@
                     <li>
                         <a href="/radio/new">NEW MUSIC</a>
                     </li>
+                    {% if current_user.is_authenticated %}
                     <li>
                         <a href="/tracks/new">NEW TRACKS</a>
                     </li>
+                    {% endif %}
                     <li>
                         <a href="/radio/main">MY MUSIC</a>
                     </li>
+                    {% if current_user.is_authenticated %}
                     <li>
                         <a href="/tracks/main">MY TRACKS</a>
                     </li>
@@ -38,6 +41,7 @@
                     <li>
                         <a href="/cogmera/config">NEW CONFIGURATION</a>
                     </li>
+                    {% endif %}
                 </ul>
             </nav>
         </header>

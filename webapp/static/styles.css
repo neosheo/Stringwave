@@ -82,11 +82,12 @@ html, body {
 }
 
 .main-footer a img {
+    color: black;
     filter: invert(100%);
 }
 
 table {
-	background-color: rgb(201, 57, 32);
+    background-color: rgb(153, 0, 26);
 	margin: auto;
 	border-collapse: collapse;
 }
@@ -104,7 +105,7 @@ tr, th, td {
 
 .box {
 	border: 4px solid;
-    color:rgb(49, 49, 49) 
+    color: black;
 }
 
 .radio {

@@ -70,8 +70,6 @@ def getRecentUploads(feed):
 	titles = feed_soup.find_all('media:title')
 	channel = feed_soup.find('title').text.rstrip()
 	# remove any videos that contain words in the bad_words.py file
-	with open(bad_word_log, 'w') as f:
-		f.write(f'{datetime.now()}\n')
 	for i, title in enumerate(titles):
 		for bad_word in bad_words:
 			if re.match(bad_word, title.text, flags=re.IGNORECASE):
@@ -99,6 +97,9 @@ def getRecentUploads(feed):
 
 
 def buildPlaylist():
+	# clear bad_word_log
+	with open(bad_word_log, 'w') as f:
+		f.write(f'{datetime.now()}\n')
 	open('dl_data/urls', 'w').close()
 	con = sqlite3.connect('webapp/instance/stringwave.db')
 	subscriptions = [x[0] for x in con.cursor().execute('SELECT channel_url FROM subs').fetchall()]

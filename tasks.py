@@ -28,17 +28,27 @@ def download_track(app):
 	match app:
 		case 'cogmera':
 			with open('dl_data/search_queries', 'r') as f:
-				data = json.load(f)
-			filename = re.sub(r'(\||%|&|:|;|,|!|-|\*|#|\\|/|\[|\|"])', '', data['filename'])
-			title = data['filename']
-			artist = data['artist']
-			search_query = data['search_query']
-			config = data['config']
-			file_path = f'{radio_path}/new/{title.replace(" ", "_")}.opus'
-			subprocess.run([f'{os.getcwd()}/scripts/cogmera-download.sh', filename, title, artist, search_query, config])
-			new_track = Tracks(title=filename, artist=artist, config=config, station='new', file_path=file_path)
-			db.session.add(new_track)
-			db.session.commit()
+				data = [ line.rstrip() for line in f.readlines() ]
+				num_queries = len(data)
+				downloads = 1
+				for datum in data:
+					query = json.loads(datum)
+					filename = re.sub(r'(\||%|&|:|;|,|!|-|\*|#|\\|/|\[|\|"])', '', query['filename'])
+					title = query['filename']
+					artist = query['artist']
+					search_query = query['search_query']
+					config = query['config']
+					file_path = f'{radio_path}/new/{title.replace(" ", "_")}.opus'
+					subprocess.run([f'{os.getcwd()}/scripts/cogmera-download.sh', filename, title, artist, search_query, config])
+					new_track = Tracks(title=filename, artist=artist, config=config, station='new', file_path=file_path)
+					db.session.add(new_track)
+					db.session.commit()
+					print(f'{filename} downloaded!')
+					if downloads == num_queries:
+						with open('dl_data/cm_download_status', 'w') as f:
+							f.write('Done')
+					else:
+						downloads += 1
 
 		case 'pipefeeder':
 			with open('dl_data/urls', 'r') as f:
