@@ -17,7 +17,6 @@ COPY scripts/ ./scripts/
 COPY webapp/ ./webapp/
 COPY cogmera.py .
 COPY pipefeeder.py .
-COPY bad_words.py .
 COPY tasks.py .
 COPY start-celery.sh ./start.sh
 

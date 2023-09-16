@@ -1,10 +1,8 @@
 import requests
-from webapp import bad_word_log
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from tqdm import tqdm
 import sqlite3
-from bad_words import bad_words
 import re
 import time
 
@@ -67,17 +65,7 @@ def getRecentUploads(feed):
 	# remove first date entry which is the channel published date
 	pub_dates = feed_soup.find_all('published')[1:]
 	videos = feed_soup.find_all('media:content')
-	titles = feed_soup.find_all('media:title')
 	channel = feed_soup.find('title').text.rstrip()
-	# remove any videos that contain words in the bad_words.py file
-	for i, title in enumerate(titles):
-		for bad_word in bad_words:
-			if re.match(bad_word, title.text, flags=re.IGNORECASE):
-				titles.remove(title)
-				pub_dates.remove(pub_dates[i])
-				videos.remove(videos[i])
-				with open(bad_word_log, 'a') as f:
-					f.write(f'BAD WORD FOUND: {title}\n')
 	# check if videos are were published before your specified period 
 	# if they are within your specified period, include them
 	index = 0
@@ -97,9 +85,6 @@ def getRecentUploads(feed):
 
 
 def buildPlaylist():
-	# clear bad_word_log
-	with open(bad_word_log, 'w') as f:
-		f.write(f'{datetime.now()}\n')
 	open('dl_data/urls', 'w').close()
 	con = sqlite3.connect('webapp/instance/stringwave.db')
 	subscriptions = [x[0] for x in con.cursor().execute('SELECT channel_url FROM subs').fetchall()]

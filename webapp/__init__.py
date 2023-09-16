@@ -11,7 +11,6 @@ from celery import Celery, Task
 # PATHS
 cogmera_log = '/stringwave/logs/cogmera_download.log'
 pipefeeder_log = '/stringwave/logs/pipefeeder.log'
-bad_word_log = '/stringwave/logs/bad_words.log'
 db_directory = f'sqlite:////{os.getcwd()}/webapp/instance'
 radio_path = '/stringwave/radio'
 
