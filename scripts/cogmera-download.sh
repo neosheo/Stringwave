@@ -7,8 +7,9 @@ search_query=$4
 config=$5
 
 yt-dlp \
-	--match-filter "title !~= (?i)(#shorts|(\[|\()?full (album|ep)(\]|\))?)" \
     ytsearch1:"$search_query" \
+    --quiet \
+	--match-filter "title !~= (?i)(#shorts|(\[|\()?full (album|ep)(\]|\))?)" \
     --format '[height<720]' \
     --sponsorblock-remove all \
     --sponsorblock-api 'https://api.sponsor.ajay.app/api/' \

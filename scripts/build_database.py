@@ -12,6 +12,7 @@ station_tracks = []
 track_id = 1
 
 for station in stations[1:]:
+    print(f'Building {station} tracks database...')
     for file in os.listdir(f'radio/{station}'):
         # this file may be present but shouldn't be added to the database
         # don't try to add hidden files
@@ -54,3 +55,4 @@ for station in stations[1:]:
     for tracks in station_tracks:
         cur.executemany('INSERT OR IGNORE INTO tracks(track_id, title, artist, config, station, file_path) VALUES (?, ?, ?, ?, ?, ?)', tracks)
     con.commit()
+    print('Done!')

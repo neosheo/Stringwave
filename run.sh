@@ -16,5 +16,6 @@ log=/stringwave/logs/pipefeeder.log
 echo "$(date)" > "$log"
 
 python pipefeeder.py | tee --append "$log" 2>&1
+sed '/^\/stringwave\//d' logs/pipefeeder.log
 	
 echo >> "$log"

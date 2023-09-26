@@ -1,5 +1,6 @@
 from webapp import celery_app, db, Tracks
 from pipefeeder import populateDb
+from scripts.update_track_data import update_track_data
 import requests
 import os
 import subprocess
@@ -50,6 +51,7 @@ def download_track(app):
 						downloads += 1
 
 		case 'pipefeeder':
+			print('Gathering links...')
 			with open('dl_data/urls', 'r') as f:
 				lines = f.readlines()
 				num_links = len(lines)
@@ -60,6 +62,7 @@ def download_track(app):
 			if links == []: 
 				print('No videos to download')
 				return
+			print('Done!')
 			print('Cleaning broken downloads...')
 			for file in os.listdir(f'{radio_path}/new'):
 				# don't include hidden files
@@ -79,31 +82,19 @@ def download_track(app):
 					downloads += 1
 					continue
 				print(f'Downloading {link}')
-				subprocess.run([f'{os.getcwd()}/scripts/pipefeeder-download.sh', link])
-				# add most recent track to radio database
-				tracks = os.listdir(f'{radio_path}/new')
-				tracks_with_path = [ f'{radio_path}/new/{track}' for track in tracks ]
-				for track in tracks_with_path:
-				# remove hidden files from list incase one somehow is most recently created file
-					regex = r'^\..+'
-					if re.match(regex, track):
-						tracks_with_path.remove(track)
-					if '.opus' not in track:
-						tracks_with_path.remove(track)
-				latest_track = Path(max(tracks_with_path, key=os.path.getctime)).stem
-				latest_track_formatted = re.sub(r'_+', ' ', latest_track)
-				if latest_track_formatted in os.listdir():
-					print(f'Match found: {latest_track_formatted}')
-				file_path = f'{radio_path}/new/{latest_track}.opus'
-				track = OggOpus(file_path)
-				track['title'] = latest_track_formatted
-				track['artist'] = artist
-				track.save()
-				file_path = f'{radio_path}/new/{latest_track_formatted.replace(" ", "_")}.opus'
-				print(f'Latest track: {latest_track_formatted}')
-				new_track = Tracks(title=latest_track_formatted, artist=artist, config='pf', station='new', file_path=file_path)
-				db.session.add(new_track)
-				db.session.commit()
+				result = subprocess.run([f'{os.getcwd()}/scripts/pipefeeder-download.sh', link], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+				# write download information to log
+				with open('dl_data/pipefeeder.log', 'a') as f:
+					f.write(f'\n{result.stderr.decode()}')
+				# only add new database entry if download completed successfully
+				if result.returncode == 0:
+					# make the file path prettier and change metadata
+					track = result.stdout.rstrip().decode()
+					file_path, title = update_track_data(track, artist)
+					new_track = Tracks(title=title, artist=artist, config='pf', station='new', file_path=file_path)
+					db.session.add(new_track)
+					db.session.commit()
+					print(f'Added {file_path}')
 				if downloads == num_links:
 					with open('dl_data/pf_download_status', 'w') as f:
 						f.write('Done')
