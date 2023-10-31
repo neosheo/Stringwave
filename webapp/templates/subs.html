@@ -9,7 +9,7 @@ Your Subscriptions
 		<h1>Add a channel's URL to subscribe</h1>
 		<input class="text-box" type="text" name="subscribe">
 		<br>
-		<center><button class="button" type="submit">Subscribe</button></center>
+		<center><button class="button" type="submit"><img src="{{ url_for('static', filename='/images/basic_rss.svg') }}" alt="Subscribe" width="30" height="30"></button></center>
 	</form>
 	<br>
 	<form class="subs-manager" method="POST" action="/pipefeeder/upload_subs" enctype="multipart/form-data">

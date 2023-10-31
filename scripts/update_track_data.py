@@ -14,7 +14,8 @@ def update_track_data(track, artist):
     new_filename = new_filename.replace(u'\xa0', '')
     new_filename = new_filename.strip()
     new_filename = re.sub(r'_+', '_', new_filename)
-    os.rename(old_filename, new_filename)
+    if old_filename != 'opus' or old_filename != '': 
+        os.rename(old_filename, new_filename)
     print('Done!')
     
     print('Updating metadata...')
@@ -37,4 +38,5 @@ def update_track_data(track, artist):
     file.save()
     print('Done!')
 
+    print(f'NEW TRACK ADDED:\nFILE PATH: {new_filename}\nTITLE: {title}')
     return new_filename, title

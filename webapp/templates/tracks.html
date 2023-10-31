@@ -29,23 +29,23 @@
                 <td class="box">{{ track.config }}</td>
                 {% if station == 'new' %}
                 <td class="box">
-                    <button class="button" type="submit" form="move" name="move_to_main" value="{{ track.track_id }}">Move</button>
+                    <button class="button linea-icon" type="submit" form="move" name="move_to_main" value="{{ track.track_id }}"><img src="{{ url_for('static', filename='/images/basic_paperplane.svg') }}" alt="Move" width="30" height="30"></button>
                 </td>
                 {% endif %}
                 <td class="box">
-                    <button class="button" type="submit" form="delete" name="delete_track" value="{{ track.track_id }}">
-                        <img src="{{ url_for('static', filename='images/delete.png') }}" alt="Del" width="30" height="30">
+                    <button class="button linea-icon" type="submit" form="delete" name="delete_track" value="{{ track.track_id }}">
+                        <img src="{{ url_for('static', filename='images/basic_trashcan.svg') }}" alt="Del" width="30" height="30">
                     </button>
                 </td>
                 <td class="box">
-                    <button class="edit-button button" type="submit">Edit</button>
-                    <button class="update-button button" type="submit" form="update-title" name="update-title" value="">Save</button>
+                    <button class="edit-button button linea-icon" type="submit"><img src="{{ url_for('static', filename='/images/software_pencil.svg') }}" alt="Edit" height="20" width="20"></button>
+                    <button class="update-button button linea-icon" type="submit" form="update-title" name="update-title" value=""><img src="{{ url_for('static', filename='/images/basic_floppydisk.svg') }}" alt="Save" width="20" height="20"></button>
                     <p class="track-id" hidden>{{ track.track_id }}</p>
                     <p class="track-title">{{ track.title }}</p>
                 </td>
                 <td class="box">
-                    <button class="edit-button button" type="submit">Edit</button>
-                    <button class="update-button button" type="submit" form="update-artist" name="update-artist" value="">Save</button>
+                    <button class="edit-button button linea-icon" type="submit"><img src="{{ url_for('static', filename='/images/software_pencil.svg') }}" alt="Edit" height="20" width="20"></button>
+                    <button class="update-button button linea-icon" type="submit" form="update-artist" name="update-artist" value=""><img src="{{ url_for('static', filename='/images/basic_floppydisk.svg') }}" alt="Save" width="20" height="20"></button>
                     <p class="track-id" hidden>{{ track.track_id }}</p>
                     <p class="track-title">{{ track.artist }}</p>
                 </td>

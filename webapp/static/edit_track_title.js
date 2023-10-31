@@ -6,12 +6,12 @@ table.addEventListener("click", function(event) {
     const track_title = button.parentElement.querySelector(".track-title");
     const new_button = document.createElement("button");
     new_button.id = "update-title";
-    new_button.className = "done-button button";
+    new_button.className = "done-button button linea-icon";
     new_button.type = "submit";
     new_button.form = "update-title";
     new_button.name = "update-title";
     new_button.value = "";
-    new_button.innerHTML = "Done"
+    new_button.innerHTML = '<img src="/static/images/basic_elaboration_bookmark_check.svg" alt="Done" height="20" width="20">';
     button.replaceWith(new_button);
     track_title.contentEditable = true;
     track_title.style.backgroundColor = "#dddbdb";
@@ -30,9 +30,9 @@ table.addEventListener("click", function(event) {
     update_button.setAttribute("value", `${track_id};${new_title};${station}`);
     console.log(`${track_id};${new_title};${station}`);
     const old_button = document.createElement("button");
-    old_button.className = "edit-button button";
+    old_button.className = "edit-button button linea-icon";
     old_button.type = "submit";
-    old_button.innerHTML = "Edit"
+    old_button.innerHTML = '<img src="/static/images/software_pencil.svg" alt="Edit" height="20" width="20">';
     button.replaceWith(old_button);
   }
 });

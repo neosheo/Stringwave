@@ -20,6 +20,10 @@ html, body {
     color: black;
 }
 
+.linea-icon {
+    color: #922b21;
+}
+
 .channel-name {
     color: #cabdbd;
 }
@@ -87,6 +91,7 @@ html, body {
 }
 
 table {
+	width: 90%;
     background-color: rgb(153, 0, 26);
 	margin: auto;
 	border-collapse: collapse;

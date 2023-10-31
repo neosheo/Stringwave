@@ -132,6 +132,9 @@ def getAlbumData(url, num_albums_to_pick, num_pages):
             albums.append((title, artists[i], links[i]))
             i += 1
     selected_albums = selectRandomAlbums(albums, num_albums_to_pick * 2)
+    if selected_albums == 'error: no albums':
+        return 
+    print(selected_albums)
     albums.clear()
     titles.clear()
     artists.clear()
