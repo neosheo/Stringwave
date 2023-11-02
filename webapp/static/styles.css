@@ -29,7 +29,6 @@ html, body {
 }
 
 .linea-icon {
-    /*background-color: #922b21;*/
 	background-color: darkgrey;
 	border-width: 2.5px;
 	border-style: solid;
@@ -125,7 +124,7 @@ table {
 }
 
 .config-col, .move-col, .del-col  {
-    width: 1%;
+    width: 4%;
 }
 
 .track-col {
