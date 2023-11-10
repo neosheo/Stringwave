@@ -5,8 +5,7 @@ link=$1
 yt-dlp \
 	--verbose \
 	--no-simulate \
-	--match-filter "title !~= (?i)(#shorts|(\[|\()?full (album|ep)(\]|\))?)" \
-	--format '[height<720]' \
+	--match-filter "title !~= (?i).*(#shorts|(\[|\()?full_(album|ep)(\]|\))?).*" \
 	--parse-metadata '%(uploader)s:%(meta_artist)s' \
 	--embed-metadata \
 	--replace-in-metadata title '[|% :;,-/#\*\\"!]' '_' \

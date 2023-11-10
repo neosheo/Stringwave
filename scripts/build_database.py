@@ -14,7 +14,6 @@ track_id = 1
 for station in stations[1:]:
     print(f'Building {station} tracks database...')
     for file in os.listdir(f'radio/{station}'):
-        # this file may be present but shouldn't be added to the database
         # don't try to add hidden files
         regex = r'^\..+'
         if re.match(regex, file):

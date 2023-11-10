@@ -8,6 +8,10 @@ import os
 from celery import Celery, Task
 
 
+# rabbitmq credentials
+rabbitmq_user = os.getenv('RABBITMQ_DEFAULT_USER')
+rabbitmq_pass = os.getenv('RABBITMQ_DEFAULT_PASS')
+
 # PATHS
 cogmera_log = '/stringwave/logs/cogmera_download.log'
 pipefeeder_log = '/stringwave/logs/pipefeeder.log'
@@ -44,8 +48,9 @@ app.config['UPLOAD_FOLDER'] = BACKUP_LOCATION
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 app.config.from_mapping(
 	CELERY=dict(
-		broker_url='pyamqp://guest@rabbitmq/',
-		backend_url='pyamqp://guest@rabbitmq/',
+		broker_url=f'pyamqp://{rabbitmq_user}@rabbitmq/',
+		backend_url=f'pyamqp://{rabbitmq_user}@rabbitmq/',
+		broker_password=rabbitmq_pass,
 		task_ignore_result=True,
 		broker_connection_retry_on_startup=True,
 		worker_cancel_long_running_tasks_on_connection_loss=True

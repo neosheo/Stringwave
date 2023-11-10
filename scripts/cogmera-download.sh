@@ -10,7 +10,6 @@ yt-dlp \
     ytsearch1:"$search_query" \
     --quiet \
 	--match-filter "title !~= (?i)(#shorts|(\[|\()?full (album|ep)(\]|\))?)" \
-    --format '[height<720]' \
     --sponsorblock-remove all \
     --sponsorblock-api 'https://api.sponsor.ajay.app/api/' \
     --extract-audio \

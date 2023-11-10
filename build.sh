@@ -5,9 +5,19 @@ then
     echo FLASK_SECRET_KEY=\""$(< /dev/random tr -dc _A-Z-a-z-0-9 | head -c 25;)"\" >> .env;
 fi
 
+if ! grep "RABBITMQ_DEFAULT_PASS" .env > /dev/null;
+then
+    echo RABBITMQ_DEFAULT_PASS=\""$(< /dev/random tr -dc _A-Z-a-z-0-9 | head -c 25;)"\" >> .env;
+fi
+
 if ! grep "NUM_DAILY_DOWNLOADS" .env > /dev/null;
 then
     echo NUM_DAILY_DOWNLOADS=5 >> .env;
+fi
+
+if ! grep "RABBITMQ_DEFAULT_USER" .env > /dev/null;
+then
+    echo RABBITMQ_DEFAULT_USER=stringwave >> .env;
 fi
 
 if [ "$1" = "rebuild" ]
