@@ -11,6 +11,8 @@ yt-dlp \
     --quiet \
 	--match-filter "title !~= (?i)(#shorts|(\[|\()?full (album|ep)(\]|\))?)" \
     --sponsorblock-remove all \
+	--embed-metadata \
+	--embed-thumbnail \
     --sponsorblock-api 'https://api.sponsor.ajay.app/api/' \
     --extract-audio \
     --audio-format opus \

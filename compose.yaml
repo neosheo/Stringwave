@@ -17,7 +17,7 @@ services:
       - ./radio:/stringwave/radio
       - logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
-      - ./webapp/instance/stringwave.db:/stringwave/webapp/instance/stringwave.db
+      - ./webapp/instance/:/stringwave/webapp/instance/
     environment:
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
       - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
@@ -57,7 +57,7 @@ services:
       - ./radio:/stringwave/radio
       - logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
-      - ./webapp/instance/stringwave.db:/stringwave/webapp/instance/stringwave.db
+      - ./webapp/instance/:/stringwave/webapp/instance/
     environment:
       - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}

@@ -58,3 +58,6 @@ generate_pw_sk.sh
 *-old.html
 docker_scripts
 scripts/yt-test.sh
+build_regex.sh
+regex.txt
+*.sql

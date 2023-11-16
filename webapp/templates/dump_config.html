@@ -35,7 +35,7 @@ Current Configurations
 			<td class="box">{{ config.sort_order.replace('D', 'desc').replace('A', 'asc') }}</td>
 			<td class="box">{{ config.albums_to_find }}</td>
 			<td class="box">
-				<button type="submit" form="delete" name="delete_config" value="{{ config.config_id }}">
+				<button class="button linea-icon" type="submit" form="delete" name="delete_config" value="{{ config.config_id }}">
 					<img src="{{ url_for('static', filename='images/basic_trashcan.svg') }}" alt="Del" width="30" height="30">
 				</button>
 			</td>

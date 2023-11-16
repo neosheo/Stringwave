@@ -8,6 +8,7 @@ yt-dlp \
 	--match-filter "title !~= (?i).*(#shorts|(\[|\()?full_(album|ep)(\]|\))?).*" \
 	--parse-metadata '%(uploader)s:%(meta_artist)s' \
 	--embed-metadata \
+	--embed-thumbnail \
 	--replace-in-metadata title '[|% :;,-/#\*\\"!]' '_' \
 	--sponsorblock-remove all \
 	--sponsorblock-api 'https://api.sponsor.ajay.app/api/' \
