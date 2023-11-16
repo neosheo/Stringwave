@@ -9,7 +9,7 @@ fi
 
 if ! grep "ADMIN_PASSWORD" .env > /dev/null;
 then
-    echo FLASK_SECRET_KEY=\""$(< /dev/random tr -dc _A-Z-a-z-0-9 | head -c 25;)"\" >> .env;
+    echo ADMIN_PASSWORD=\""$(< /dev/random tr -dc _A-Z-a-z-0-9 | head -c 25;)"\" >> .env;
 fi
 
 if ! grep "RABBITMQ_DEFAULT_PASS" .env > /dev/null;
