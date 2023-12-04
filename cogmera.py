@@ -19,7 +19,7 @@ class Album:
         else:
             self.tracklist_artists = tracklist_artists
 
-    def getRandomTrack(self):
+    def get_random_track(self):
         while True:
             random_number = random.randrange(len(self.tracklist))
             if self.tracklist[random_number] != "?":
@@ -27,7 +27,7 @@ class Album:
         return [self.tracklist[random_number], random_number]
 
 
-def setGenres(*genres):
+def set_genres(*genres):
     if genres[0] == "None":
         return ""
     genre_param = "".join(
@@ -36,16 +36,42 @@ def setGenres(*genres):
     return genre_param
 
 
-def setStyles(*styles):
+def set_styles(*styles):
     if styles[0] == "None":
         return ""
-    style_param = "".join(
-        [f"&style_exact={style.title().replace(' ', '%20')}" for style in styles]
-    )
+    style_list = []
+    # alter URLs for styles with symbols or all capitals
+    for style in styles:
+        if "-" in style:
+            style = style.split("-")
+            style = f"{style[0]}-{style[1].lower()}"
+            style_list.append(f"&style_exact={style.replace(' ', '%20')}")
+        else:
+            style_list.append(f"&style_exact={style.replace(' ', '%20')}")
+    style_param = "".join(style_list)
+    style_param = f'''&{(
+        style_param[1:].replace("/", "%2F")
+        .replace("dj", "DJ")
+        .replace("Uk", "UK")
+        .replace("&", "%26")
+        .replace("É", "%C3%89")
+        .replace("ï", "%C3%AF")
+        .replace("è", "%C3%A8")
+        .replace("ō", "%C5%8D")
+        .replace("ó", "%C3%B3")
+        .replace("ó", "%C3%A9")
+        .replace("ñ", "%C3%B1")
+        .replace("é", "%C3%A9")
+        .replace("ç", "%C3%A7")
+        .replace("ã", "%C3%A3")
+        .replace("ū", "%C5%AB")
+        .replace("á", "%CC%81")
+        .replace("č", "%C4%8D")
+    )}'''
     return style_param
 
 
-def setTime(decade="None", year="None"):
+def set_time(decade="None", year="None"):
     if decade != "None":
         decade_param = f"&decade={decade}"
     else:
@@ -57,7 +83,7 @@ def setTime(decade="None", year="None"):
     return f"{decade_param}{year_param}"
 
 
-def setSortMethod(method, order):
+def set_sort_method(method, order):
     if order == "D":
         order = "desc"
     elif order == "A":
@@ -68,14 +94,14 @@ def setSortMethod(method, order):
     return sort_param
 
 
-def setCountry(country="None"):
+def set_country(country="None"):
     if country != "None":
         country_param = f"&country_exact={country}"
         return country_param
     return ""
 
 
-def buildUrl(
+def build_url(
     genre_param, style_param, time_param, sort_param, country_param, query=None
 ):
     if query is None:
@@ -86,7 +112,7 @@ def buildUrl(
     return url
 
 
-def selectRandomAlbums(albums, num_albums_to_pick):
+def select_random_albums(albums, num_albums_to_pick):
     if len(albums) == 0:
         print("NO ALBUMS FOUND", flush=True)
         return "error: no albums"
@@ -111,7 +137,7 @@ def selectRandomAlbums(albums, num_albums_to_pick):
     return albums_selected
 
 
-def getAlbumData(url, num_albums_to_pick, num_pages):
+def get_album_data(url, num_albums_to_pick, num_pages):
     header = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0"
     }
@@ -149,7 +175,7 @@ def getAlbumData(url, num_albums_to_pick, num_pages):
         for title in titles:
             albums.append((title, artists[i], links[i]))
             i += 1
-    selected_albums = selectRandomAlbums(albums, num_albums_to_pick * 2)
+    selected_albums = select_random_albums(albums, num_albums_to_pick * 2)
     if selected_albums == "error: no albums":
         return
     # print(selected_albums)
@@ -200,7 +226,7 @@ def getAlbumData(url, num_albums_to_pick, num_pages):
     return albums
 
 
-def validateAlbums(albums, num_albums_to_pick):
+def validate_albums(albums, num_albums_to_pick):
     # this function is here to make sure albums return a tracklist
     # and that albums with various artists return track artists with same amount of tracks and track artists
     valid_albums = []
@@ -221,12 +247,12 @@ def validateAlbums(albums, num_albums_to_pick):
 
 
 # two parameters default to None to prevent the program from exiting if getAlbumDate returns None
-def downloadSongs(albums, num_albums_to_pick=None, config_stamp=None):
+def download_songs(albums, num_albums_to_pick=None, config_stamp=None):
     if albums == "error: no albums":
         return
     if albums is None:
         return "No album found. Timed out."
-    albums = validateAlbums(albums, num_albums_to_pick)
+    albums = validate_albums(albums, num_albums_to_pick)
     [
         print(
             f"Album selected: {album.title} - {album.artist}\nDiscogs link: {album.link}"
@@ -234,7 +260,7 @@ def downloadSongs(albums, num_albums_to_pick=None, config_stamp=None):
         for album in albums
     ]
     for album in albums:
-        random_track, random_number = album.getRandomTrack()
+        random_track, random_number = album.get_random_track()
         if album.tracklist_artists is not None:
             selected_artist = album.tracklist_artists[random_number]
         else:
@@ -276,16 +302,16 @@ def run_cogmera():
         print(f"Albums to Find: {config[8]}")
 
         config_stamp = config[0]
-        genres = setGenres(*config[1].split(";"))
-        styles = setStyles(*config[2].split(";"))
-        time_param = setTime(config[3], config[4])
-        sort_method = setSortMethod(config[6], config[7])
-        country = setCountry(config[5])
+        genres = set_genres(*config[1].split(";"))
+        styles = set_styles(*config[2].split(";"))
+        time_param = set_time(config[3], config[4])
+        sort_method = set_sort_method(config[6], config[7])
+        country = set_country(config[5])
         num_albums_to_scrape = config[8]
         num_daily_downloads = int(os.getenv("NUM_DAILY_DOWNLOADS"))
-        url = buildUrl(genres, styles, time_param, sort_method, country)
-        albums = getAlbumData(url, num_albums_to_scrape, num_daily_downloads)
-        downloadSongs(albums, num_albums_to_scrape, str(config_stamp))
+        url = build_url(genres, styles, time_param, sort_method, country)
+        albums = get_album_data(url, num_albums_to_scrape, num_daily_downloads)
+        download_songs(albums, num_albums_to_scrape, str(config_stamp))
 
     # initiate download and check status until all downloads complete
     requests.get("http://gateway:8080/download/cogmera")
