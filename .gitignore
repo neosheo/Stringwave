@@ -61,3 +61,8 @@ scripts/yt-test.sh
 build_regex.sh
 regex.txt
 *.sql
+styles_to_change.py
+test.sh
+subs.txt
+configs.txt
+upload_status

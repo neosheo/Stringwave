@@ -5,7 +5,7 @@ from sqlalchemy import func, exc
 from webapp import (
 	app, 
 	db,
-	bcrypt, 
+	flask_bcrypt, 
 	Users, 
 	LoginForm,
 	login_manager,
@@ -23,11 +23,11 @@ import subprocess
 import os
 from tasks import move_track, download_track, upload
 from pipefeeder import (
-	getChannelFeed, 
-	getChannelId, 
-	getChannelName, 
-	getChannelUrl, 
-	getChannelIcon)
+	get_channel_feed, 
+	get_channel_id, 
+	get_channel_name, 
+	get_channel_url, 
+	get_channel_icon)
 import sqlite3
 import re
 from mutagen.oggopus import OggOpus
@@ -38,12 +38,11 @@ def login():
 	form = LoginForm()
 	if request.method == 'POST':
 		if form.validate_on_submit():
-			print(form.username.data)
 			user = db.session.query(Users).filter(Users.username == form.username.data).one()
-			if user and bcrypt.check_password_hash(user.password, form.password.data):
+			if user and flask_bcrypt.check_password_hash(user.password, form.password.data):
 				login_user(user, remember=True)
 				next = request.args.get('next')
-				return redirect(next or url_for('index'))
+				return redirect(next or '/')
 			else:
 				flash("Login unsuccessful.")
 				return render_template("login.html", form=form)
@@ -260,12 +259,12 @@ def addSub():
 		print(f'{channel_url} is not valid')
 		flash('Not a valid YouTube URL')
 		return redirect('/pipefeeder/list_subs')
-	feed = getChannelFeed(channel_url)
+	feed = get_channel_feed(channel_url)
 	new_record = Subs(
-					channel_id=getChannelId(feed), 
-					channel_name=getChannelName(feed), 
-					channel_url=getChannelUrl(feed), 
-					channel_icon=getChannelIcon(channel_url))
+					channel_id=get_channel_id(feed), 
+					channel_name=get_channel_name(feed), 
+					channel_url=get_channel_url(feed), 
+					channel_icon=get_channel_icon(channel_url))
 	try:
 		db.session.add(new_record)
 	except exc.IntegrityError:

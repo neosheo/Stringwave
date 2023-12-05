@@ -59,7 +59,7 @@ app.config.from_mapping(
 
 celery_app = celery_init_app(app)
 db = SQLAlchemy(app)
-bcrypt = Bcrypt(app)
+flask_bcrypt = Bcrypt(app)
 
 
 def create_admin_user(bcrypt_obj):
@@ -67,9 +67,9 @@ def create_admin_user(bcrypt_obj):
 	hashed_pw = bcrypt_obj.generate_password_hash(password)
 	if db.session.query(Users).filter(Users.user_id == 1).first() is None:
 		admin_user = Users(
-						user_id=1,
-						username="admin",
-						password=hashed_pw,
+			user_id=1,
+			username="admin",
+			password=hashed_pw,
 		)
 		db.session.add(admin_user)
 		db.session.commit()
@@ -170,4 +170,4 @@ class SortMethods(db.Model):
 with app.app_context():
 	db.create_all('main')
 	db.create_all('discogs')
-	create_admin_user(bcrypt)
+	create_admin_user(flask_bcrypt)

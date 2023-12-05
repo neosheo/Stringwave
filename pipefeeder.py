@@ -3,11 +3,11 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from tqdm import tqdm
 import sqlite3
-import re
 import time
+import re
 
 
-def getChannelFeed(channel=None):
+def get_channel_feed(channel=None):
     # get the html of the requested youtube channel
     if channel:
         chan_url = channel.rstrip()
@@ -34,19 +34,19 @@ def getChannelFeed(channel=None):
     return feed
 
 
-def getChannelUrl(feed):
+def get_channel_url(feed):
     return BeautifulSoup(feed, "xml").find("uri").text
 
 
-def getChannelName(feed):
+def get_channel_name(feed):
     return BeautifulSoup(feed, "xml").find("title").text
 
 
-def getChannelId(feed):
+def get_channel_id(feed):
     return BeautifulSoup(feed, "xml").find_all("yt:channelId")[1].text
 
 
-def getChannelIcon(channel_url):
+def get_channel_icon(channel_url):
     channel_html = requests.get(channel_url).text
     soup = BeautifulSoup(channel_html, "html.parser")
     links = soup.find_all("link")
@@ -57,7 +57,7 @@ def getChannelIcon(channel_url):
             continue
 
 
-def getRecentUploads(feed):
+def get_recent_uploads(feed):
     now = datetime.now()
     period = timedelta(days=1)
     feed_soup = BeautifulSoup(feed, "xml")
@@ -86,7 +86,7 @@ def getRecentUploads(feed):
             f.write(f"{url};{channel}\n")
 
 
-def buildPlaylist():
+def build_playlist():
     open("dl_data/urls", "w").close()
     con = sqlite3.connect("webapp/instance/stringwave.db")
     subscriptions = [
@@ -95,8 +95,8 @@ def buildPlaylist():
     print("Fetching new video URLs...", flush=True)
     for subscription in tqdm(subscriptions):
         try:
-            feed = getChannelFeed(subscription)
-            getRecentUploads(feed)
+            feed = get_channel_feed(subscription)
+            get_recent_uploads(feed)
         except requests.exceptions.ConnectionError:
             tqdm.write(f"Connection error for {subscription}")
             continue
@@ -106,18 +106,18 @@ def buildPlaylist():
     requests.get("http://gateway:8080/download/pipefeeder")
 
 
-def populateDb(text_file):
+def populate_database(text_file):
     with open(text_file, "r") as f:
         subs = f.readlines()
     subscriptions = []
     print("Gathering subscriptions...", flush=True)
     for sub in tqdm(subs):
         try:
-            feed = getChannelFeed(sub)
-            channel_id = getChannelId(feed)
-            channel_name = getChannelName(feed)
-            channel_url = getChannelUrl(feed)
-            channel_icon = getChannelIcon(channel_url)
+            feed = get_channel_feed(sub)
+            channel_id = get_channel_id(feed)
+            channel_name = get_channel_name(feed)
+            channel_url = get_channel_url(feed)
+            channel_icon = get_channel_icon(channel_url)
             subscriptions.append((channel_id, channel_name, channel_url, channel_icon))
             time.sleep(3)
         except requests.exceptions.ConnectionError:
@@ -136,7 +136,7 @@ def populateDb(text_file):
 
 
 if __name__ == "__main__":
-    buildPlaylist()
+    build_playlist()
     while True:
         with open("dl_data/pf_download_status", "r") as f:
             if f.read() == "Done":
