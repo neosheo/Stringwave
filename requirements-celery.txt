@@ -9,4 +9,4 @@ celery==5.3.4
 bs4==0.0.1
 lxml==4.9.3
 tqdm==4.66.1
-werkzeug==2.3.7
+werkzeug==2.3.8
