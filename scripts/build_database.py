@@ -22,6 +22,10 @@ for station in stations[1:]:
         if os.path.isdir(f'radio/{station}/{file}'):
             shutil.rmtree(f'radio/{station}/{file}')
             continue
+        # if these files are present they will cause segfaults on ezstream
+        if '.temp.opus' in file:
+            os.remove(f'radio/{station}/{file}')
+            continue		
         # delete files that don't end in .opus
         regex = r'.+\.opus$'
         if not re.match(regex, file):
