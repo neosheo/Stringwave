@@ -73,7 +73,7 @@ def download_track(app):
                 downloads = 1
                 links = []
                 for line in lines:
-                    links.append((line.split(";")[0], line.split(";")[1]))
+                    links.append((line.split(";")[0], line.split(";")[1], line.split(";")[2]))
             if links == []:
                 print("No videos to download")
                 return
@@ -88,9 +88,10 @@ def download_track(app):
                 if os.path.isdir(f"{radio_path}/new/{file}"):
                     shutil.rmtree(f"{radio_path}/new/{file}")
             print("Done!")
-            for line, link_and_artist in enumerate(links):
-                link = link_and_artist[0].strip()
-                artist = link_and_artist[1].strip()
+            for line, video_data in enumerate(links):
+                link = video_data[0].strip()
+                artist = video_data[1].strip()
+                video_title = video_data[2].strip()	
                 regex = r"^(https?:\/\/)?(www\.)?youtube\.com\/(watch\?)?v(=|\/).{11}$"
                 if not re.match(regex, link):
                     print(f"Invalid YouTube link at line {line}: {link}.")
@@ -109,7 +110,7 @@ def download_track(app):
                 if result.returncode == 0:
                     # make the file path prettier and change metadata
                     track = result.stdout.rstrip().decode()
-                    file_path, title = update_track_data(track, artist)
+                    file_path, title = update_track_data(track, artist, video_title)
                     new_track = Tracks(
                         title=title,
                         artist=artist,

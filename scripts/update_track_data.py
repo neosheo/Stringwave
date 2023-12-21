@@ -4,8 +4,10 @@ import re
 from mutagen.oggopus import OggOpus
 
 
-def update_track_data(track, artist):
+def update_track_data(track, artist, video_title):
     old_filename = f"{track[:-4]}opus"
+    if old_filename == 'opus':
+        return old_filename, video_title
     print("Changing file name...")
     new_filename = re.sub(r"\s{2,}", " ", old_filename)
     new_filename = re.sub(r"(^_|_$)", "", new_filename)
@@ -20,8 +22,8 @@ def update_track_data(track, artist):
 
     print("Updating metadata...")
     file = OggOpus(new_filename)
-    title = re.sub(r"_+", " ", Path(new_filename).stem)
-    file["title"] = title
+#    title = re.sub(r"_+", " ", Path(new_filename).stem)
+    file["title"] = video_title
     file["artist"] = artist
     file["album"] = ""
     file["data"] = ""
@@ -38,5 +40,5 @@ def update_track_data(track, artist):
     file.save()
     print("Done!")
 
-    print(f"NEW TRACK ADDED:\nFILE PATH: {new_filename}\nTITLE: {title}")
-    return new_filename, title
+    print(f"NEW TRACK ADDED:\nFILE PATH: {new_filename}\nTITLE: {video_title}")
+    return new_filename, video_title

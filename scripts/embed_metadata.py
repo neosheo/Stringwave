@@ -1,9 +1,9 @@
 import sys
+from mutagen import MutagenError
 from mutagen.oggopus import OggOpus
 
 
 def embed_metadata(track):
-    # clip off path and extension
     print('Setting metadata...')
     track['title'] = sys.argv[2]
     track['artist'] = sys.argv[3]
@@ -24,4 +24,8 @@ def embed_metadata(track):
 
 
 if __name__ == '__main__':
-    embed_metadata(OggOpus(sys.argv[1]))
+    try:
+        embed_metadata(OggOpus(sys.argv[1]))
+    except (FileNotFoundError, MutagenError) as e:
+        print(e)
+        

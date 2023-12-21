@@ -15,7 +15,7 @@ for station in stations[1:]:
     print(f'Building {station} tracks database...')
     for file in os.listdir(f'radio/{station}'):
         # don't try to add hidden files
-        regex = r'^\..+'
+        regex = r'^\.[^\.].+'
         if re.match(regex, file):
             continue
         # sometimes downloads fail and create a directory with a file inside, this cleans them up

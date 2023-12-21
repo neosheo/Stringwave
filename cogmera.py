@@ -1,4 +1,4 @@
-import requests
+import cloudscraper
 from bs4 import BeautifulSoup
 import random
 import os
@@ -42,18 +42,15 @@ def set_styles(*styles):
     style_list = []
     # alter URLs for styles with symbols or all capitals
     for style in styles:
-        if "-" in style:
-            style = style.split("-")
-            style = f"{style[0]}-{style[1].lower()}"
-            style_list.append(f"&style_exact={style.replace(' ', '%20')}")
-        else:
-            style_list.append(f"&style_exact={style.replace(' ', '%20')}")
+        # do this here to prevent deleting needed &s
+        if "&" in style:
+            style = style.replace("&", "%26")
+        style_list.append(f"&style_exact={style.replace(' ', '%20')}")
     style_param = "".join(style_list)
-    style_param = f'''&{(
+    style_param = f"""&{(
         style_param[1:].replace("/", "%2F")
         .replace("dj", "DJ")
         .replace("Uk", "UK")
-        .replace("&", "%26")
         .replace("É", "%C3%89")
         .replace("ï", "%C3%AF")
         .replace("è", "%C3%A8")
@@ -67,7 +64,7 @@ def set_styles(*styles):
         .replace("ū", "%C5%AB")
         .replace("á", "%CC%81")
         .replace("č", "%C4%8D")
-    )}'''
+    )}"""
     return style_param
 
 
@@ -137,7 +134,7 @@ def select_random_albums(albums, num_albums_to_pick):
     return albums_selected
 
 
-def get_album_data(url, num_albums_to_pick, num_pages):
+def get_album_data(scraper, url, num_albums_to_pick, num_pages):
     header = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/110.0"
     }
@@ -151,8 +148,8 @@ def get_album_data(url, num_albums_to_pick, num_pages):
             if i == 5:
                 return None
             try:
-                html = requests.get(f"{url}&page={page}", headers=header).text
-            except requests.exceptions.ConnectionError:
+                html = scraper.get(f"{url}&page={page}", headers=header).text
+            except scraper.exceptions.ConnectionError:
                 continue
                 i += 1
             break
@@ -178,7 +175,6 @@ def get_album_data(url, num_albums_to_pick, num_pages):
     selected_albums = select_random_albums(albums, num_albums_to_pick * 2)
     if selected_albums == "error: no albums":
         return
-    # print(selected_albums)
     albums.clear()
     titles.clear()
     artists.clear()
@@ -192,7 +188,7 @@ def get_album_data(url, num_albums_to_pick, num_pages):
     for link in links:
         tracks = []
         track_artists = []
-        html = requests.get(link, headers=header).text
+        html = scraper.get(link, headers=header).text
         soup = BeautifulSoup(html, "html.parser")
         # the first if statement is to fill in the artists of each track on albums with various artists
         # there are at least 2 different classes for tracks so the script will try both
@@ -280,6 +276,8 @@ def download_songs(albums, num_albums_to_pick=None, config_stamp=None):
 
 
 def run_cogmera():
+    scraper = cloudscraper.create_scraper()
+
     con = sqlite3.connect("webapp/instance/stringwave.db")
     cur = con.cursor()
 
@@ -310,15 +308,15 @@ def run_cogmera():
         num_albums_to_scrape = config[8]
         num_daily_downloads = int(os.getenv("NUM_DAILY_DOWNLOADS"))
         url = build_url(genres, styles, time_param, sort_method, country)
-        albums = get_album_data(url, num_albums_to_scrape, num_daily_downloads)
+        albums = get_album_data(scraper, url, num_albums_to_scrape, num_daily_downloads)
         download_songs(albums, num_albums_to_scrape, str(config_stamp))
 
     # initiate download and check status until all downloads complete
-    requests.get("http://gateway:8080/download/cogmera")
+    scraper.get("http://gateway:8080/download/cogmera")
     while True:
         with open("dl_data/cm_download_status", "r") as f:
             if f.read().rstrip() == "Done":
-                requests.get("http://gateway:8080/reread")
+                scraper.get("http://gateway:8080/reread")
                 break
         time.sleep(5)
     open("dl_data/cm_download_status", "w").close()
