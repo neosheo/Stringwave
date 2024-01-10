@@ -121,15 +121,15 @@ def select_random_albums(albums, num_albums_to_pick):
         num_albums_to_pick = int(num_albums_to_pick)
     while i < num_albums_to_pick:
         try:
-            selected_album = random.randrange(len(albums))
+            selected_album = random.choice(albums)
         # force retry if it encounters a ValueError to prevent the program from exiting
         except ValueError:
             continue
         # check the selected album against a list of previously selected albums to skip duplicates
-        if albums[selected_album][0].lower() in albums_selected_titles:
+        if selected_album[0].lower() in albums_selected_titles:
             continue
-        albums_selected.append(albums[selected_album])
-        albums_selected_titles.append(albums[selected_album][0].lower())
+        albums_selected.append(selected_album)
+        albums_selected_titles.append(selected_album[0].lower())
         i += 1
     return albums_selected
 

@@ -4,7 +4,7 @@ from mutagen.oggopus import OggOpus
 
 
 def embed_metadata(track):
-    print('Setting metadata...')
+    print(f'Setting metadata for {sys.argv[2]}...')
     track['title'] = sys.argv[2]
     track['artist'] = sys.argv[3]
     track['config'] = sys.argv[4]

@@ -91,7 +91,7 @@ def download_track(app):
             for line, video_data in enumerate(links):
                 link = video_data[0].strip()
                 artist = video_data[1].strip()
-                video_title = video_data[2].strip()	
+                video_title = video_data[2].strip()
                 regex = r"^(https?:\/\/)?(www\.)?youtube\.com\/(watch\?)?v(=|\/).{11}$"
                 if not re.match(regex, link):
                     print(f"Invalid YouTube link at line {line}: {link}.")
@@ -118,6 +118,8 @@ def download_track(app):
                         station="new",
                         file_path=file_path,
                     )
+                    print(f'TITlE: {title}')
+                    print(f'FILE PATH: {file_path}')
                     db.session.add(new_track)
                     db.session.commit()
                     print(f"Added {file_path}")

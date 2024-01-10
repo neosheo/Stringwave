@@ -67,7 +67,7 @@ def get_recent_uploads(feed):
     pub_dates = feed_soup.find_all("published")[1:]
     videos = feed_soup.find_all("media:content")
     channel = feed_soup.find("title").text.rstrip()
-    titles = feed_soup.find_all("title")[1:]
+    titles = feed_soup.find_all("media:title")
     # check if videos are were published before your specified period
     # if they are within your specified period, include them
     index = 0
@@ -146,6 +146,6 @@ if __name__ == "__main__":
                 requests.get("http://gateway:8080/reread")
                 break
             time.sleep(5)
-    subprocess.run(["sed", "'/^\/stringwave\//d'", "logs/pipefeeder.log"])
+    subprocess.run(["sed", r"/\/stringwave/\/d", "logs/pipefeeder.log"])
     open("dl_data/pf_download_status", "w").close()
     print("Done!", flush=True)
