@@ -146,6 +146,6 @@ if __name__ == "__main__":
                 requests.get("http://gateway:8080/reread")
                 break
             time.sleep(5)
-    subprocess.run(["sed", r"/\/stringwave/\/d", "logs/pipefeeder.log"])
+    subprocess.run(["sed", "-i", "/stringwave/d", "logs/pipefeeder.log"])
     open("dl_data/pf_download_status", "w").close()
     print("Done!", flush=True)

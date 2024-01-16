@@ -13,7 +13,7 @@ uwsgi \
     --socket :3033 \
     --wsgi-file app.py \
     --master \
-    --threads 2 \
+    --threads 1 \
     --callable app \
     --uid stringwave \
     --gid stringwave
