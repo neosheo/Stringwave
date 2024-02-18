@@ -12,4 +12,5 @@ python-dotenv==1.0.0
 tqdm==4.66.1
 mutagen==1.47.0
 werkzeug==2.3.8
-cloudscraper
+cloudscraper==1.2.71
+pytest==8.0.0

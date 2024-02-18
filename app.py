@@ -1,4 +1,9 @@
-from flask import render_template, request, redirect, flash, jsonify, url_for
+from flask import (
+	render_template,
+	request,
+	redirect,
+	flash,
+	jsonify)
 from flask_login import login_user, logout_user, login_required
 from werkzeug.utils import secure_filename
 from sqlalchemy import func, exc

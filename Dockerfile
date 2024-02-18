@@ -1,9 +1,9 @@
-FROM python:3.11.3-slim-bullseye
+FROM python:3.11.8-slim-bullseye
 
 WORKDIR /stringwave
 
 RUN apt-get update && apt-get upgrade -y 
-RUN apt-get install icecast2 ezstream gcc tmux procps sqlite3 -y
+RUN apt-get install ezstream gcc tmux procps sqlite3 -y
 
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip
@@ -15,7 +15,7 @@ RUN chsh --shell /usr/sbin/nologin root
 COPY radio/ ./radio/
 COPY scripts/ ./scripts/
 COPY webapp/ ./webapp/
-COPY config/ ./config/
+COPY config/ezstream-*.xml ./config/
 COPY src/ ./src/
 COPY app.py .
 COPY cogmera.py .
@@ -24,29 +24,15 @@ COPY start.sh .
 COPY tasks.py .
 COPY run.sh .
 
-RUN mkdir dl_data logs /home/stringwave
+RUN mkdir logs /home/stringwave
 RUN touch logs/cogmera_download.log \
     logs/cogmera_selection.log \
     logs/pipefeeder.log \
-    /var/log/icecast2/access.log \
-    /var/log/icecast2/error.log \
-    webapp/static/move_status \
-    dl_data/urls \
-    dl_data/search_queries \
-    dl_data/pf_download_status \
-    dl_data/cm_download_status \
-    webapp/static/upload_status \
-    webapp/static/now_playing_main \
-    webapp/static/now_playing_new \
-    webapp/static/subs.txt \
-    webapp/static/configs.txt
 RUN [ -f webapp/instance/stringwave.db ] || touch webapp/instance/stringwave.db
 RUN echo 99999 > .pid-new
 RUN echo 99999 > .pid-main
 RUN chown -R stringwave:stringwave \
     /stringwave/ \
-    /var/log/icecast2/access.log \
-    /var/log/icecast2/error.log \
     /home/stringwave
 RUN gcc src/monitor_port.c -o /bin/monitor_port
 

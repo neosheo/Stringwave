@@ -1,11 +1,5 @@
 #!/bin/bash
 
-session="icecast"
-window=0
-tmux new-session -d -s $session
-tmux rename-window -t $session:$window "icecast"
-tmux send-keys -t $session:$window "icecast2 -c config/icecast.xml" C-m
-sleep 5
 session="ezstream-new"
 tmux new-session -d -s $session
 tmux rename-window -t $session:$window "ezstream-new"

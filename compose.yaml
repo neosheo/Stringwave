@@ -82,6 +82,19 @@ services:
       stringwave:
     restart: unless-stopped
 
+  icecast:
+    build: 
+      context: .
+      dockerfile: Dockerfile-icecast
+    image: stringwave-icecast:latest
+    container_name: stringwave-icecast
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      stringwave:
+    restart: unless-stopped
+
 networks:
   stringwave:
     driver: bridge

@@ -1,0 +1,17 @@
+FROM alpine:latest
+
+RUN apk update
+RUN apk upgrade
+RUN apk add icecast
+RUN adduser -D stringwave
+
+COPY config/icecast.xml /config/
+RUN touch \
+    /var/log/icecast/access.log \
+    /var/log/icecast/error.log
+RUN chown stringwave:stringwave \
+    /var/log/icecast/access.log \
+    /var/log/icecast/error.log
+
+USER stringwave
+ENTRYPOINT ["icecast", "-c", "/config/icecast.xml"]

@@ -3,7 +3,7 @@
 		<server>
 			<name>Icecast</name>
 			<protocol>HTTP</protocol>
-			<hostname>127.0.0.1</hostname>
+			<hostname>icecast</hostname>
 			<port>8000</port>
 			<user>source</user>
 			<password></password>

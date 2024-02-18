@@ -1,6 +1,6 @@
 #!/bin/bash
 
-mkdir -p radio/new radio/main config dl_data
+mkdir -p radio/new radio/main config dl_data webapp/static webapp/instance
 cp config_examples/*.xml config
 touch .env \
 	dl_data/pf_download_status \
@@ -8,6 +8,7 @@ touch .env \
 	dl_data/urls \
 	dl_data/search_queries \
 	webapp/static/upload_status \
+	webapp/static/move_status \
 	webapp/static/now_playing_main \
 	webapp/static/now_playing_new \
 	webapp/static/subs.txt \
@@ -71,6 +72,7 @@ then
         docker compose down
         docker image rm stringwave
         docker image rm stringwave-celery
+        docker image rm stringwave-icecast
     else
         for image in "${@:2}"
         do

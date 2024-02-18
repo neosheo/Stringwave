@@ -1,4 +1,4 @@
-FROM python:3.11.3-slim-bullseye
+FROM python:3.11.8-slim-bullseye
 
 WORKDIR /stringwave
 
@@ -21,14 +21,7 @@ COPY tasks.py .
 COPY start-celery.sh ./start.sh
 
 RUN export NUM_DAILY_DOWNLOADS=$NUM_DAILY_DOWNLOADS
-RUN mkdir dl_data logs /home/stringwave
-RUN touch webapp/static/subs.txt \
-    webapp/static/move_status \
-    dl_data/urls \
-    dl_data/search_queries \
-    dl_data/pf_download_status \
-    dl_data/cm_download_status \
-    webapp/static/upload_status
+RUN mkdir -p logs /home/stringwave
 RUN chown -R stringwave:stringwave \
     /home/stringwave \
     /stringwave
