@@ -153,6 +153,10 @@ tr, th, td {
 	font-size: 22px;
 }
 
+.centered {
+    text-align: center;
+}
+
 .box {
 	border: 4px solid;
     color: black;

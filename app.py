@@ -327,5 +327,17 @@ def upload_status():
 	return json
 
 
+@app.route('/update_channel_name', methods = ['POST'])
+def update_channel_name():
+	data = request.form['update-channel-name'].split(';')
+	print(data)
+	channel_id = data[0]
+	new_channel_name = data[1].strip()
+	channel = db.session.query(Subs).filter_by(channel_id=channel_id).one()
+	channel.channel_name = new_channel_name
+	db.session.commit()
+	return redirect('/pipefeeder/list_subs')
+
+
 if __name__ == '__main__':
 	app.run(host='0.0.0.0', debug=True)

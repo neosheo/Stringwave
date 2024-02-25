@@ -40,7 +40,10 @@ def download_track(app):
                         r'(\||%|&|:|;|,|!|-|\*|#|\\|/|\[|\|"])', "", query["filename"]
                     ).replace(" ", "_")
                     title = query["filename"]
-                    artist = query["artist"]
+                    # remove the (#) that are added by discogs for artists with the same name
+                    artist = re.sub(
+                        r"\s\(\d+\)", "", query["artist"]
+                    ).rstrip()
                     search_query = query["search_query"]
                     config = query["config"]
                     file_path = f'{radio_path}/new/{filename}.opus'

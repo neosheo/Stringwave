@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from tqdm import tqdm
 import sqlite3
 import time
-import re
 import subprocess
 
 
