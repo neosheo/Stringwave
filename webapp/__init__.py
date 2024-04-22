@@ -6,6 +6,7 @@ from flask_bcrypt import Bcrypt
 from wtforms import StringField, PasswordField, SubmitField
 import os
 from celery import Celery, Task
+import logging
 
 
 # rabbitmq credentials
@@ -17,6 +18,10 @@ cogmera_log = '/stringwave/logs/cogmera_download.log'
 pipefeeder_log = '/stringwave/logs/pipefeeder.log'
 db_directory = f'sqlite:////{os.getcwd()}/webapp/instance'
 radio_path = '/stringwave/radio'
+
+# set up logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level=logging.INFO)
 
 # only allow backups that have .txt extension
 BACKUP_LOCATION = f'{os.getcwd()}/webapp/static'

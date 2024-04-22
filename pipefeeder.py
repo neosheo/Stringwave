@@ -1,6 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+from webapp import logger, pipefeeder_log
 from tqdm import tqdm
 import sqlite3
 import time
@@ -27,6 +28,7 @@ def get_channel_feed(channel=None):
         chan_soup = BeautifulSoup(chan_html, "html.parser")
         alt_chan_url = chan_soup.find("link", rel="canonical")["href"]
         chan_id = alt_chan_url.split("/")[-1].rstrip()
+        logger.debug(f"Channel ID found: {chan_id}")
     # get the rss feed for the channel
     feed_url = f"https://youtube.com/feeds/videos.xml?channel_id={chan_id}"
     feed = requests.get(feed_url).text
@@ -66,6 +68,7 @@ def get_recent_uploads(feed):
     pub_dates = feed_soup.find_all("published")[1:]
     videos = feed_soup.find_all("media:content")
     channel = feed_soup.find("title").text.rstrip()
+    channel_id = feed_soup.find_all("yt:channelId")[1].text.strip() 
     titles = feed_soup.find_all("media:title")
     # check if videos are were published before your specified period
     # if they are within your specified period, include them
@@ -79,13 +82,15 @@ def get_recent_uploads(feed):
         else:
             new_videos.append((videos[index], titles[index]))
         index += 1
-    # extract video urls
+    [ logger.debug(f"NEW VIDEO FOUND: {new_video[1].text}") for new_video in new_videos ]
+    [ logger.debug(f"NEW VIDEO LINK: {new_video[0].text}") for new_video in new_videos ]
+# extract video urls
     urls = [ new_video[0].attrs["url"].split("?")[0].rstrip() for new_video in new_videos ]
     titles = [ new_video[1].text for new_video in new_videos ]
     for i, url in enumerate(urls):
         tqdm.write(f"Link found: {url} by {channel}")
         with open("dl_data/urls", "a") as f:
-            f.write(f"{url};{channel};{titles[i]}\n")
+            f.write(f"{url};{channel_id};{titles[i]};\n")
 
 
 def build_playlist():
@@ -145,6 +150,6 @@ if __name__ == "__main__":
                 requests.get("http://gateway:8080/reread")
                 break
             time.sleep(5)
-    subprocess.run(["sed", "-i", "/stringwave/d", "logs/pipefeeder.log"])
+    subprocess.run(["sed", "-i", "/stringwave/d", pipefeeder_log])
     open("dl_data/pf_download_status", "w").close()
     print("Done!", flush=True)

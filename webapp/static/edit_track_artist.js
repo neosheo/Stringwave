@@ -1,16 +1,16 @@
 // grab appropriate element depending on which page you are on
-let table;
-if (document.getElementById("track-table") !== null) {
-  table = document.querySelector("table");
+let table_b;
+if (document.getElementById("tracks-table") !== null) {
+  table_b = document.querySelector("table");
 } else {
-  table = document.getElementById("artist-list");
+  table_b = document.getElementById("artist-list");
 }
 
-table.addEventListener("click", (event) => {
+table_b.addEventListener("click", (event) => {
   if (event.target.closest(".edit-button")) {
-    const button = event.target.closest(".edit-button");
-    const track_artist = button.parentElement.querySelector(".track-artist");
-    const new_button = document.createElement("button");
+    let button = event.target.closest(".edit-button");
+    let track_artist = button.parentElement.querySelector(".track-artist");
+    let new_button = document.createElement("button");
     new_button.className = "done-button button linea-icon";
     new_button.type = "submit";
     new_button.innerHTML = '<img src="/static/images/basic_elaboration_bookmark_check.svg" alt="Done" height="20" width="20">';
@@ -20,9 +20,9 @@ table.addEventListener("click", (event) => {
     track_artist.style.backgroundColor = "#dddbdb";
   }
   if (event.target.closest(".done-button")) {
-    const button = event.target.closest(".done-button");
-    const track_artist = button.parentElement.querySelector(".track-artist");
-    const old_button = document.createElement("button");
+    let button = event.target.closest(".done-button");
+    let track_artist = button.parentElement.querySelector(".track-artist");
+    let old_button = document.createElement("button");
     old_button.className = "edit-button button linea-icon";
     old_button.type = "submit";
     old_button.innerHTML = '<img src="/static/images/software_pencil.svg" alt="Edit" height="20" width="20">'
@@ -48,7 +48,7 @@ table.addEventListener("click", (event) => {
     }
     new_artist = update_button.parentElement.querySelector(".track-artist").innerHTML;
     update_button.setAttribute("value", `${track_id};${new_artist};${station}`);
-    console.log(`${track_id};${new_artist};${station}`);
+    //console.log(`${track_id};${new_artist};${station}`);
     }
   }
 );

@@ -4,6 +4,7 @@ link=$1
 
 yt-dlp \
 	--verbose \
+	--quiet \
 	--no-simulate \
 	--match-filter "title !~= (?i).*(#shorts|(\[|\()?full_(album|ep)(\]|\))?).*" \
 	--parse-metadata '%(uploader)s:%(meta_artist)s' \

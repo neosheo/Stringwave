@@ -20,6 +20,7 @@ COPY src/ ./src/
 COPY app.py .
 COPY cogmera.py .
 COPY pipefeeder.py .
+COPY disallowed_titles.py .
 COPY start.sh .
 COPY tasks.py .
 COPY run.sh .

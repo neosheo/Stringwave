@@ -1,4 +1,5 @@
-from webapp import celery_app, db, Tracks
+from webapp import celery_app, db, Tracks, Subs, pipefeeder_log, cogmera_log, logger
+from disallowed_titles import disallowed_titles
 from pipefeeder import populate_database
 from scripts.update_track_data import update_track_data
 import requests
@@ -33,6 +34,7 @@ def download_track(app):
                 # so program knows when all downloads have completed
                 num_queries = len(data)
                 downloads = 1
+                print("Starting cogmera downloads...")
                 for datum in data:
                     query = json.loads(datum)
                     # remove illegal characters and spaces from filename
@@ -48,8 +50,8 @@ def download_track(app):
                     config = query["config"]
                     file_path = f'{radio_path}/new/{filename}.opus'
                     # initiate the download
-                    print(f"Downloading {title}...")
-                    subprocess.run(
+                    logger.info(f"Downloading {title}...")
+                    result = subprocess.run(
                         [
                             f"{os.getcwd()}/scripts/cogmera-download.sh",
                             filename,
@@ -57,11 +59,15 @@ def download_track(app):
                             artist,
                             search_query,
                             config,
-                        ]
+                        ],
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT
                     )
                     print("Done!")
+                    with open(cogmera_log, "a") as f:
+                        f.write(f"\n{result.stdout.decode()}")                    
                     # enter new track into database
-                    print(f"Entering {title} into database...")
+                    logger.info(f"Entering {title} into database...")
                     new_track = Tracks(
                         title=filename,
                         artist=artist,
@@ -77,9 +83,9 @@ def download_track(app):
                     if downloads == num_queries:
                         with open("dl_data/cm_download_status", "w") as f:
                             f.write("Done")
-                        print("All downloads complete!")
+                        logger.info("All downloads complete!")
                     else:
-                        print(f"Download {downloads} of {num_queries} complete.")
+                        logger.info(f"Download {downloads} of {num_queries} complete.")
                         downloads += 1
 
         case "pipefeeder":
@@ -96,7 +102,7 @@ def download_track(app):
                 for line in lines:
                     links.append((line.split(";")[0], line.split(";")[1], line.split(";")[2]))
             if links == []:
-                print("No videos to download")
+                logger.info("No videos to download")
                 return
             print("Done!")
             print("Cleaning broken downloads...")
@@ -113,42 +119,61 @@ def download_track(app):
             for line, video_data in enumerate(links):
                 # separate data from the links list
                 link = video_data[0].strip()
-                artist = video_data[1].strip()
+                logger.debug(f"LINK: {link}")
+                logger.debug(f"CHANNEL_ID: {video_data[1]}")
+                artist = db.session.query(Subs).filter_by(channel_id=video_data[1].strip()).scalar().channel_name
                 video_title = video_data[2].strip()
                 # only download youtube videos
                 # don't download shorts
                 regex = r"^(https?:\/\/)?(www\.)?youtube\.com\/(watch\?)?v(=|\/).{11}$"
                 if not re.match(regex, link):
-                    print(f"Invalid YouTube link at line {line}: {link}.")
+                    logger.warning(f"Invalid YouTube link at line {line}: {link}.")
                     # increment the download counter because the
                     # invalid link was included in the number of links
                     downloads += 1
                     continue
                 # initiate download
-                print(f"Downloading {link}")
+                logger.info(f"Downloading {link}")
                 result = subprocess.run(
                     [f"{os.getcwd()}/scripts/pipefeeder-download.sh", link],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                 )
                 # write download information to log
-                with open("dl_data/pipefeeder.log", "a") as f:
+                with open(pipefeeder_log, "a") as f:
                     f.write(f"\n{result.stderr.decode()}")
                 # only add new database entry if download completed successfully
                 if result.returncode == 0:
                     # make the file path prettier and change metadata
                     track = result.stdout.rstrip().decode()
                     file_path, title = update_track_data(track, artist, video_title)
-                    new_track = Tracks(
-                        title=title,
-                        artist=artist,
-                        config="pf",
-                        station="new",
-                        file_path=file_path,
-                    )
-                    db.session.add(new_track)
-                    db.session.commit()
-                    print(f"Added {file_path}")
+                    title_is_allowed = [True]
+                    for disallowed_title in disallowed_titles:
+                        if re.match(title.rstrip(), disallowed_title):
+                           logger.info(f"Disallowed title found: {title}")
+                           title_is_allowed[0] = False
+                           break
+                    if title_is_allowed[0]:
+                        new_track = Tracks(
+                            title=title,
+                            artist=artist,
+                            config="pf",
+                            station="new",
+                            file_path=file_path,
+                        )
+                        db.session.add(new_track)
+                        db.session.commit()
+                        logger.debug(f"Added file {file_path}")
+                        logger.debug(f"TRACK TITLE: {title}")
+                        logger.debug(f"ARTIST: {artist}")
+                    # delete a file was not added to the database if it exists
+                    # this will delete database entries for files skipped by download script's match filter
+                    else:
+                        if os.path.exists(file_path):
+                            entry_to_delete = db.session.query(Tracks).filter_by(file_path=file_path).one()
+                            logger.warning(f"Deleting database entry for {title}. This entry was blocked by download script.")
+                            db.session.delete(entry_to_delete)
+                            db.session.commit()
                 # increments downloads counter until
                 # downloads = number of links
                 if downloads == num_links:

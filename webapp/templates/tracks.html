@@ -9,8 +9,6 @@
     <form method="POST" id="delete" action="/delete_track/{{ station }}"></form>
     <form method="POST" id="update-title" action="/update_title"></form>
     <form method="POST" id="update-artist" action="/update_artist"></form>
-    <script src="{{ url_for('static', filename='edit_track_title.js') }}"></script>
-    <script src="{{ url_for('static', filename='edit_track_artist.js') }}"></script>
     <table id="tracks-table" class="tablemobile">
         <tbody>
             <tr>
@@ -53,4 +51,6 @@
             {% endfor %}
         </tbody>
     </table>
+    <script src="{{ url_for('static', filename='edit_track_title.js') }}"></script>
+    <script src="{{ url_for('static', filename='edit_track_artist.js') }}"></script>
 {% endblock %}

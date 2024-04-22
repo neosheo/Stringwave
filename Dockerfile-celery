@@ -17,6 +17,7 @@ COPY scripts/ ./scripts/
 COPY webapp/ ./webapp/
 COPY cogmera.py .
 COPY pipefeeder.py .
+COPY disallowed_titles.py .
 COPY tasks.py .
 COPY start-celery.sh ./start.sh
 
