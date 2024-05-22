@@ -26,9 +26,7 @@ COPY tasks.py .
 COPY run.sh .
 
 RUN mkdir logs /home/stringwave
-RUN touch logs/cogmera_download.log \
-    logs/cogmera_selection.log \
-    logs/pipefeeder.log \
+RUN touch logs/stringwave.log
 RUN [ -f webapp/instance/stringwave.db ] || touch webapp/instance/stringwave.db
 RUN echo 99999 > .pid-new
 RUN echo 99999 > .pid-main

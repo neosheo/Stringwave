@@ -15,6 +15,7 @@ yt-dlp \
 	--sponsorblock-api 'https://api.sponsor.ajay.app/api/' \
 	--extract-audio \
 	--audio-format opus \
+	-F --extractor-args "youtube:player_client=web" \
 	-o '/stringwave/radio/new/%(title)s.%(ext)s' \
 	--print filename \
-	$link | tee --append /stringwave/logs/pipefeeder.log
+	$link

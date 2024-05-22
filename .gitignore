@@ -72,3 +72,6 @@ test/*
 !test/tests/
 dev/*
 dev
+data.txt
+scrape_test.py
+scripts/download_test.py

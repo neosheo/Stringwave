@@ -1,4 +1,4 @@
-from webapp import celery_app, db, Tracks, Subs, pipefeeder_log, cogmera_log, logger
+from webapp import celery_app, db, Tracks, Subs, logger, radio_path
 from disallowed_titles import disallowed_titles
 from pipefeeder import populate_database
 from scripts.update_track_data import update_track_data
@@ -8,7 +8,6 @@ import subprocess
 import re
 import shutil
 import json
-from webapp import radio_path
 
 
 @celery_app.task
@@ -27,28 +26,37 @@ def move_track(track_id, old_file_path, new_file_path):
 def download_track(app):
     match app:
         case "cogmera":
+            logger.debug("COGMERA INITIATED A DOWNLOAD")
             # read search queries and set proper attributes for database entry and download script
             with open("dl_data/search_queries", "r") as f:
                 data = [line.rstrip() for line in f.readlines()]
                 # num_queries and downloads are needed 
                 # so program knows when all downloads have completed
                 num_queries = len(data)
+                logger.debug(f"RECEIVED {num_queries} SEARCH QUERIES")
                 downloads = 1
                 print("Starting cogmera downloads...")
                 for datum in data:
                     query = json.loads(datum)
+                    logger.debug(f"DATA RECEIVED: {query}")
                     # remove illegal characters and spaces from filename
                     filename = re.sub(
                         r'(\||%|&|:|;|,|!|-|\*|#|\\|/|\[|\|"])', "", query["filename"]
                     ).replace(" ", "_")
+                    logger.debug(f"FILENAME: {filename}")
                     title = query["filename"]
+                    logger.debug(f"TITLE: {title}")
                     # remove the (#) that are added by discogs for artists with the same name
                     artist = re.sub(
                         r"\s\(\d+\)", "", query["artist"]
                     ).rstrip()
+                    logger.debug(f"ARTIST: {artist}")
                     search_query = query["search_query"]
+                    logger.debug(f"SEARCH QUERY: {search_query}")
                     config = query["config"]
+                    logger.debug(f"CONFIG: {config}")
                     file_path = f'{radio_path}/new/{filename}.opus'
+                    logger.debug(f"FILE PATH: {file_path}")
                     # initiate the download
                     logger.info(f"Downloading {title}...")
                     result = subprocess.run(
@@ -63,11 +71,12 @@ def download_track(app):
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT
                     )
+                    logger.debug(f"DOWNLOAD SCRIPT EXIT CODE: {result.returncode}")
+                    logger.info(result.stdout.decode())
                     print("Done!")
-                    with open(cogmera_log, "a") as f:
-                        f.write(f"\n{result.stdout.decode()}")                    
                     # enter new track into database
                     logger.info(f"Entering {title} into database...")
+                    print(f"Entering {title} into database...")
                     new_track = Tracks(
                         title=filename,
                         artist=artist,
@@ -111,46 +120,52 @@ def download_track(app):
                 # but include files that start with more than one '.'
                 regex = r'^\.[^\.].+'
                 if re.match(regex, file):
+                    logger.debug(f"SKIPPING HIDDEN FILE: {file}")
                     continue
                 # delete directories with files in them which are created by failed downloads
                 if os.path.isdir(f"{radio_path}/new/{file}"):
+                    logger.debug(f"FAILED DOWNLOAD FOUND: {radio_path}/new/{file}")
                     shutil.rmtree(f"{radio_path}/new/{file}")
             print("Done!")
             for line, video_data in enumerate(links):
                 # separate data from the links list
                 link = video_data[0].strip()
-                logger.debug(f"LINK: {link}")
-                logger.debug(f"CHANNEL_ID: {video_data[1]}")
+                logger.debug(f"PARSED LINK FROM DOWNLOAD DATA: {link}")
+                logger.debug(f"PARSED CHANNEL_ID FROM DOWNLOAD DATA: {video_data[1]}")
                 artist = db.session.query(Subs).filter_by(channel_id=video_data[1].strip()).scalar().channel_name
                 video_title = video_data[2].strip()
+                logger.debug(f"PARSED ARTIST FROM DOWNLOAD DATA: {artist}")
+                logger.debug(f"PARSED VIDEO TITLE FROM DOWNLOAD DATA: {video_title}")
                 # only download youtube videos
                 # don't download shorts
                 regex = r"^(https?:\/\/)?(www\.)?youtube\.com\/(watch\?)?v(=|\/).{11}$"
                 if not re.match(regex, link):
-                    logger.warning(f"Invalid YouTube link at line {line}: {link}.")
+                    logger.debug(f"INVALID YOUTUBE LINK AT LINE {line}: {link}.")
                     # increment the download counter because the
                     # invalid link was included in the number of links
                     downloads += 1
                     continue
                 # initiate download
-                logger.info(f"Downloading {link}")
+                print(f"Downloading {link}")
                 result = subprocess.run(
                     [f"{os.getcwd()}/scripts/pipefeeder-download.sh", link],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                 )
-                # write download information to log
-                with open(pipefeeder_log, "a") as f:
-                    f.write(f"\n{result.stderr.decode()}")
+                logger.debug(f"DOWNLOAD SCRIPT EXIT CODE: {result.returncode}")
+                logger.info(result.stderr.decode())
                 # only add new database entry if download completed successfully
                 if result.returncode == 0:
                     # make the file path prettier and change metadata
-                    track = result.stdout.rstrip().decode()
-                    file_path, title = update_track_data(track, artist, video_title)
+                    track_name = result.stdout.decode()
+                    logger.debug(f"TRACK TITLE BEFORE UPDATING DATA: {track_name}")
+                    file_path, title = update_track_data(track_name, artist, video_title)
+                    logger.debug(f"DOWNLOADED TRACK: {title}")
+                    logger.debug(f"DOWNLOADED FILE PATH: {file_path}")
                     title_is_allowed = [True]
                     for disallowed_title in disallowed_titles:
                         if re.match(title.rstrip(), disallowed_title):
-                           logger.info(f"Disallowed title found: {title}")
+                           logger.debug(f"DISALLOWED TITLE FOUND: {title}")
                            title_is_allowed[0] = False
                            break
                     if title_is_allowed[0]:
@@ -163,7 +178,7 @@ def download_track(app):
                         )
                         db.session.add(new_track)
                         db.session.commit()
-                        logger.debug(f"Added file {file_path}")
+                        logger.debug(f"ADDED FILE {file_path} TO DATABASE")
                         logger.debug(f"TRACK TITLE: {title}")
                         logger.debug(f"ARTIST: {artist}")
                     # delete a file was not added to the database if it exists
@@ -171,7 +186,7 @@ def download_track(app):
                     else:
                         if os.path.exists(file_path):
                             entry_to_delete = db.session.query(Tracks).filter_by(file_path=file_path).one()
-                            logger.warning(f"Deleting database entry for {title}. This entry was blocked by download script.")
+                            logger.debug(f"DELETING DATABASE ENTRY FOR {title}. THIS ENTRY WAS BLOCKED BY THE DOWNLOAD SCRIPT")
                             db.session.delete(entry_to_delete)
                             db.session.commit()
                 # increments downloads counter until

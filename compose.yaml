@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   stringwave:
     build: 
@@ -24,6 +22,7 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+      - DISCOGS_PERSONAL_ACCESS_TOKEN=${DISCOGS_PERSONAL_ACCESS_TOKEN}
     ports:
       - 5801:5801
       - 5802:5802

@@ -21,7 +21,11 @@ radio_path = '/stringwave/radio'
 
 # set up logging
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+	filename="logs/stringwave.log",
+	encoding="utf-8",
+	level=logging.DEBUG
+)
 
 # only allow backups that have .txt extension
 BACKUP_LOCATION = f'{os.getcwd()}/webapp/static'

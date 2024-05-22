@@ -8,6 +8,7 @@ config=$5
 
 yt-dlp \
     ytsearch1:"$search_query" \
+    --verbose \
     --quiet \
 	--match-filter "title !~= (?i)(#shorts|(\[|\()?full (album|ep)(\]|\))?)" \
     --sponsorblock-remove all \
@@ -15,8 +16,9 @@ yt-dlp \
 	--embed-thumbnail \
     --sponsorblock-api 'https://api.sponsor.ajay.app/api/' \
     --extract-audio \
+    -F --extractor-args "youtube:player_client=web" \
     --audio-format opus \
-    -o ./radio/new/"$filename" | tee --append /stringwave/logs/cogmera_download.log
+    -o ./radio/new/"$filename"
 
 python scripts/embed_metadata.py /stringwave/radio/new/"$filename".opus "$title" "$artist" "$config"
 

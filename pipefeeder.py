@@ -31,8 +31,8 @@ def get_channel_feed(channel=None):
         logger.debug(f"Channel ID found: {chan_id}")
     # get the rss feed for the channel
     feed_url = f"https://youtube.com/feeds/videos.xml?channel_id={chan_id}"
+    logger.debug(f"BUILT FEED URL: {feed_url}")
     feed = requests.get(feed_url).text
-    # print(feed)
     return feed
 
 
@@ -81,10 +81,10 @@ def get_recent_uploads(feed):
             continue
         else:
             new_videos.append((videos[index], titles[index]))
+            logger.debug(f"NEW VIDEO FOUND: {videos[index]}")
+            logger.debug(f"NEW VIDEO LINK: {titles[index]}")
         index += 1
-    [ logger.debug(f"NEW VIDEO FOUND: {new_video[1].text}") for new_video in new_videos ]
-    [ logger.debug(f"NEW VIDEO LINK: {new_video[0].text}") for new_video in new_videos ]
-# extract video urls
+    # extract video urls
     urls = [ new_video[0].attrs["url"].split("?")[0].rstrip() for new_video in new_videos ]
     titles = [ new_video[1].text for new_video in new_videos ]
     for i, url in enumerate(urls):
@@ -94,7 +94,9 @@ def get_recent_uploads(feed):
 
 
 def build_playlist():
+    # clear old urls
     open("dl_data/urls", "w").close()
+    # retrieve channel urls from database
     con = sqlite3.connect("webapp/instance/stringwave.db")
     subscriptions = [
         x[0] for x in con.cursor().execute("SELECT channel_url FROM subs").fetchall()
@@ -102,13 +104,15 @@ def build_playlist():
     print("Fetching new video URLs...", flush=True)
     for subscription in tqdm(subscriptions):
         try:
+            logger.debug(f"DOWNLOADING FEED FOR {subscription}")
             feed = get_channel_feed(subscription)
             get_recent_uploads(feed)
         except requests.exceptions.ConnectionError:
-            tqdm.write(f"Connection error for {subscription}")
+            logger.error(f"Connection error for {subscription}")
             continue
     with open("dl_data/urls", "r") as f:
         num_urls = len(f.readlines())
+        logger.debug(f"FOUND {num_urls} LINKS")
     print(f"Grabbed {num_urls} URLs!", flush=True)
     requests.get("http://gateway:8080/download/pipefeeder")
 
@@ -139,6 +143,7 @@ def populate_database(text_file):
         subscriptions,
     )
     con.commit()
+    logger.debug(f"INSERTED {channel_name} INTO DATABASE")
     print("Done!", flush=True)
 
 
@@ -148,8 +153,11 @@ if __name__ == "__main__":
         with open("dl_data/pf_download_status", "r") as f:
             if f.read() == "Done":
                 requests.get("http://gateway:8080/reread")
+                logger.debug("RECEIVED NOTICE THAT ALL DOWNLOADS ARE COMPLETE")
                 break
             time.sleep(5)
+    logger.debug("CLEANING UP LOG")
     subprocess.run(["sed", "-i", "/stringwave/d", pipefeeder_log])
+    logger.debug("LOG CLEANED")
     open("dl_data/pf_download_status", "w").close()
     print("Done!", flush=True)
