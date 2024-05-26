@@ -5,8 +5,9 @@ Current Configurations
 {% endblock %}
 
 {% block content %}
-	<a href="/cogmera/backup_configs">Backup</a>
-	<br>
+	<form class="subs-manager" method="POST" action="/cogmera/backup_configs">
+		<button class="button sub-button linea-icon" type="submit">Backup Configurations</button>
+	</form>
 	<table class="tablemobile">
 		<tbody>
 			<tr>

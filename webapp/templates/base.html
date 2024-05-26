@@ -18,29 +18,29 @@
             <h1>S T R I N G W A V E</h1>
             <nav class="nav main-nav">
                 <ul>
-                    <li>
-                        <a href="/radio/new">NEW MUSIC</a>
+                    <li class="clickable">
+                        <a href="/radio/new" class="header-link">NEW MUSIC</a>
                     </li>
                     {% if current_user.is_authenticated %}
-                    <li>
-                        <a href="/tracks/new">NEW TRACKS</a>
+                    <li class="clickable">
+                        <a href="/tracks/new" class="header-link">NEW TRACKS</a>
                     </li>
                     {% endif %}
-                    <li>
-                        <a href="/radio/main">MY MUSIC</a>
+                    <li class="clickable">
+                        <a href="/radio/main" class="header-link">MY MUSIC</a>
                     </li>
                     {% if current_user.is_authenticated %}
-                    <li>
-                        <a href="/tracks/main">MY TRACKS</a>
+                    <li class="clickable">
+                        <a href="/tracks/main" class="header-link">MY TRACKS</a>
                     </li>
-                    <li>
-                        <a href="/pipefeeder/list_subs">MY SUBSCRIPTIONS</a>
+                    <li class="clickable">
+                        <a href="/pipefeeder/list_subs" class="header-link">MY SUBSCRIPTIONS</a>
                     </li>
-                    <li>
-                        <a href="/cogmera/dump_config">MY CONFIGURATIONS</a>
+                    <li class="clickable">
+                        <a href="/cogmera/dump_config" class="header-link">MY CONFIGURATIONS</a>
                     </li>
-                    <li>
-                        <a href="/cogmera/config">NEW CONFIGURATION</a>
+                    <li class="clickable">
+                        <a href="/cogmera/config" class="header-link">NEW CONFIGURATION</a>
                     </li>
                     {% endif %}
                 </ul>

@@ -14,7 +14,8 @@ table_a.addEventListener("click", function(event) {
     new_button.innerHTML = '<img src="/static/images/basic_elaboration_bookmark_check.svg" alt="Done" height="20" width="20">';
     button.replaceWith(new_button);
     track_title.contentEditable = true;
-    track_title.style.backgroundColor = "#dddbdb";
+    track_title.style.backgroundColor = "#e95959ad";
+    track_title.style.width = "500px";
   }
   if (event.target.closest(".done-button")) {
     let button = event.target.closest(".done-button");

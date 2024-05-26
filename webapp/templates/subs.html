@@ -7,19 +7,20 @@ Your Subscriptions
 {% block content %}
 	<form class="subs-manager" method="POST" action="/pipefeeder/add_sub">
 		<h1>Add a channel's URL to subscribe</h1>
-		<input class="text-box" type="text" name="subscribe">
+		<input class="text-box subscribe-text-box" type="text" name="subscribe">
 		<br>
-		<button class="button" type="submit"><img src="{{ url_for('static', filename='/images/basic_rss.svg') }}" alt="Subscribe" width="30" height="30"></button>
+		<button class="button linea-icon" type="submit"><img src="{{ url_for('static', filename='/images/basic_rss.svg') }}" alt="Subscribe" width="30" height="30"></button>
 	</form>
 	<br>
 	<form class="subs-manager" method="POST" action="/pipefeeder/upload_subs" enctype="multipart/form-data">
 		<input class="centered" type="file" id="subs" name="subs">
 		<br>
-		<input class="button" type="submit" value="Upload">
+		<input class="button sub-button linea-icon" type="submit" value="Upload">
 	</form>
 	<form id="update-channel-name" method="POST" action="/update_channel_name"></form>
-	<br><br>
-	<a href="/pipefeeder/backup_subs">Backup</a>
+	<form class="subs-manager" method="POST" action="/pipefeeder/backup_subs">
+		<button class="button sub-button linea-icon" type="submit">Backup</button>
+	</form>
 	<h1>Channels you've subscribed to:</h1>
 	{% if subs %}
 		<div id="artist-list">
@@ -29,12 +30,12 @@ Your Subscriptions
 					<div class="title">
 						<h2 class="channel-name centered track-artist">{{ sub['channel_name'] }}</h2>
 						<button class="edit-button button linea-icon" type="submit"><img src="{{ url_for('static', filename='/images/software_pencil.svg') }}" alt="Edit" height="20" width="20"></button>
-						<button class="update-button button linea-icon" type="submit" form="update-channel-name" name="update-channel-name" value=""><img src="{{ url_for('static', filename='/images/basic_floppydisk.svg') }}" alt="Save" width="20" height="20"></button>
+						<button class="update-button button linea-icon" style="margin-bottom: 10px;" type="submit" form="update-channel-name" name="update-channel-name" value=""><img src="{{ url_for('static', filename='/images/basic_floppydisk.svg') }}" alt="Save" width="20" height="20"></button>
 						<form method="POST" action="/pipefeeder/del_sub">
 							<p class="channel-id" hidden>{{ sub['channel_id'] }}</p>
-							<img class="centered" src="{{ sub['channel_icon'] }}" alt="{{ sub['channel_name'] }}" width="200" height="200">
+							<img class="centered" src="{{ url_for('static', filename='images/channel_icons/') }}{{ sub['channel_id'] }}.jpg" alt="{{ sub['channel_name'] }}" width="200" height="200">
 							<br>
-							<button class="button centered" type="submit" name="unsubscribe" value="{{ sub['channel_id'] }}">Unsubscribe</button>
+							<button class="button centered sub-button linea-icon" type="submit" name="unsubscribe" value="{{ sub['channel_id'] }}">Unsubscribe</button>
 							<br>
 						</form>
 					</div>

@@ -75,3 +75,4 @@ dev
 data.txt
 scrape_test.py
 scripts/download_test.py
+webapp/static/channel_icons/*

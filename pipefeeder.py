@@ -6,6 +6,7 @@ from tqdm import tqdm
 import sqlite3
 import time
 import subprocess
+import os
 
 
 def get_channel_feed(channel=None):
@@ -54,7 +55,13 @@ def get_channel_icon(channel_url):
     links = soup.find_all("link")
     for link in links:
         if link["rel"][0] == "image_src":
-            return link["href"]
+            icon = requests.get(link["href"]).content
+            channel_id = channel_url.split("/")[-1]
+            icon_uri = f"/stringwave/webapp/static/images/channel_icons/{channel_id}.jpg"
+            open(icon_uri, 'w').close()
+            with open(icon_uri, "wb") as f:
+                f.write(icon)
+            return f"{channel_id}.jpg"
         else:
             continue
 

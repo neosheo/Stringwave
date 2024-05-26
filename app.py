@@ -265,10 +265,13 @@ def addSub():
 		flash('Not a valid YouTube URL')
 		return redirect('/pipefeeder/list_subs')
 	feed = get_channel_feed(channel_url)
+	# change channel_url to the form youtube.com/channel/CHANNELID
+	# this is necessary here so you can pass the channel ID to get_channel_icon()
+	channel_url = get_channel_url(feed)
 	new_record = Subs(
 					channel_id=get_channel_id(feed), 
 					channel_name=get_channel_name(feed), 
-					channel_url=get_channel_url(feed), 
+					channel_url=channel_url,
 					channel_icon=get_channel_icon(channel_url))
 	try:
 		db.session.add(new_record)

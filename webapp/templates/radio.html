@@ -7,7 +7,6 @@
 {% block content %}
     <script src='{{ url_for("static", filename="skip_song.js") }}'></script>
     <script src='{{ url_for("static", filename="refresh_stream.js") }}' defer></script>
-    <p>Now Playing:</p>
     <h1 id="now_playing" class="now-playing"></h1>
     <audio id="audio-controls" controls><source id="stream" src="/{{ station }}" type="audio/ogg"></audio>
     <br>

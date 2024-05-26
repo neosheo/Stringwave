@@ -29,20 +29,32 @@ html, body {
 }
 
 .linea-icon {
-	background-color: darkgrey;
+	background-color: rgba(201, 229, 241, 0.678);
 	border-width: 2.5px;
 	border-style: solid;
 	border-color: black;
 	border-radius: 10px;
     padding: 4px;
+    transition: background-color 200ms,
+        box-shadow 100ms;
+}
+
+.linea-icon:hover {
+    background-color: grey;
 }
 
 .linea-icon:active {
-	background-color: #922b21;
+    box-shadow: 0px 0px 10px rgba(250, 90, 90, 0.671);
+
+}
+
+#skip:hover {
+    opacity: 0.7;
 }
 
 #skip:active {
 	filter: invert(100%);
+    opacity: 1;
 }
 
 .channel-name {
@@ -65,6 +77,8 @@ html, body {
     display: inline-block;
     padding: 0.5em;
     text-decoration: none;
+    transition: background-color, 200ms;
+    border-radius: 20px;
 }
 
 .main-nav {
@@ -79,6 +93,10 @@ html, body {
 
 .nav a:hover {
     background-color: rgba(255, 255, 255, .3);
+}
+
+.nav a:active {
+    opacity: 0.4;
 }
 
 .main-header {
@@ -183,4 +201,24 @@ td p {
 
 .now-playing {
 	word-break: break-all;
+    font-weight: bold;
+}
+
+.clickable, button {
+    cursor: pointer;
+}
+
+.header-link {
+    font-weight: bold;
+}
+
+.sub-button {
+    margin-top: 12px;
+    height: 30px;
+}
+
+.subscribe-text-box {
+    height: 30px;
+    margin-bottom: 7px;
+    border: none;
 }

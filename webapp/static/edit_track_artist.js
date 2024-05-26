@@ -17,7 +17,9 @@ table_b.addEventListener("click", (event) => {
     button.replaceWith(new_button);
     track_artist.contentEditable = true;
     track_artist.style.color = "black;"
-    track_artist.style.backgroundColor = "#dddbdb";
+    track_artist.style.backgroundColor = "#e95959ad";
+    track_artist.style.width = "500px";
+    track_artist.style.margin = "auto";
   }
   if (event.target.closest(".done-button")) {
     let button = event.target.closest(".done-button");

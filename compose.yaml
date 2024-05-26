@@ -15,6 +15,7 @@ services:
       - ./radio:/stringwave/radio
       - logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
+      - ./webapp/static/images/channel_icons:/stringwave/webapp/static/images/channel_icons
       - ./webapp/instance/:/stringwave/webapp/instance/
     environment:
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
