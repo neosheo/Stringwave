@@ -16,6 +16,7 @@ services:
       - logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
       - ./webapp/static/images/channel_icons:/stringwave/webapp/static/images/channel_icons
+      - ./webapp/static/uploads:/stringwave/webapp/static/uploads
       - ./webapp/instance/:/stringwave/webapp/instance/
     environment:
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
@@ -57,13 +58,14 @@ services:
       - ./radio:/stringwave/radio
       - logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
+      - ./webapp/static/images/channel_icons:/stringwave/webapp/static/images/channel_icons
+      - ./webapp/static/uploads:/stringwave/webapp/static/uploads
       - ./webapp/instance/:/stringwave/webapp/instance/
     environment:
       - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-
 
   rabbitmq:
     image: rabbitmq:latest

@@ -222,3 +222,7 @@ td p {
     margin-bottom: 7px;
     border: none;
 }
+
+.update-button {
+    margin-bottom: 10px;
+}

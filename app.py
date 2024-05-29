@@ -23,7 +23,8 @@ from webapp import (
 	Countries, 
 	Decades, 
 	Years, 
-	SortMethods)
+	SortMethods,
+	logger)
 import subprocess
 import os
 from tasks import move_track, download_track, upload
@@ -265,14 +266,12 @@ def addSub():
 		flash('Not a valid YouTube URL')
 		return redirect('/pipefeeder/list_subs')
 	feed = get_channel_feed(channel_url)
-	# change channel_url to the form youtube.com/channel/CHANNELID
-	# this is necessary here so you can pass the channel ID to get_channel_icon()
-	channel_url = get_channel_url(feed)
+	# download channel icon
+	get_channel_icon(get_channel_url(feed))
 	new_record = Subs(
 					channel_id=get_channel_id(feed), 
 					channel_name=get_channel_name(feed), 
-					channel_url=channel_url,
-					channel_icon=get_channel_icon(channel_url))
+					)
 	try:
 		db.session.add(new_record)
 	except exc.IntegrityError:
@@ -286,8 +285,10 @@ def addSub():
 @app.route('/pipefeeder/del_sub', methods = ['POST'])
 @login_required
 def delSub():
-	db.session.query(Subs).filter_by(channel_id=request.form['unsubscribe']).delete()
+	channel_id = request.form['unsubscribe']
+	db.session.query(Subs).filter_by(channel_id=channel_id).delete()
 	db.session.commit()
+	os.remove(f'webapp/static/channel_icons/{channel_id}.jpg')
 	return redirect('/pipefeeder/list_subs')
 
 
@@ -297,7 +298,7 @@ def backup():
 	con = sqlite3.connect('webapp/instance/stringwave.db')
 	urls = con.cursor().execute('SELECT channel_url FROM subs')
 	with open('webapp/static/subs.txt', 'w') as f:
-		[f.write(f'{url[0]}\n') for url in urls.fetchall()]
+		[ f.write(f'{url[0]}\n') for url in urls.fetchall() ]
 	return '<a href="/static/subs.txt" download>Download</a><br><a href="/pipefeeder/list_subs">Return to Subs</a>'
 
 
@@ -307,12 +308,20 @@ def upload_subs():
 	with open('webapp/static/upload_status', 'w') as f:
 		f.write('uploading')
 	file = request.files['subs']
+	file_type = file.filename.split('.')[-1]
+	logger.debug(f"RECEIVED {file.filename}")
 	if file and allowed_file(file.filename):
+		logger.debug(f"FILE TYPE {file_type} IS ALLOWED")
 		filename = secure_filename(file.filename)
 		file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 		file.save(file_path)
-	upload.delay(file_path)
-	return render_template('upload.html')
+		logger.debug(f"FILE {file_path} UPLOADED")
+		upload.delay(file_path)
+		return render_template('upload.html')
+	elif not allowed_file(file.filename):
+		logger.debug(f"FILE TYPE {file_type} IS NOT ALLOWED")
+		flash(f"File {file.filename} is of a disallowed type: {file_type}")
+		return redirect("/pipefeeder/list_subs")
 
 
 @app.route('/pipefeeder/upload_complete', methods = ['GET'])
@@ -332,13 +341,23 @@ def upload_status():
 
 @app.route('/update_channel_name', methods = ['POST'])
 def update_channel_name():
+	print(request.form['update-channel-name'].split(';'))
 	data = request.form['update-channel-name'].split(';')
-	print(data)
 	channel_id = data[0]
 	new_channel_name = data[1].strip()
+	logger.debug(f"UPDATING CHANNEL NAME FOR {channel_id} TO {new_channel_name}")
 	channel = db.session.query(Subs).filter_by(channel_id=channel_id).one()
 	channel.channel_name = new_channel_name
 	db.session.commit()
+	return redirect('/pipefeeder/list_subs')
+
+
+@app.route('/refresh_icon', methods = ['POST'])
+def refresh_icon():
+	channel_id = request.form['refresh-icon']
+	logger.debug(f"REFRESHING ICON FOR CHANNEL WITH ID: {channel_id}")
+	get_channel_icon(f"https://youtube.com/channel/{channel_id}")
+	logger.debug("ICON REFRESHED SUCCESSFULLY!")
 	return redirect('/pipefeeder/list_subs')
 
 

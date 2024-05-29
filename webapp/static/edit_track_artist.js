@@ -45,7 +45,7 @@ table_b.addEventListener("click", (event) => {
       track_artist.style.backgroundColor = "#c93920";
     } else {
       station = "0"
-      track_id = update_button.parentElement.children[3].children[0].innerHTML;
+      track_id = update_button.parentElement.children[4].children[0].innerHTML;
       track_artist.style.backgroundColor = "black";
     }
     new_artist = update_button.parentElement.querySelector(".track-artist").innerHTML;

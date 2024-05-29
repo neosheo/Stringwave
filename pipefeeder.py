@@ -1,12 +1,10 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from webapp import logger, pipefeeder_log
+from webapp import logger
 from tqdm import tqdm
 import sqlite3
 import time
-import subprocess
-import os
 
 
 def get_channel_feed(channel=None):
@@ -50,6 +48,7 @@ def get_channel_id(feed):
 
 
 def get_channel_icon(channel_url):
+    logger.debug(f"GETTING ICON FOR {channel_url}")
     channel_html = requests.get(channel_url).text
     soup = BeautifulSoup(channel_html, "html.parser")
     links = soup.find_all("link")
@@ -58,11 +57,12 @@ def get_channel_icon(channel_url):
             icon = requests.get(link["href"]).content
             channel_id = channel_url.split("/")[-1]
             icon_uri = f"/stringwave/webapp/static/images/channel_icons/{channel_id}.jpg"
-            open(icon_uri, 'w').close()
             with open(icon_uri, "wb") as f:
                 f.write(icon)
-            return f"{channel_id}.jpg"
+            logger.debug(f"ICON SAVED: {icon_uri}")
+            return
         else:
+            logger.debug(f"NO ICON FOUND FOR {channel_url}")
             continue
 
 
@@ -106,7 +106,8 @@ def build_playlist():
     # retrieve channel urls from database
     con = sqlite3.connect("webapp/instance/stringwave.db")
     subscriptions = [
-        x[0] for x in con.cursor().execute("SELECT channel_url FROM subs").fetchall()
+        f"https://youtube.com/channel/{chan_id[0]}" for chan_id in con.cursor().execute("SELECT channel_id FROM subs").fetchall()
+        
     ]
     print("Fetching new video URLs...", flush=True)
     for subscription in tqdm(subscriptions):
@@ -134,9 +135,8 @@ def populate_database(text_file):
             feed = get_channel_feed(sub)
             channel_id = get_channel_id(feed)
             channel_name = get_channel_name(feed)
-            channel_url = get_channel_url(feed)
-            channel_icon = get_channel_icon(channel_url)
-            subscriptions.append((channel_id, channel_name, channel_url, channel_icon))
+            get_channel_icon(get_channel_url(feed))
+            subscriptions.append((channel_id, channel_name))
             time.sleep(3)
         except requests.exceptions.ConnectionError:
             time.sleep(3)
@@ -146,11 +146,11 @@ def populate_database(text_file):
     con = sqlite3.connect("webapp/instance/stringwave.db")
     cur = con.cursor()
     cur.executemany(
-        "INSERT OR IGNORE INTO subs(channel_id, channel_name, channel_url, channel_icon) VALUES (?, ?, ?, ?)",
+        "INSERT OR IGNORE INTO subs(channel_id, channel_name) VALUES (?, ?)",
         subscriptions,
     )
     con.commit()
-    logger.debug(f"INSERTED {channel_name} INTO DATABASE")
+    logger.debug(f"INSERTED {subscriptions[1]} INTO DATABASE")
     print("Done!", flush=True)
 
 
@@ -164,7 +164,6 @@ if __name__ == "__main__":
                 break
             time.sleep(5)
     logger.debug("CLEANING UP LOG")
-    subprocess.run(["sed", "-i", "/stringwave/d", pipefeeder_log])
     logger.debug("LOG CLEANED")
     open("dl_data/pf_download_status", "w").close()
     print("Done!", flush=True)

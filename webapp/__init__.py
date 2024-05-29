@@ -14,8 +14,6 @@ rabbitmq_user = os.getenv('RABBITMQ_DEFAULT_USER')
 rabbitmq_pass = os.getenv('RABBITMQ_DEFAULT_PASS')
 
 # PATHS
-cogmera_log = '/stringwave/logs/cogmera_download.log'
-pipefeeder_log = '/stringwave/logs/pipefeeder.log'
 db_directory = f'sqlite:////{os.getcwd()}/webapp/instance'
 radio_path = '/stringwave/radio'
 
@@ -28,7 +26,7 @@ logging.basicConfig(
 )
 
 # only allow backups that have .txt extension
-BACKUP_LOCATION = f'{os.getcwd()}/webapp/static'
+BACKUP_LOCATION = f'{os.getcwd()}/webapp/static/uploads'
 ALLOWED_EXTENSIONS = {'txt'}
 def allowed_file(filename):
 	return '.' in filename and \
@@ -113,8 +111,8 @@ class Subs(db.Model):
 	__bind_key__ = 'main'
 	channel_id = db.Column(db.String(24), primary_key=True)
 	channel_name = db.Column(db.String(35))
-	channel_url = db.Column(db.String(300))
-	channel_icon = db.Column(db.String(300))
+	#channel_url = db.Column(db.String(300))
+	#channel_icon = db.Column(db.String(300))
 
 
 class Tracks(db.Model):
