@@ -111,8 +111,6 @@ class Subs(db.Model):
 	__bind_key__ = 'main'
 	channel_id = db.Column(db.String(24), primary_key=True)
 	channel_name = db.Column(db.String(35))
-	#channel_url = db.Column(db.String(300))
-	#channel_icon = db.Column(db.String(300))
 
 
 class Tracks(db.Model):

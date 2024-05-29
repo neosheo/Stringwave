@@ -341,7 +341,6 @@ def upload_status():
 
 @app.route('/update_channel_name', methods = ['POST'])
 def update_channel_name():
-	print(request.form['update-channel-name'].split(';'))
 	data = request.form['update-channel-name'].split(';')
 	channel_id = data[0]
 	new_channel_name = data[1].strip()
