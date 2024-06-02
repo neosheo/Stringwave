@@ -24,7 +24,7 @@
             {% endif %}
             {% for track in tracks %}
             <tr>
-                <td class="box">{{ track.config }}</td>
+                <td class="config-num box">{{ track.config }}</td>
                 {% if station == 'new' %}
                 <td class="box">
                     <button class="button linea-icon" type="submit" form="move" name="move_to_main" value="{{ track.track_id }}"><img src="{{ url_for('static', filename='/images/basic_paperplane.svg') }}" alt="Move" width="30" height="30"></button>
