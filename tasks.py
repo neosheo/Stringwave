@@ -80,7 +80,8 @@ def download_track(app):
                     new_track = Tracks(
                         title=filename,
                         artist=artist,
-                        config=config,
+                        track_type="c",
+                        config=[config],
                         station="new",
                         file_path=file_path,
                     )
@@ -172,7 +173,8 @@ def download_track(app):
                         new_track = Tracks(
                             title=title,
                             artist=artist,
-                            config="pf",
+                            track_type="p",
+                            config=[0],
                             station="new",
                             file_path=file_path,
                         )

@@ -39,7 +39,7 @@ then
         	sqlite3 webapp/instance/stringwave.db "DELETE FROM users WHERE username='admin';";
 		ADMIN_PW_MAYBE=ADMIN_PASSWORD;
 		break;;
-    	    No )
+        No )
 		ADMIN_PW_MAYBE=NULL_PASSWORD;
 		break;;
 	esac

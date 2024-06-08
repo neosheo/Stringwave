@@ -83,7 +83,6 @@ def tracks_main(station):
 	for track in tracks:
 		track.title = re.sub(r'_+', ' ', track.title)
 		track.title = re.sub(r'\s{2,}', ' ', track.title)
-	db.session.commit()
 	return render_template('tracks.html', tracks=tracks, station=station)
 
 
@@ -201,24 +200,24 @@ def config():
         sort_order = request.form['order']
         albums_to_find = request.form['number']
         new_config = Config(
-						genres=genres, 
-						styles=styles, 
-						decade=decade, 
-						year=year, 
-						country=country, 
-						sort_method=sort_method, 
-						sort_order=sort_order, 
-						albums_to_find=albums_to_find)
+			genres=genres, 
+			styles=styles, 
+			decade=decade, 
+			year=year, 
+			country=country, 
+			sort_method=sort_method, 
+			sort_order=sort_order, 
+			albums_to_find=albums_to_find)
         db.session.add(new_config)
         db.session.commit()
     return render_template(
-						'config.html', 
-						genres=Genres.query.order_by(Genres.genre_id).all(), 
-						styles=Styles.query.order_by(Styles.style_id).all(), 
-						decades=Decades.query.order_by(Decades.decade_id).all(), 
-						countries=Countries.query.order_by(Countries.country_id).all(), 
-						years=Years.query.order_by(Years.year_id).all(), 
-						sort_methods=SortMethods.query.order_by(SortMethods.sort_method_id).all())
+		'config.html', 
+		genres=Genres.query.order_by(Genres.genre_id).all(), 
+		styles=Styles.query.order_by(Styles.style_id).all(), 
+		decades=Decades.query.order_by(Decades.decade_id).all(), 
+		countries=Countries.query.order_by(Countries.country_id).all(), 
+		years=Years.query.order_by(Years.year_id).all(), 
+		sort_methods=SortMethods.query.order_by(SortMethods.sort_method_id).all())
 
 
 @app.route('/cogmera/dump_config', methods=['GET'])
@@ -269,9 +268,9 @@ def addSub():
 	# download channel icon
 	get_channel_icon(get_channel_url(feed))
 	new_record = Subs(
-					channel_id=get_channel_id(feed), 
-					channel_name=get_channel_name(feed), 
-					)
+		channel_id=get_channel_id(feed), 
+		channel_name=get_channel_name(feed), 
+		)
 	try:
 		db.session.add(new_record)
 	except exc.IntegrityError:

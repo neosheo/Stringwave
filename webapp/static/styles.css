@@ -7,6 +7,7 @@
     /* horizontal scrollbar for tables if mobile screen */
     .tablemobile {
         overflow-x: auto;
+        width: 100%;
         display: block;
     }
 }
@@ -134,9 +135,9 @@ html, body {
 }
 
 table {
-	width: 100%;
+	width: 75%;
     background-color: rgb(153, 0, 26);
-	table-layout: fixed;
+	table-layout: auto;
 	margin: auto;
     border-radius: 10px;
     border-spacing: 0px;
@@ -179,6 +180,7 @@ tr:nth-of-type(even) {
 }
 
 .header {
+    white-space: nowrap;
 	font-style: italic;
 	font-size: 22px;
     color: #cabdbd;
@@ -245,4 +247,23 @@ td p {
 
 .update-button {
     margin-bottom: 10px;
+}
+
+.info {
+    display: none;
+    position: absolute;
+    background-color: #ec6b6b;
+    border: 5px solid black;
+    padding: 5px;
+    z-index: 9999; /* Set a high z-index to ensure it appears above other elements */
+    width: 200px;
+    height: auto;
+}
+
+.config-hover-field:hover .info {
+    display: block;
+}
+
+.config-content {
+    position: relative;
 }

@@ -24,7 +24,38 @@
             {% endif %}
             {% for track in tracks %}
             <tr>
+                {% if track.config_rel != None %}
+                <td class="config-num box config-hover-field">
+                    <span class="config-num">
+                        {{ track.config_rel.config_id }}
+                    </span>
+                    <div class="info">
+                        {% if track.config_rel.genres != "None" %}
+                        <p>Genres: {{ track.config_rel.genres }}</p>
+                        {% endif %}
+                        {% if track.config_rel.styles != "None" %}
+                        <p>Styles: {{ track.config_rel.styles.replace(";", ", ") }}</p>
+                        {% endif %}
+                        {% if track.config_rel.decade != "None" %}
+                        <p>Decade: {{ track.config_rel.decade }}</p>
+                        {% endif %}
+                        {% if track.config_rel.year != "None" %}
+                        <p>Year: {{ track.config_rel.year }}</p>
+                        {% endif %}
+                        {% if track.config_rel.country != "None" %}
+                        <p>Country: {{ track.config_rel.country }}</p>
+                        {% endif %}
+                        {% if track.config_rel.sort_method != "None" %}
+                        <p>Sort Method: {{ track.config_rel.sort_method }}</p>
+                        {% endif %}
+                        {% if track.config_rel.sort_order != "None" %}
+                        <p>Sort Order: {{ track.config_rel.sort_order }}</p>
+                        {% endif %}
+                    </div>
+                </td>
+                {% else %}
                 <td class="config-num box">{{ track.config }}</td>
+                {% endif %}
                 {% if station == 'new' %}
                 <td class="box">
                     <button class="button linea-icon" type="submit" form="move" name="move_to_main" value="{{ track.track_id }}"><img src="{{ url_for('static', filename='/images/basic_paperplane.svg') }}" alt="Move" width="30" height="30"></button>
@@ -53,4 +84,5 @@
     </table>
     <script src="{{ url_for('static', filename='edit_track_title.js') }}"></script>
     <script src="{{ url_for('static', filename='edit_track_artist.js') }}"></script>
+    <script src="{{ url_for('static', filename='mouse_finder.js') }}"></script>
 {% endblock %}

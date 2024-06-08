@@ -40,8 +40,17 @@ for station in stations[1:]:
             continue
         if 'config' not in track:
             track['config'] = 'na'
+        # placeholder if track_type isn't present
+        if 'track_type' not in track:
+            track['track_type'] = 'n'
         try:
-            tracks.append((track_id, track['title'][0], track['artist'][0], track['config'][0], station, file_path))
+            tracks.append((track_id,
+                track['title'][0],
+                track['artist'][0],
+                track['track_type'][0],
+                track['config'][0],
+                station,
+                file_path))
         except KeyError:
             print(f'KEY ERROR on {file_path}')
             continue
@@ -52,6 +61,6 @@ for station in stations[1:]:
     con = sqlite3.connect('webapp/instance/stringwave.db')
     cur = con.cursor()
     for tracks in station_tracks:
-        cur.executemany('INSERT OR IGNORE INTO tracks(track_id, title, artist, config, station, file_path) VALUES (?, ?, ?, ?, ?, ?)', tracks)
+        cur.executemany('INSERT OR IGNORE INTO tracks(track_id, title, artist, track_type, config, station, file_path) VALUES (?, ?, ?, ?, ?, ?, ?)', tracks)
     con.commit()
     print('Done!')

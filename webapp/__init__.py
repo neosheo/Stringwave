@@ -51,6 +51,7 @@ app.config['SQLALCHEMY_BINDS'] = {
 	'discogs': f'{db_directory}/cogmera.db',
 	'main': f'{db_directory}/stringwave.db'
 }
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'foreign_keys': 'ON'}
 app.config['UPLOAD_FOLDER'] = BACKUP_LOCATION
 app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
 app.config.from_mapping(
@@ -110,30 +111,32 @@ login_manager.init_app(app)
 class Subs(db.Model):
 	__bind_key__ = 'main'
 	channel_id = db.Column(db.String(24), primary_key=True)
-	channel_name = db.Column(db.String(35))
+	channel_name = db.Column(db.String(35), nullable=False)
 
 
 class Tracks(db.Model):
 	__bind_key__ = 'main'
 	track_id = db.Column(db.Integer, primary_key=True)
-	title = db.Column(db.String(100))
-	artist = db.Column(db.String(30))
-	config = db.Column(db.Integer)
-	station = db.Column(db.String(4))
-	file_path = db.Column(db.String(300))
+	title = db.Column(db.String(100), nullable=False)
+	artist = db.Column(db.String(30), nullable=False)
+	track_type = db.Column(db.String(1), nullable=False)
+	config = db.Column(db.Integer, db.ForeignKey('config.config_id'), nullable=False)
+	station = db.Column(db.String(4), nullable=False)
+	file_path = db.Column(db.String(300), nullable=False)
+	config_rel = db.relationship('Config', backref='tracks', lazy=True, uselist=False)
 
 
 class Config(db.Model):
 	__bind_key__ = 'main'
 	config_id = db.Column(db.Integer, primary_key=True)
-	genres = db.Column(db.String(21))
-	styles = db.Column(db.String(30))
-	decade = db.Column(db.String(4))
-	year = db.Column(db.String(4))
-	country = db.Column(db.String(45))
-	sort_method = db.Column(db.String(1))
-	sort_order = db.Column(db.String(4))
-	albums_to_find = db.Column(db.Integer)
+	genres = db.Column(db.String(21), nullable=False)
+	styles = db.Column(db.String(30), nullable=False)
+	decade = db.Column(db.String(4), nullable=False)
+	year = db.Column(db.String(4), nullable=False)
+	country = db.Column(db.String(45), nullable=False)
+	sort_method = db.Column(db.String(1), nullable=False)
+	sort_order = db.Column(db.String(4), nullable=False)
+	albums_to_find = db.Column(db.Integer, nullable=False)
 
 
 class Genres(db.Model):
