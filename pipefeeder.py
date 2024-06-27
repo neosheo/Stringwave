@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-from webapp import logger
+from webapp import pf_logger as logger
 from tqdm import tqdm
 import sqlite3
 import time
@@ -88,8 +88,8 @@ def get_recent_uploads(feed):
             continue
         else:
             new_videos.append((videos[index], titles[index]))
-            logger.debug(f"NEW VIDEO FOUND: {videos[index]}")
-            logger.debug(f"NEW VIDEO LINK: {titles[index]}")
+            logger.debug(f"NEW VIDEO FOUND: {videos[index].text}")
+            logger.debug(f"NEW VIDEO LINK: {titles[index].text}")
         index += 1
     # extract video urls
     urls = [ new_video[0].attrs["url"].split("?")[0].rstrip() for new_video in new_videos ]

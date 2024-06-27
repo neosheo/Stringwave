@@ -15,7 +15,7 @@ EOF
 
 python scripts/build_database.py new main
 
-./scripts/run_radio.sh
+./scripts/start_radio.sh
 
 uwsgi \
     --socket :3033 \

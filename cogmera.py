@@ -6,7 +6,7 @@ import json
 import sqlite3
 import re
 import time
-from webapp import logger
+from webapp import cm_logger as logger
 
 
 class Album:

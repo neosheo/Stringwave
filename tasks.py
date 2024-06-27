@@ -1,4 +1,4 @@
-from webapp import celery_app, db, Tracks, Subs, logger, radio_path
+from webapp import celery_app, db, Tracks, Subs, pf_logger, cm_logger, radio_path
 from disallowed_titles import disallowed_titles
 from pipefeeder import populate_database
 from scripts.update_track_data import update_track_data
@@ -26,6 +26,7 @@ def move_track(track_id, old_file_path, new_file_path):
 def download_track(app):
     match app:
         case "cogmera":
+            logger = cm_logger
             logger.debug("COGMERA INITIATED A DOWNLOAD")
             # read search queries and set proper attributes for database entry and download script
             with open("dl_data/search_queries", "r") as f:
@@ -81,7 +82,7 @@ def download_track(app):
                         title=filename,
                         artist=artist,
                         track_type="c",
-                        config=[config],
+                        config=config,
                         station="new",
                         file_path=file_path,
                     )
@@ -99,6 +100,7 @@ def download_track(app):
                         downloads += 1
 
         case "pipefeeder":
+            logger = pf_logger
             print("Gathering links...")
             with open("dl_data/urls", "r") as f:
                 lines = f.readlines()
@@ -159,6 +161,7 @@ def download_track(app):
                 if result.returncode == 0:
                     # make the file path prettier and change metadata
                     track_name = result.stdout.decode()
+                    print(f"TRACK TITLE BEFORE UPDATING DATA: {track_name}")
                     logger.debug(f"TRACK TITLE BEFORE UPDATING DATA: {track_name}")
                     file_path, title = update_track_data(track_name, artist, video_title)
                     logger.debug(f"DOWNLOADED TRACK: {title}")
@@ -174,7 +177,7 @@ def download_track(app):
                             title=title,
                             artist=artist,
                             track_type="p",
-                            config=[0],
+                            config=0,
                             station="new",
                             file_path=file_path,
                         )

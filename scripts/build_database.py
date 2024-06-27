@@ -39,7 +39,7 @@ for station in stations[1:]:
             print(f'ERROR: {file}')
             continue
         if 'config' not in track:
-            track['config'] = 'na'
+            track['config'] = 0
         # placeholder if track_type isn't present
         if 'track_type' not in track:
             track['track_type'] = 'n'

@@ -18,6 +18,7 @@ services:
       - ./webapp/static/images/channel_icons:/stringwave/webapp/static/images/channel_icons
       - ./webapp/static/uploads:/stringwave/webapp/static/uploads
       - ./webapp/instance/:/stringwave/webapp/instance/
+      - ./tests:/stringwave/tests
     environment:
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
       - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
@@ -40,7 +41,7 @@ services:
     ports:
       - 10004:8080
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./config/nginx.conf:/etc/nginx/nginx.conf:ro
 
   celery:
     build:

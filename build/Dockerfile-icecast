@@ -5,7 +5,7 @@ RUN apk upgrade
 RUN apk add icecast
 RUN adduser -D stringwave
 
-COPY config/icecast.xml /config/
+COPY ../config/icecast.xml /config/
 RUN touch \
     /var/log/icecast/access.log \
     /var/log/icecast/error.log

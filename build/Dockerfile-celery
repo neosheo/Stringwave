@@ -1,9 +1,9 @@
-FROM python:3.11.8-slim-bullseye
+FROM python:3.12.4-slim-bullseye
 
 WORKDIR /stringwave
 
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install ffmpeg -y
+RUN apt-get install ffmpeg python3-lxml -y
 
 COPY requirements-celery.txt ./requirements.txt
 RUN python -m pip install --upgrade pip
@@ -12,14 +12,14 @@ RUN python -m pip install -r requirements.txt
 RUN groupadd -r --gid 1000 stringwave && useradd -r --uid 1000 -g stringwave stringwave
 RUN chsh --shell /usr/sbin/nologin root
 
-COPY radio/ ./radio/
-COPY scripts/ ./scripts/
-COPY webapp/ ./webapp/
-COPY cogmera.py .
-COPY pipefeeder.py .
-COPY disallowed_titles.py .
-COPY tasks.py .
-COPY start-celery.sh ./start.sh
+COPY ../radio/ ./radio/
+COPY ../scripts/ ./scripts/
+COPY ../webapp/ ./webapp/
+COPY ../cogmera.py .
+COPY ../pipefeeder.py .
+COPY ../disallowed_titles.py .
+COPY ../tasks.py .
+COPY ../start-celery.sh ./start.sh
 
 RUN export NUM_DAILY_DOWNLOADS=$NUM_DAILY_DOWNLOADS
 RUN mkdir -p logs /home/stringwave

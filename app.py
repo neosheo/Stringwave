@@ -24,7 +24,7 @@ from webapp import (
 	Decades, 
 	Years, 
 	SortMethods,
-	logger)
+	sw_logger as logger)
 import subprocess
 import os
 from tasks import move_track, download_track, upload
@@ -59,8 +59,8 @@ def login():
 @app.route("/logout", methods=["GET"])
 @login_required
 def logout():
-    logout_user()
-    return redirect('/login')
+	logout_user()
+	return redirect('/login')
 
 
 @login_manager.user_loader
@@ -140,7 +140,7 @@ def move_to_main():
 def move_complete():
 	with open('webapp/static/move_status', 'w') as f:
 		f.write('complete')
-		print('complete')
+		return('complete')
 
 
 @app.route('/move_status', methods = ['GET'])
@@ -188,18 +188,18 @@ def reread(station):
 @app.route('/cogmera/config', methods=['GET', 'POST'])
 @login_required
 def config():
-    if request.method == 'POST':
-        genres = request.form.getlist('genres')
-        genres = ';'.join(genres)
-        styles = request.form.getlist('styles')
-        styles = ';'.join(styles)
-        decade = request.form['decades']
-        year = request.form['years']
-        country = request.form['countries']
-        sort_method = request.form['sort_methods']
-        sort_order = request.form['order']
-        albums_to_find = request.form['number']
-        new_config = Config(
+	if request.method == 'POST':
+		genres = request.form.getlist('genres')
+		genres = ';'.join(genres)
+		styles = request.form.getlist('styles')
+		styles = ';'.join(styles)
+		decade = request.form['decades']
+		year = request.form['years']
+		country = request.form['countries']
+		sort_method = request.form['sort_methods']
+		sort_order = request.form['order']
+		albums_to_find = request.form['number']
+		new_config = Config(
 			genres=genres, 
 			styles=styles, 
 			decade=decade, 
@@ -208,9 +208,9 @@ def config():
 			sort_method=sort_method, 
 			sort_order=sort_order, 
 			albums_to_find=albums_to_find)
-        db.session.add(new_config)
-        db.session.commit()
-    return render_template(
+		db.session.add(new_config)
+		db.session.commit()
+	return render_template(
 		'config.html', 
 		genres=Genres.query.order_by(Genres.genre_id).all(), 
 		styles=Styles.query.order_by(Styles.style_id).all(), 

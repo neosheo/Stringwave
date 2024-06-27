@@ -16,14 +16,21 @@ rabbitmq_pass = os.getenv('RABBITMQ_DEFAULT_PASS')
 # PATHS
 db_directory = f'sqlite:////{os.getcwd()}/webapp/instance'
 radio_path = '/stringwave/radio'
+log_path = '/stringwave/logs'
 
-# set up logging
-logger = logging.getLogger(__name__)
-logging.basicConfig(
-	filename="logs/stringwave.log",
-	encoding="utf-8",
-	level=logging.DEBUG
-)
+#log_level = logging.DEBUG
+
+def setup_logger(name, level=logging.INFO):
+    log_file = f'{log_path}/{name}.log'
+    handler = logging.FileHandler(log_file)
+    logger = logging.getLogger(name)
+    logger.setLevel(level)
+    logger.addHandler(handler)
+    return logger
+
+pf_logger = setup_logger('pipefeeder', level=log_level)
+cm_logger = setup_logger('cogmera')
+sw_logger = setup_logger('stringwave')
 
 # only allow backups that have .txt extension
 BACKUP_LOCATION = f'{os.getcwd()}/webapp/static/uploads'

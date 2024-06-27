@@ -31,7 +31,7 @@
                     </span>
                     <div class="info">
                         {% if track.config_rel.genres != "None" %}
-                        <p>Genres: {{ track.config_rel.genres }}</p>
+                        <p>Genres: {{ track.config_rel.genres.replace(";", ", ") }}</p>
                         {% endif %}
                         {% if track.config_rel.styles != "None" %}
                         <p>Styles: {{ track.config_rel.styles.replace(";", ", ") }}</p>
