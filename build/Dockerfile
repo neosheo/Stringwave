@@ -5,7 +5,7 @@ WORKDIR /stringwave
 RUN apt-get update && apt-get upgrade -y 
 RUN apt-get install ezstream gcc tmux procps sqlite3 python3-lxml -y
 
-COPY requirements.txt .
+COPY build/requirements.txt .
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -r requirements.txt
 

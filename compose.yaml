@@ -2,6 +2,7 @@ services:
   stringwave:
     build: 
       context: .
+      dockerfile: build/Dockerfile
     image: stringwave:latest
     container_name: stringwave
     restart: unless-stopped
@@ -46,7 +47,7 @@ services:
   celery:
     build:
       context: .
-      dockerfile: Dockerfile-celery
+      dockerfile: build/Dockerfile-celery
     image: stringwave-celery:latest
     container_name: stringwave-celery
     depends_on:
@@ -88,7 +89,7 @@ services:
   icecast:
     build: 
       context: .
-      dockerfile: Dockerfile-icecast
+      dockerfile: build/Dockerfile-icecast
     image: stringwave-icecast:latest
     container_name: stringwave-icecast
     depends_on:
