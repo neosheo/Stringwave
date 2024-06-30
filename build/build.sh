@@ -1,6 +1,9 @@
 #!/bin/bash
 
-cd ..
+if [[ "$(pwd)" == *"/build" ]]; then
+    cd ..
+fi
+
 # create needed files and directories
 mkdir -p radio/new radio/main config dl_data webapp/static webapp/instance
 cp config_examples/* config
