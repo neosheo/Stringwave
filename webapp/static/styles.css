@@ -135,7 +135,7 @@ html, body {
 }
 
 table {
-	width: 75%;
+	width: 85%;
     background-color: rgb(153, 0, 26);
 	table-layout: auto;
 	margin: auto;
@@ -147,7 +147,7 @@ table {
     width: 4%;
 }
 
-.move-col {
+.move-col, .edit-col {
     width: 3%;
 }
 
@@ -174,7 +174,7 @@ tr:nth-of-type(even) {
     background: #9e0707;
 }
 
-.track-title, .track-artist {
+.track-title, .track-artist, .artist {
 	text-align: left;
     color: #cabdbd;
 }
@@ -192,13 +192,11 @@ tr:nth-of-type(even) {
 
 .box {
 	border: 4px solid;
-    color: black;
     border-radius: 10px;
     border-color: black;
 }
 
 .config-num {
-    padding-top: 45px;
     color: #cabdbd;
 }
 
@@ -266,4 +264,8 @@ td p {
 
 .config-content {
     position: relative;
+}
+
+.edit-button, .done-button {
+    margin-top: 10px;
 }

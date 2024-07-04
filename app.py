@@ -91,19 +91,22 @@ def radio_main(station):
 	return render_template('radio.html', station=station)
 
 
-@app.route('/update_title', methods = ['POST'])
+@app.route('/update_track_data', methods = ['POST'])
 @login_required
-def update_title():
-	data = request.form['update-title'].split(';')
+def update_track_data():
+	data = request.form['update-track-data'].split(';')
 	track_id = data[0]
-	new_name = data[1].strip()
-	station = data[2]
+	new_title = data[1].strip()
+	new_artist = data[2].strip()
+	station = data[3]
 	track = db.session.query(Tracks).filter_by(track_id=track_id).one()
-	track.title = new_name
+	track.title = new_title
+	track.artist = new_artist
 	db.session.commit()
 	file_path = db.session.query(Tracks).filter_by(track_id=track_id).one().file_path
 	file = OggOpus(file_path)
-	file['title'] = new_name
+	file['title'] = new_title
+	file['aritst'] = new_artist
 	file.save()
 	return redirect(f'/tracks/{station}')
 

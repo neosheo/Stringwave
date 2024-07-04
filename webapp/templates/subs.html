@@ -25,11 +25,11 @@ Your Subscriptions
 	<h1>Channels you've subscribed to:</h1>
 	{% if subs %}
 		<div id="artist-list">
-		<script src="{{ url_for('static', filename='edit_track_artist.js') }}"></script>
+		<script src="{{ url_for('static', filename='edit_subscription_name.js') }}"></script>
 			{% for sub in subs %}
 				<div>
 					<div class="title">
-						<h2 class="channel-name centered track-artist">{{ sub['channel_name'] }}</h2>
+						<h2 class="channel-name centered artist">{{ sub['channel_name'] }}</h2>
 						<button class="edit-button button linea-icon" type="submit"><img src="{{ url_for('static', filename='/images/software_pencil.svg') }}" alt="Edit" height="20" width="20"></button>
 						<button class="update-button button linea-icon" type="submit" form="update-channel-name" name="update-channel-name" value=""><img src="{{ url_for('static', filename='/images/basic_floppydisk.svg') }}" alt="Save" width="20" height="20"></button>
 						<button class="button linea-icon" type="submit" form="refresh-icon" name="refresh-icon" value="{{ sub['channel_id'] }}"><img src="{{ url_for('static', filename='/images/arrows_rotate_anti.svg') }}" alt="Refresh Icon" width="20" height="20"></button>

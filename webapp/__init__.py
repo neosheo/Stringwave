@@ -16,9 +16,9 @@ rabbitmq_pass = os.getenv('RABBITMQ_DEFAULT_PASS')
 # PATHS
 db_directory = f'sqlite:////{os.getcwd()}/webapp/instance'
 radio_path = '/stringwave/radio'
-log_path = '/stringwave/logs'
+log_path = 'logs'
 
-#log_level = logging.DEBUG
+log_level = logging.DEBUG
 
 def setup_logger(name, level=logging.INFO):
     log_file = f'{log_path}/{name}.log'

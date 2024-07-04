@@ -16,9 +16,11 @@ services:
       - ./radio:/stringwave/radio
       - logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
-      - ./webapp/static/images/channel_icons:/stringwave/webapp/static/images/channel_icons
-      - ./webapp/static/uploads:/stringwave/webapp/static/uploads
-      - ./webapp/instance/:/stringwave/webapp/instance/
+      - ./webapp:/stringwave/webapp
+      # - ./webapp/static/images/channel_icons:/stringwave/webapp/static/images/channel_icons
+      # - ./webapp/static/uploads:/stringwave/webapp/static/uploads
+      # - ./webapp/instance/:/stringwave/webapp/instance/
+      # - ./webapp/static/:/stringwave/webapp/static
       - ./tests:/stringwave/tests
     environment:
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
@@ -60,9 +62,6 @@ services:
       - ./radio:/stringwave/radio
       - logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
-      - ./webapp/static/images/channel_icons:/stringwave/webapp/static/images/channel_icons
-      - ./webapp/static/uploads:/stringwave/webapp/static/uploads
-      - ./webapp/instance/:/stringwave/webapp/instance/
     environment:
       - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
