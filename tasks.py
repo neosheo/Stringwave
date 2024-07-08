@@ -1,4 +1,4 @@
-from webapp import celery_app, db, Tracks, Subs, pf_logger, cm_logger, radio_path
+from webapp import celery_app, db, Tracks, Subs, pf_logger, cm_logger, sw_logger,  radio_path
 from disallowed_titles import disallowed_titles
 from pipefeeder import populate_database
 from scripts.update_track_data import update_track_data
@@ -8,19 +8,23 @@ import subprocess
 import re
 import shutil
 import json
-
+from sqlalchemy import exc
 
 @celery_app.task
 def move_track(track_id, old_file_path, new_file_path):
     subprocess.run(["mv", old_file_path, new_file_path])
-    entry = db.session.query(Tracks).filter_by(track_id=track_id).one()
-    entry.station = "main"
-    entry.file_path = new_file_path
-    db.session.commit()
-    requests.get("http://gateway:8080/reread/new")
-    requests.get("http://gateway:8080/reread/main")
-    requests.get("http://gateway:8080/move_complete")
-
+    sw_logger.debug(f"ATTEMPTING TO MOVE TRACK ID: {track_id}")
+    try:
+        entry = db.session.query(Tracks).filter_by(track_id=track_id).one()
+        entry.station = "main"
+        entry.file_path = new_file_path
+        db.session.commit()
+        requests.get("http://gateway:8080/reread/new")
+        requests.get("http://gateway:8080/reread/main")
+        requests.get("http://gateway:8080/move_complete")
+    except exc.NoResultFound:
+        sw_logger.error(f"ERROR: moving track with id {track_id} back to new station")
+        subprocess.run(["mv", new_file_path, old_file_path])
 
 @celery_app.task
 def download_track(app):
