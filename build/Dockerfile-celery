@@ -8,6 +8,7 @@ RUN apt-get install ffmpeg python3-lxml -y
 COPY build/requirements-celery.txt ./requirements.txt
 RUN python -m pip install --upgrade pip
 RUN python -m pip install -r requirements.txt
+RUN python -m pip install --upgrade --pre "yt-dlp[default]"
 
 RUN groupadd -r --gid 1000 stringwave && useradd -r --uid 1000 -g stringwave stringwave
 RUN chsh --shell /usr/sbin/nologin root

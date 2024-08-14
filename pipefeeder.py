@@ -5,7 +5,7 @@ from webapp import pf_logger as logger
 from tqdm import tqdm
 import sqlite3
 import time
-
+import subprocess
 
 def get_channel_feed(channel=None):
     # get the html of the requested youtube channel
@@ -75,7 +75,12 @@ def get_recent_uploads(feed):
     pub_dates = feed_soup.find_all("published")[1:]
     videos = feed_soup.find_all("media:content")
     channel = feed_soup.find("title").text.rstrip()
-    channel_id = feed_soup.find_all("yt:channelId")[1].text.strip() 
+    # pull channel id from feed instead of parsing from xml because sometimes videos from other channels are included
+    # mostly on artists with a vevo channel, videos may be listed with the vevo channel id that isn't in the database
+    # channel_id = feed.split("channel_id=")[1]
+    # channel_id = feed_soup.find_all("yt:channelId")[1].text.strip() 
+    channel_id = feed_soup.find("link")["href"].split("channel_id=")[1].strip()
+    logger.debug(f"EXTRACTED CHANNEL ID FROM FEED URL: {channel_id}")
     titles = feed_soup.find_all("media:title")
     # check if videos are were published before your specified period
     # if they are within your specified period, include them
@@ -163,7 +168,10 @@ if __name__ == "__main__":
                 logger.debug("RECEIVED NOTICE THAT ALL DOWNLOADS ARE COMPLETE")
                 break
             time.sleep(5)
-    logger.debug("CLEANING UP LOG")
-    logger.debug("LOG CLEANED")
     open("dl_data/pf_download_status", "w").close()
+    # remove any duplicate database entries and illegal filenames
+    print("Cleaning up...", flush=True)
+    res = subprocess.run(["./scripts/cleanup.sh"])
+    print("Done!", flush=True)
+    logger.debug(f"CLEANUP SCRIPT EXIT CODE: {res}")
     print("Done!", flush=True)

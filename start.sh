@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS tracks( \
 	FOREIGN KEY (config) REFERENCES config (config_id));
 EOF
 
-python scripts/build_database.py new main
+python -m scripts.build_database new main
 
 ./scripts/start_radio.sh
 
