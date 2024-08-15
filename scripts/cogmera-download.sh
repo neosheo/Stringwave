@@ -18,8 +18,8 @@ yt-dlp \
 	--postprocessor-args "Metadata:-vn" \
 	--sponsorblock-api 'https://api.sponsor.ajay.app/api/' \
 	--extract-audio \
-	-F --extractor-args "youtube:player_client=web" \
 	--audio-format opus \
+	--format bestaudio \
 	-o /stringwave/radio/new/"$filename"
 
 python scripts/embed_metadata.py /stringwave/radio/new/"$filename".opus "$title" "$artist" "$config"

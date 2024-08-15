@@ -16,7 +16,7 @@ yt-dlp \
 	--embed-thumbnail \
 	--extract-audio \
 	--audio-format opus \
-	-F --extractor-args "youtube:player_client=web" \
+	--format bestaudio \
 	-o '/stringwave/radio/new/%(title)s.%(ext)s' \
 	--print filename \
 	$link
