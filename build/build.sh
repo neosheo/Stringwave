@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [[ "$(pwd)" == *"/build" ]]; then
     cd ..
@@ -36,24 +36,29 @@ unset PASSWORD
 
 # check for existence of admin account in database
 # if it exists already give user the option to use the old account or create a new one
-if sqlite3 webapp/instance/stringwave.db "SELECT EXISTS(SELECT 1 FROM users WHERE username='admin');" > /dev/null
+table_exists=$(sqlite3 webapp/instance/stringwave.db "SELECT EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='users');")
+if [[ "$table_exists" -eq 1 ]]
 then
-    echo  "Admin user exists, overwrite? "
-    select yn in "Yes" "No"; do
-	case $yn in
-	    Yes )
-		echo "Removing old admin account...";
-        sed -i '/ADMIN_PASSWORD/d' .env;
-        sqlite3 webapp/instance/stringwave.db "DELETE FROM users WHERE username='admin';";
+	if sqlite3 webapp/instance/stringwave.db "SELECT EXISTS(SELECT 1 FROM users WHERE username='admin');" > /dev/null
+	then
+    	echo  "Admin user exists, overwrite? "
+	    select yn in "Yes" "No"; do
+		case $yn in
+		    Yes )
+			echo "Removing old admin account...";
+    	    sed -i '/ADMIN_PASSWORD/d' .env;
+        	sqlite3 webapp/instance/stringwave.db "DELETE FROM users WHERE username='admin';";
+			ADMIN_PW_MAYBE=ADMIN_PASSWORD;
+			break;;
+        	No )
+			ADMIN_PW_MAYBE=NULL_PASSWORD;
+			break;;
+		esac
+	    done
+	else
 		ADMIN_PW_MAYBE=ADMIN_PASSWORD;
-		break;;
-        No )
-		ADMIN_PW_MAYBE=NULL_PASSWORD;
-		break;;
-	esac
-    done
+	fi
 fi
-
 for env_var in FLASK_SECRET_KEY RABBITMQ_DEFAULT_PASS $ADMIN_PW_MAYBE
 do
     if ! grep "$env_var" .env > /dev/null;

@@ -14,7 +14,7 @@ services:
       - stringwave
     volumes:
       - ./radio:/stringwave/radio
-      - logs:/stringwave/logs
+      - ./logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
       - ./webapp/instance/:/stringwave/webapp/instance/
       - ./tests:/stringwave/tests
@@ -56,7 +56,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./radio:/stringwave/radio
-      - logs:/stringwave/logs
+      - ./logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
       - ./webapp/instance/:/stringwave/webapp/instance/
     environment:
@@ -101,6 +101,3 @@ networks:
     ipam:
       config:
         - subnet: 172.10.10.0/24
-
-volumes:
-  logs:
