@@ -67,9 +67,7 @@ configs.txt
 upload_status
 *sync-conflict*
 standalone_tests
-test/*
-!test/run_test.sh
-!test/tests/
+tests
 dev/*
 dev
 data.txt
