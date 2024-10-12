@@ -139,8 +139,36 @@ def download_track(app):
                 link = video_data[0].strip()
                 logger.debug(f"PARSED LINK FROM DOWNLOAD DATA: {link}")
                 logger.debug(f"PARSED CHANNEL_ID FROM DOWNLOAD DATA: {video_data[1]}")
-                artist = db.session.query(Subs).filter_by(channel_id=video_data[1].strip()).scalar().channel_name
+                sub = db.session.query(Subs).filter_by(channel_id=video_data[1].strip()).scalar()
+                artist = sub.channel_name
+                logger.debug(f"CHANNEL_ID IS {artist}")
+                # convert regex to raw string
+                logger.debug(f"REGEX PATTERN RECEIVED FROM DATABASE: {sub.video_title_regex}")
+                video_title_regex = sub.video_title_regex #.encode("unicode-escape").decode()
+                regex_type = sub.regex_type
                 video_title = video_data[2].strip()
+                # check if using regex
+                if regex_type != None:
+                    logger.debug(f"USING REGEX PATTERN: {video_title_regex}")
+                    logger.debug(f"VIDEO TITLE IS: {video_title}")
+                    # check if title matches user's regex
+                    matches = re.match(video_title_regex, video_title)
+                    if matches == None:
+                        logger.debug(f"VIDEO TITLE DOES NOT MATCH PATTERN: {video_title_regex}")
+                    else:
+                    # if it matches, check regex type from database to see which
+                    # capture group is the artist and which is the title
+                    #if matches is not None:
+                    #    logger.debug(f"FOUND A MATCH: {matches}")
+                        logger.debug(f"VIDEO TITLE MATCHES REGEX PATTHER: {video_title_regex}")
+                        logger.debug(f"REGEX IS TYPE: {regex_type}")
+                        match regex_type:
+                            case "title first":
+                                video_title = matches.group(1)
+                                arist = matches.group(2)
+                            case "artist first":
+                                video_title = matches.group(2)
+                                artist = matches.group(1)
                 logger.debug(f"PARSED ARTIST FROM DOWNLOAD DATA: {artist}")
                 logger.debug(f"PARSED VIDEO TITLE FROM DOWNLOAD DATA: {video_title}")
                 # only download youtube videos

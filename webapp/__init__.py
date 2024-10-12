@@ -119,6 +119,8 @@ class Subs(db.Model):
 	__bind_key__ = 'main'
 	channel_id = db.Column(db.String(24), primary_key=True)
 	channel_name = db.Column(db.String(35), nullable=False)
+	video_title_regex = db.Column(db.String(35), nullable=True)
+	regex_type = db.Column(db.String(12), nullable=True)
 
 
 class Tracks(db.Model):

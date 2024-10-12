@@ -13,11 +13,14 @@ services:
     networks:
       - stringwave
     volumes:
+      #- ./app.py:/stringwave/app.py
       - ./radio:/stringwave/radio
       - ./logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
       - ./webapp/instance/:/stringwave/webapp/instance/
-      - ./tests:/stringwave/tests
+      #- ./webapp/templates/:/stringwave/webapp/templates/
+      #- ./webapp/static/:/stringwave/webapp/static/
+      #- ./tests:/stringwave/tests
     environment:
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
       - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
@@ -25,9 +28,9 @@ services:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
       - DISCOGS_PERSONAL_ACCESS_TOKEN=${DISCOGS_PERSONAL_ACCESS_TOKEN}
-    ports:
-      - 5801:5801
-      - 5802:5802
+    # ports:
+    #   - 5801:5801
+    #   - 5802:5802
 
   gateway:
     image: nginxinc/nginx-unprivileged:latest
@@ -59,6 +62,7 @@ services:
       - ./logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
       - ./webapp/instance/:/stringwave/webapp/instance/
+      - ./tasks.py:/stringwave/tasks.py
     environment:
       - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}

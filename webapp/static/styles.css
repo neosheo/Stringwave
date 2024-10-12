@@ -30,6 +30,65 @@ html, body {
     color: black;
 }
 
+.small-icon > img {
+    height: 30px;
+    width: 30px;
+}
+
+.regex-popup {
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    /* moves top left corner to the middle */
+    top: 50%;
+    left: 50%;
+    /* moves top left corner right and up by 50% of elements height and width respectively */
+    transform: translate(-50%, -50%);
+    height: auto;
+    width: auto;
+    min-width: 300px;
+    border-style: solid;
+    border-width: 4.5px;
+    border-radius: 2%;
+    border-color: #9e0707;
+    background-color: black;
+    visibility: hidden;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.regex-buttons-container {
+    flex-direction: row;
+}
+
+.regex-radio-button-container {
+    align-items: flex-start;
+    margin-bottom: 5px;
+}
+
+.regex-radio-button {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.regex-radio-button input {
+    margin-right: 5px;
+}
+
+.regex-header {
+    margin-top: 10px;
+}
+
+.regex-pattern {
+    margin-top: 0px;
+    margin-bottom: 10px;
+}
+
+.regex-popup .linea-icon {
+    margin-bottom: 10px;
+}
+
 .linea-icon {
 	background-color: rgba(201, 229, 241, 0.678);
 	border-width: 2.5px;

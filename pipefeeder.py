@@ -173,5 +173,5 @@ if __name__ == "__main__":
     print("Cleaning up...", flush=True)
     res = subprocess.run(["./scripts/cleanup.sh"])
     print("Done!", flush=True)
-    logger.debug(f"CLEANUP SCRIPT EXIT CODE: {res}")
+    logger.debug(f"CLEANUP SCRIPT EXIT CODE: {res.returncode}")
     print("Done!", flush=True)

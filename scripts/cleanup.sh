@@ -2,7 +2,7 @@
 
 python scripts/clean_radio.py "new"
 
-# delete duplicate entries
+# delete duplicate entries in database
 sqlite3 webapp/instance/stringwave.db <<EOF
 DELETE FROM tracks
     WHERE rowid NOT IN (

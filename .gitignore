@@ -77,3 +77,5 @@ webapp/static/images/channel_icons/*
 webapp/static/uploads/*
 subs*.txt
 
+.venv
+alembic*

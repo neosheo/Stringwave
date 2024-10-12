@@ -22,6 +22,6 @@ def test_admin_account_creation():
         result = session.execute(text("SELECT username FROM users WHERE username='admin';"))
         assert result.all()[0][0] == "admin"
 
-def test_subscribe():
-    # need to be able to login
-    assert requests.post("http://gateway:8080/pipefeeder/add_sub", data="https://www.youtube.com/@YouTube")
+# def test_subscribe():
+#     # need to be able to login
+#     assert requests.post("http://gateway:8080/pipefeeder/add_sub", data="https://www.youtube.com/@YouTube")

@@ -129,6 +129,20 @@ def update_artist():
 	return redirect(f'/tracks/{station}')
 
 
+@app.route('/add_regex', methods = ['POST'])
+# uncomment once this is incorporated into the front end
+@login_required
+def add_regex():
+	data = request.get_json()
+	channel_id = data["channel_id"]
+	video_title_regex = data["video_title_regex"]
+	regex_type = data["regex_type"]
+	channel = db.session.query(Subs).filter_by(channel_id=channel_id).scalar()
+	channel.video_title_regex = video_title_regex
+	channel.regex_type = regex_type
+	db.session.commit()
+	return "Success"
+
 @app.route('/move_to_main', methods = ['POST'])
 @login_required
 def move_to_main():
@@ -290,7 +304,7 @@ def delSub():
 	channel_id = request.form['unsubscribe']
 	db.session.query(Subs).filter_by(channel_id=channel_id).delete()
 	db.session.commit()
-	os.remove(f'webapp/static/channel_icons/{channel_id}.jpg')
+	os.remove(f'webapp/static/images/channel_icons/{channel_id}.jpg')
 	return redirect('/pipefeeder/list_subs')
 
 
@@ -360,7 +374,3 @@ def refresh_icon():
 	get_channel_icon(f"https://youtube.com/channel/{channel_id}")
 	logger.debug("ICON REFRESHED SUCCESSFULLY!")
 	return redirect('/pipefeeder/list_subs')
-
-
-if __name__ == '__main__':
-	app.run(host='0.0.0.0', debug=True)
