@@ -290,7 +290,7 @@ def delSub():
 	channel_id = request.form['unsubscribe']
 	db.session.query(Subs).filter_by(channel_id=channel_id).delete()
 	db.session.commit()
-	os.remove(f'webapp/static/channel_icons/{channel_id}.jpg')
+	os.remove(f'webapp/static/images/channel_icons/{channel_id}.jpg')
 	return redirect('/pipefeeder/list_subs')
 
 
