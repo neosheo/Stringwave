@@ -106,7 +106,7 @@ def update_track_data():
 	file_path = db.session.query(Tracks).filter_by(track_id=track_id).one().file_path
 	file = OggOpus(file_path)
 	file['title'] = new_title
-	file['aritst'] = new_artist
+	file['artist'] = new_artist
 	file.save()
 	return redirect(f'/tracks/{station}')
 
