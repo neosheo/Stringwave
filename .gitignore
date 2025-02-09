@@ -76,6 +76,5 @@ scripts/download_test.py
 webapp/static/images/channel_icons/*
 webapp/static/uploads/*
 subs*.txt
-
+*.bkp
 .venv
-alembic*

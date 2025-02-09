@@ -13,4 +13,4 @@ mutagen==1.47.0
 werkzeug==3.0.6
 pytest==8.0.0
 lxml==5.2.2
-alembic==1.13.2
+alembic==1.14.1
