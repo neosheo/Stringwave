@@ -18,7 +18,7 @@ find /stringwave/radio/"$station" -name "*.opus" > /stringwave/radio/"$station"/
 if [ -f /stringwave/.pid-$station ]
 then
 	ezpid="$(cat /stringwave/.pid-$station)"
-	# checks if station is run and starts it if it wasn't running, otherwise triggers a reread
+	# checks if station is running and starts it if it wasn't running, otherwise triggers a reread
 	if ps h --pid $ezpid
 	then
 	    kill -1 $ezpid

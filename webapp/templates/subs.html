@@ -18,6 +18,9 @@ Your Subscriptions
 		<button class="button sub-button linea-icon" type="submit">Upload</button>
 	</form>
 	<form id="update-channel-name" method="POST" action="/update_channel_name"></form>
+	<form id="add-regex" method="POST" action="/add_regex">
+		<p id="regex-data" name="regex-data" value="">
+	</form>
 	<form class="subs-manager" method="POST" action="/pipefeeder/backup_subs">
 		<button class="button sub-button linea-icon" type="submit">Backup</button>
 	</form>
@@ -25,14 +28,22 @@ Your Subscriptions
 	<h1>Channels you've subscribed to:</h1>
 	{% if subs %}
 		<div id="artist-list">
-		<script src="{{ url_for('static', filename='edit_subscription_name.js') }}"></script>
-			{% for sub in subs %}
-				<div>
-					<div class="title">
+			<script src="{{ url_for('static', filename='edit_subscription_name.js') }}"></script>
+				{% for sub in subs %}
+					<div class="subscription">
 						<h2 class="channel-name centered artist">{{ sub['channel_name'] }}</h2>
-						<button class="edit-button button linea-icon" type="submit"><img src="{{ url_for('static', filename='/images/software_pencil.svg') }}" alt="Edit" height="20" width="20"></button>
-						<button class="update-button button linea-icon" type="submit" form="update-channel-name" name="update-channel-name" value=""><img src="{{ url_for('static', filename='/images/basic_floppydisk.svg') }}" alt="Save" width="20" height="20"></button>
-						<button class="button linea-icon" type="submit" form="refresh-icon" name="refresh-icon" value="{{ sub['channel_id'] }}"><img src="{{ url_for('static', filename='/images/arrows_rotate_anti.svg') }}" alt="Refresh Icon" width="20" height="20"></button>
+						<button class="edit-button button linea-icon small-icon" type="submit">
+							<img src="{{ url_for('static', filename='/images/software_pencil.svg') }}" alt="Edit">
+						</button>
+						<button class="update-button button linea-icon small-icon" type="submit" form="update-channel-name" name="update-channel-name" value="">
+							<img src="{{ url_for('static', filename='/images/basic_floppydisk.svg') }}" alt="Save">
+						</button>
+						<button class="button linea-icon small-icon refresh-icon-button" type="submit" form="refresh-icon" name="refresh-icon" value="{{ sub['channel_id'] }}">
+							<img src="{{ url_for('static', filename='/images/arrows_rotate_anti.svg') }}" alt="Refresh Icon">
+						</button>
+						<button class="button linea-icon small-icon regex-button" type="submit" form="add_regex" name="add-regex" value="">
+							<img class="regex-button-img" src="{{ url_for('static', filename='/images/basic_magnifier.svg') }}" alt="Regex Icon">
+						</button>
 						<form method="POST" action="/pipefeeder/del_sub">
 							<p class="channel-id" hidden>{{ sub['channel_id'] }}</p>
 							<img class="centered" src="{{ url_for('static', filename='images/channel_icons/') }}{{ sub['channel_id'] }}.jpg" alt="{{ sub['channel_name'] }}" width="200" height="200">
@@ -40,12 +51,39 @@ Your Subscriptions
 							<button class="button centered sub-button linea-icon" type="submit" name="unsubscribe" value="{{ sub['channel_id'] }}">Unsubscribe</button>
 							<br>
 						</form>
+						<div class="regex-popup">
+							<p class="channel-name" hidden>{{ sub['channel_name'] }}</p>
+							<h1 class="regex-header"></h1>
+							<h2 class="regex-pattern">{{ sub['video_title_regex'] }}</h2>
+							<div class="regex-radio-button-container">
+								<div class="regex-radio-button">
+									<input type="radio" name="regex-type" value="title first" checked>
+									<label for="title-first">Title First</label>
+								</div>
+								<div class="regex-radio-button">
+									<input type="radio" name="regex-type" value="artist first">
+									<label for="artist-first">Artist First</label>
+								</div>
+							</div>
+							<div class="regex-buttons-container">
+								<button class="button save-regex-button linea-icon small-icon" type="submit" value="{{ sub['channel_id'] }}">
+									<img class="save-regex-button-img" src="/static/images/basic_floppydisk.svg" alt="Save">
+								</button>
+								<button class="button close-regex-button linea-icon small-icon" type="submit" value="">
+									<img class="close-regex-button-img" src="{{ url_for('static', filename='/images/arrows_circle_remove.svg') }}" alt="Close">
+								</button>
+							</div>
+						</div>
 					</div>
-				</div>
 				<br>
-			{% endfor %}
+				{% endfor %}
+			</div>
 		</div>
 	{% else %}
 		<h2>No subs to display</h2>
 	{% endif %}
+{% endblock %}
+
+{% block scripts %}
+	<script src="{{ url_for('static', filename='regex_popup.js') }}"></script>
 {% endblock %}
