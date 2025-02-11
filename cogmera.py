@@ -33,7 +33,13 @@ class Album:
 
 def set_genres(*genres):
     if genres[0] == "None":
+        logger.debug("NO GENRES SET")
         return ""
+
+    # log genres passed to function
+    for i, genre in enumerate(genres):
+        logger.debug(f"GENRE {i + 1} SET TO {genre}")
+
     genre_param = "".join(
         [f"&genre={genre.title().replace(' ', '%20')}" for genre in genres]
     )
@@ -42,7 +48,13 @@ def set_genres(*genres):
 
 def set_styles(*styles):
     if styles[0] == "None":
+        logger.debug("NO STYLES SET")
         return ""
+
+    # log styles passed to function
+    for i, style in enumerate(styles):
+        logger.debug(f"STYLE {i + 1} SET TO {style}")
+
     style_list = []
     # alter URLs for styles with symbols or all capitals
     for style in styles:
@@ -74,23 +86,28 @@ def set_styles(*styles):
 
 def set_time(decade="None", year="None"):
     if decade != "None":
+        logger.debug(f"DECADE SET TO {decade}")
         decade_param = f"&decade={decade}"
     else:
+        logger.debug("NO DECADE SET")
         decade_param = ""
     if year != "None":
+        logger.debug(f"YEAR SET TO {year}")
         year_param = f"&year={year}"
     else:
+        logger.debug(f"NO YEAR SET")
         year_param = ""
     return f"{decade_param}{year_param}"
 
 
 def set_sort_method(method, order):
+    logger.debug(f"SORT METHOD SET TO {method}")
+    logger.debug(f"SORT ORDER SET TO {order}")
     if order == "D":
         order = "desc"
     elif order == "A":
         order = "asc"
     else:
-        logger.debug(f"SORT ORDER: {order}")
         logger.error("INVALID SORT ORDER")
     sort_param = f"sort={method}%2C{order}&"
     return sort_param
@@ -98,8 +115,10 @@ def set_sort_method(method, order):
 
 def set_country(country="None"):
     if country != "None":
+        logger.debug(f"COUNTRY OF ORIGIN SET TO {country}")
         country_param = f"&country={country}"
         return country_param
+    logger.debug(f"NO COUNTRY OF ORIGIN SET")
     return ""
 
 
@@ -327,12 +346,18 @@ def download_songs(albums, num_albums_to_pick=None, config_stamp=None):
 
 
 def run_cogmera():
+    # establish connection to database
     con = sqlite3.connect("webapp/instance/stringwave.db")
     cur = con.cursor()
 
+    # pick random configs
+    num_daily_downloads = int(os.getenv("NUM_DAILY_DOWNLOADS"))
     configs = cur.execute(
-        f'SELECT * FROM config ORDER BY RANDOM() LIMIT {os.getenv("NUM_DAILY_DOWNLOADS")}'
+        f'SELECT * FROM config ORDER BY RANDOM() LIMIT {num_daily_downloads}'
     )
+
+    logger.debug(f"APPLICATION IS SET TO SELECT {num_daily_downloads} CONFIGURATIONS")
+    logger.debug(f"SELECTED {len(configs)} CONFIGURATIONS")
 
     # clear old search queries
     open("dl_data/search_queries", "w").close()
@@ -349,13 +374,15 @@ def run_cogmera():
         logger.info(f"Albums to Find: {config[8]}")
 
         config_stamp = config[0]
+
+        # build discogs search url
         genres = set_genres(*config[1].split(";"))
         styles = set_styles(*config[2].split(";"))
         time_param = set_time(config[3], config[4])
         sort_method = set_sort_method(config[6], config[7])
         country = set_country(config[5])
         num_albums_to_scrape = config[8]
-        num_daily_downloads = int(os.getenv("NUM_DAILY_DOWNLOADS"))
+        # num_daily_downloads = int(os.getenv("NUM_DAILY_DOWNLOADS"))
         url = build_url(genres, styles, time_param, sort_method, country)
         albums = get_album_data(url, num_albums_to_scrape, 2)
         download_songs(albums, num_albums_to_scrape, str(config_stamp))

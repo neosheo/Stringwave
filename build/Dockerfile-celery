@@ -15,6 +15,7 @@ RUN chsh --shell /usr/sbin/nologin root
 
 COPY radio/ ./radio/
 COPY scripts/ ./scripts/
+COPY logs/ ./logs/
 COPY webapp/ ./webapp/
 COPY cogmera.py .
 COPY pipefeeder.py .
@@ -23,7 +24,7 @@ COPY tasks.py .
 COPY start-celery.sh ./start.sh
 
 RUN export NUM_DAILY_DOWNLOADS=$NUM_DAILY_DOWNLOADS
-RUN mkdir -p logs /home/stringwave
+RUN mkdir -p /home/stringwave
 RUN chown -R stringwave:stringwave \
     /home/stringwave \
     /stringwave

@@ -14,6 +14,7 @@ RUN chsh --shell /usr/sbin/nologin root
 
 COPY radio/ ./radio/
 COPY scripts/ ./scripts/
+COPY logs/ ./logs/
 COPY webapp/ ./webapp/
 COPY config/ezstream-*.xml ./config/
 COPY src/ ./src/
@@ -25,9 +26,8 @@ COPY start.sh .
 COPY tasks.py .
 COPY run.sh .
 
-RUN mkdir logs /home/stringwave
-RUN touch logs/stringwave.log
-RUN [ -f webapp/instance/stringwave.db ] || touch webapp/instance/stringwave.db
+RUN mkdir /home/stringwave
+# RUN [ -f webapp/instance/stringwave.db ] || touch webapp/instance/stringwave.db
 RUN echo 99999 > .pid-new
 RUN echo 99999 > .pid-main
 RUN chown -R stringwave:stringwave \
