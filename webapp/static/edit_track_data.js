@@ -23,11 +23,13 @@ document.querySelector("table").addEventListener("click", (event) => {
         }
         // replace edit button with done button
         let new_button = document.createElement("button");
-        new_button.className = "done-button button linea-icon small-icon";
+        new_button.className = "done-button button linea-icon";
         new_button.type = "submit";
         let button_img = document.createElement("img");
         button_img.src = "/static/images/basic_elaboration_bookmark_check.svg";
         button_img.alt = "Done";
+        button_img.setAttribute("height", "20");
+        button_img.setAttribute("width", "20");
         button_img.className = "done-button-img";
         new_button.appendChild(button_img);
         button.replaceWith(new_button);
@@ -49,13 +51,15 @@ document.querySelector("table").addEventListener("click", (event) => {
         track_data["artist"] = track_artist.textContent;
         // replace done button with edit button
         let old_button = document.createElement("button");
-        old_button.className = "edit-button button linea-icon small-icon";
+        old_button.className = "edit-button button linea-icon";
         old_button.type = "submit";
         let button_img = document.createElement("img");
         button_img.src = "/static/images/software_pencil.svg";
         button_img.alt = "Edit";
         button_img.className = "edit-button-img";
-        new_button.appendChild(button_img);
+        button_img.setAttribute("height", "20");
+        button_img.setAttribute("width", "20");
+        old_button.appendChild(button_img);
         button.replaceWith(old_button);
         // set new track data to update button
         let update_button = old_button.parentElement.querySelector(".update-button");
