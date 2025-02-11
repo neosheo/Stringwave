@@ -29,12 +29,15 @@ def setup_logger(name, level=logging.INFO):
     return logger
 
 pf_logger = setup_logger('pipefeeder', level=log_level)
-cm_logger = setup_logger('cogmera')
+cm_logger = setup_logger('cogmera', level=log_level)
 sw_logger = setup_logger('stringwave')
+
 
 # only allow backups that have .txt extension
 BACKUP_LOCATION = f'{os.getcwd()}/webapp/static/uploads'
 ALLOWED_EXTENSIONS = {'txt'}
+
+
 def allowed_file(filename):
 	return '.' in filename and \
 		filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS

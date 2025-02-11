@@ -43,6 +43,7 @@ def set_genres(*genres):
     genre_param = "".join(
         [f"&genre={genre.title().replace(' ', '%20')}" for genre in genres]
     )
+    logger.debug(f"GENRE PARAMETER SET AS: {genre_param}")
     return genre_param
 
 
@@ -81,6 +82,7 @@ def set_styles(*styles):
         .replace("á", "%CC%81")
         .replace("č", "%C4%8D")
     )}"""
+    logger.debug(f"STYLE PARAMETER SET TO: {style_param}")
     return style_param
 
 
@@ -97,6 +99,7 @@ def set_time(decade="None", year="None"):
     else:
         logger.debug(f"NO YEAR SET")
         year_param = ""
+    logger.debug(f"TIME PARAMETER SET TO: {decade_param}{year_param}")
     return f"{decade_param}{year_param}"
 
 
@@ -109,7 +112,8 @@ def set_sort_method(method, order):
         order = "asc"
     else:
         logger.error("INVALID SORT ORDER")
-    sort_param = f"sort={method}%2C{order}&"
+    sort_param = f"&sort={method}%2C{order}&"
+    logger.debug(f"SORT PARAMETER SET TO: {sort_param}")
     return sort_param
 
 
@@ -117,6 +121,7 @@ def set_country(country="None"):
     if country != "None":
         logger.debug(f"COUNTRY OF ORIGIN SET TO {country}")
         country_param = f"&country={country}"
+        logger.debug(f"COUNTRY OF ORIGIN PARAMETER SET TO: {country_param}")
         return country_param
     logger.debug(f"NO COUNTRY OF ORIGIN SET")
     return ""
@@ -185,7 +190,7 @@ def get_album_data(url, num_albums_to_pick, num_pages):
                 return None
             try:
                 # load returned data as a json and only grab the results key
-                search_results = json.loads(requests.get(f"{url}&page={page}").text)["results"]
+                search_results = json.loads(requests.get(f"{url}&page={page}", headers=header).text)["results"]
                 logger.debug(f"SCRAPED DATA FOR PAGE {page}:\n{search_results}")
             except requests.exceptions.ConnectionError:
                 logger.error(f"Connection error on page {page}!")
@@ -357,7 +362,7 @@ def run_cogmera():
     )
 
     logger.debug(f"APPLICATION IS SET TO SELECT {num_daily_downloads} CONFIGURATIONS")
-    logger.debug(f"SELECTED {len(configs)} CONFIGURATIONS")
+    #logger.debug(f"SELECTED {len(configs.fetchall())} CONFIGURATIONS")
 
     # clear old search queries
     open("dl_data/search_queries", "w").close()

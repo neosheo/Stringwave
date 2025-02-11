@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# for rootless podman compatibility
-export USERNS_MODE="keep-id"
-
 if [[ "$(pwd)" == *"/build" ]]; then
     cd ..
 fi
