@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS tracks( \
 	config INTEGER, \
 	station VARCHAR(4), \
 	file_path VARCHAR(300), \
+	discogs_link VARCHAR(300), \
 	FOREIGN KEY (config) REFERENCES config (config_id));
 EOF
 

@@ -5,6 +5,7 @@ title=$2
 artist=$3
 search_query=$4
 config=$5
+discogs_link=$6
 
 yt-dlp \
 	ytsearch1:"$search_query" \
@@ -22,6 +23,6 @@ yt-dlp \
 	--format bestaudio \
 	-o /stringwave/radio/new/"$filename"
 
-python scripts/embed_metadata.py /stringwave/radio/new/"$filename".opus "$title" "$artist" "$config"
+python scripts/embed_metadata.py /stringwave/radio/new/"$filename".opus "$title" "$artist" "$config" "$discogs_link"
 
 

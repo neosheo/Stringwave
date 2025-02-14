@@ -131,10 +131,8 @@ def build_url(
     genre_param, style_param, time_param, sort_param, query=None
 ):
     if query is None:
-        #url = f"https://www.discogs.com/search/?{sort_param}ev=em_rs{genre_param}{style_param}{time_param}{country_param}"
         url = f"https://api.discogs.com/database/search?per_page=100{genre_param}{style_param}{time_param}{sort_param}&token={os.getenv('DISCOGS_PERSONAL_ACCESS_TOKEN')}"
     else:
-        #url = f"https://www.discogs.com/search/?{sort_param}q={query}{genre_param}{style_param}{time_param}{country_param}"
         url = f"https://api.discogs.com/database/search?per_page=100&q={query}{genre_param}{style_param}{time_param}{sort_param}&token={os.getenv('DISCOGS_PERSONAL_ACCESS_TOKEN')}"
     logger.debug(f"SEARCH URL: {url}")
     return url
@@ -338,11 +336,15 @@ def download_songs(albums, num_albums_to_pick=None, config_stamp=None):
         logger.debug(f"RANDOM TRACK TITLE UPDATED: {random_track}")
         selected_artist = re.sub(r"(\*|/)", "", selected_artist)
         logger.debug(f"RANDOM TRACK ARTIST UPDATED: {selected_artist}")
+        header = {
+            "User-Agent": "Cogmera/1.0",
+        }
         data = {
             "filename": random_track,
             "artist": selected_artist,
             "search_query": f"{selected_artist} {random_track}",
             "config": config_stamp,
+            "discogs_link": json.loads(requests.get(album.link, headers=header).text)['uri'].split("/")[-1]
         }
         logger.debug(f"DATA TO PASS TO API: {data}")
         with open("dl_data/search_queries", "a") as f:
@@ -387,7 +389,6 @@ def run_cogmera():
         sort_method = set_sort_method(config[6], config[7])
         country = set_country(config[5])
         num_albums_to_scrape = config[8]
-        # num_daily_downloads = int(os.getenv("NUM_DAILY_DOWNLOADS"))
         url = build_url(genres, styles, time_param, sort_method, country)
         albums = get_album_data(url, num_albums_to_scrape, 2)
         download_songs(albums, num_albums_to_scrape, str(config_stamp))

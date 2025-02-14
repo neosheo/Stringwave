@@ -60,6 +60,7 @@ def download_track(app):
                     logger.debug(f"SEARCH QUERY: {search_query}")
                     config = query["config"]
                     logger.debug(f"CONFIG: {config}")
+                    discogs_link = query["discogs_link"]
                     file_path = f'{radio_path}/new/{filename}.opus'
                     logger.debug(f"FILE PATH: {file_path}")
                     # initiate the download
@@ -72,6 +73,7 @@ def download_track(app):
                             artist,
                             search_query,
                             config,
+                            discogs_link
                         ],
                         stdout=subprocess.PIPE,
                         stderr=subprocess.STDOUT
@@ -89,6 +91,7 @@ def download_track(app):
                         config=config,
                         station="new",
                         file_path=file_path,
+                        discogs_link=discogs_link
                     )
                     db.session.add(new_track)
                     db.session.commit()

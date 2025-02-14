@@ -18,7 +18,7 @@ services:
       - ./logs:/stringwave/logs
       - ./dl_data:/stringwave/dl_data/
       - ./webapp/instance/:/stringwave/webapp/instance/
-      #- ./webapp/templates/:/stringwave/webapp/templates/
+      # - ./webapp/templates/:/stringwave/webapp/templates/
       # - ./webapp/static/:/stringwave/webapp/static/
       #- ./tests:/stringwave/tests
     environment:

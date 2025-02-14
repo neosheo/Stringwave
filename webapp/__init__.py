@@ -135,6 +135,7 @@ class Tracks(db.Model):
 	config = db.Column(db.Integer, db.ForeignKey('config.config_id'), nullable=False)
 	station = db.Column(db.String(4), nullable=False)
 	file_path = db.Column(db.String(300), nullable=False)
+	discogs_link = db.Column(db.String(300), nullable=False)
 	config_rel = db.relationship('Config', backref='tracks', lazy=True, uselist=False)
 
 

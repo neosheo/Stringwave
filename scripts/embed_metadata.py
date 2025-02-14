@@ -8,6 +8,7 @@ def embed_metadata(track):
     track['title'] = sys.argv[2]
     track['artist'] = sys.argv[3]
     track['config'] = sys.argv[4]
+    track['discogs_link'] = sys.argv[5]
     track['album'] = ''
     track['data'] = ''
     track['language'] = ''

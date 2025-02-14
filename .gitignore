@@ -78,3 +78,4 @@ webapp/static/uploads/*
 subs*.txt
 *.bkp
 .venv
+api_test.py
