@@ -46,7 +46,7 @@ def download_track(app):
                     logger.debug(f"DATA RECEIVED: {query}")
                     # remove illegal characters and spaces from filename
                     filename = re.sub(
-                        r'(\||%|&|:|;|,|!|-|\*|#|\\|/|\[|\|"])', "", query["filename"]
+                        r'(\||%|&|:|;|,|!|-|\*|\+|#|\\|/|\[|\|"])', "", query["filename"]
                     ).replace(" ", "_")
                     logger.debug(f"FILENAME: {filename}")
                     title = query["filename"]
