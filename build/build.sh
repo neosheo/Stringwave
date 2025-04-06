@@ -37,6 +37,12 @@ unset PASSWORD
 # create database if one is not already provided
 [ -f webapp/instance/stringwave.db ] || touch webapp/instance/stringwave.db
 
+if ! grep DISCOGS_PERSONAL_ACCESS_TOKEN .env > /dev/null;
+then
+	read -p "Enter discogs personal access token: " access_token
+	echo DISCOGS_PERSONAL_ACCESS_TOKEN=\"$access_token\" >> .env
+fi
+
 # check for existence of stringwave admin account in database
 # if it exists already give user the option to use the old account or create a new one
 table_exists=$(sqlite3 webapp/instance/stringwave.db "SELECT EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='users');")
