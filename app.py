@@ -44,7 +44,10 @@ def login():
 	form = LoginForm()
 	if request.method == 'POST':
 		if form.validate_on_submit():
+			# select user matching supplied user name
 			user = db.session.query(Users).filter(Users.username == form.username.data).one()
+
+			# check if password hash matches user's password hash
 			if user and flask_bcrypt.check_password_hash(user.password, form.password.data):
 				login_user(user, remember=True)
 				next = request.args.get('next')
@@ -79,8 +82,10 @@ def index():
 @app.route('/tracks/<string:station>', methods = ['GET'])
 @login_required
 def tracks_main(station):
+	# filter only tracks from the supplied station for display
 	tracks = db.session.query(Tracks).filter(Tracks.station == station).order_by(func.lower(Tracks.title)).all()
 	for track in tracks:
+		# replace underscores and multiple consecutive spaces with a single space
 		track.title = re.sub(r'_+', ' ', track.title)
 		track.title = re.sub(r'\s{2,}', ' ', track.title)
 	return render_template('tracks.html', tracks=tracks, station=station)
@@ -95,14 +100,21 @@ def radio_main(station):
 @login_required
 def update_track_data():
 	data = request.form['update-track-data'].split(';')
+	# parse track metadata from POST request
 	track_id = data[0]
 	new_title = data[1].strip()
 	new_artist = data[2].strip()
 	station = data[3]
+
+	# find requested track in database based on track_id
 	track = db.session.query(Tracks).filter_by(track_id=track_id).one()
+
+	# set metadata in database
 	track.title = new_title
 	track.artist = new_artist
 	db.session.commit()
+
+	# extract file path from database and set new metadata to file
 	file_path = db.session.query(Tracks).filter_by(track_id=track_id).one().file_path
 	file = OggOpus(file_path)
 	file['title'] = new_title
@@ -129,20 +141,26 @@ def update_artist():
 	return redirect(f'/tracks/{station}')
 
 
+# sets regex pattern to extract title and artist from pipefeeder video title
 @app.route('/add_regex', methods = ['POST'])
-# uncomment once this is incorporated into the front end
 @login_required
 def add_regex():
 	data = request.get_json()
+
+	# extract subscription info from POST request
 	channel_id = data["channel_id"]
 	video_title_regex = data["video_title_regex"]
 	regex_type = data["regex_type"]
+
+	# add regex pattern to database
 	channel = db.session.query(Subs).filter_by(channel_id=channel_id).scalar()
 	channel.video_title_regex = video_title_regex
 	channel.regex_type = regex_type
 	db.session.commit()
 	return "Success"
 
+
+# move a track from the new station to the main station
 @app.route('/move_to_main', methods = ['POST'])
 @login_required
 def move_to_main():
@@ -153,6 +171,8 @@ def move_to_main():
 	return render_template('move.html')
 
 
+# this is called by the celery backend when the move is complete
+# this causes the tracks page to reload
 @app.route('/move_complete', methods = ['GET'])
 def move_complete():
 	with open('webapp/static/move_status', 'w') as f:
@@ -206,16 +226,23 @@ def reread(station):
 @login_required
 def config():
 	if request.method == 'POST':
+		# split passed genres
 		genres = request.form.getlist('genres')
 		genres = ';'.join(genres)
+
+		# split passed styles
 		styles = request.form.getlist('styles')
 		styles = ';'.join(styles)
-		decade = request.form['decades']
+
+		# extract other configuration values
+		decade = request.form['decades']	# decade doesn't work with discogs API, currently useless
 		year = request.form['years']
 		country = request.form['countries']
 		sort_method = request.form['sort_methods']
 		sort_order = request.form['order']
 		albums_to_find = request.form['number']
+
+		# add new configuration to the database
 		new_config = Config(
 			genres=genres, 
 			styles=styles, 
@@ -227,6 +254,8 @@ def config():
 			albums_to_find=albums_to_find)
 		db.session.add(new_config)
 		db.session.commit()
+
+	# if a GET request is submitted to this endpoint, display configuration creation page
 	return render_template(
 		'config.html', 
 		genres=Genres.query.order_by(Genres.genre_id).all(), 
@@ -255,14 +284,20 @@ def delete():
 @app.route('/cogmera/backup_configs', methods = ['GET'])
 @login_required
 def backup_configs():
+	# select all configs
 	con = sqlite3.connect('webapp/instance/stringwave.db')
 	configs = con.cursor().execute('SELECT * FROM config')
+
+	# write to text file
 	with open('webapp/static/configs.txt', 'w') as f:
 		#[f.write(f'{"|".join(config[1:])}\n') for config in configs.fetchall()]
 		for config in configs.fetchall():
 			config = [str(item) for item in config[1:]]
 			config = '|'.join(config)
 			f.write(config + '\n')
+
+	# return download link
+	# needs to be fixed returns Not Allowed
 	return '<a href="/static/configs.txt" download>Download</a><br><a href="/cogmera/dump_config">Return to Configs</a>'
 
 
@@ -274,16 +309,23 @@ def listSubs():
 
 @app.route('/pipefeeder/add_sub', methods = ['POST'])
 @login_required
-def addSub():
+def add_sub():
 	channel_url = request.form['subscribe']
+
+	# make sure link matches the proper format
 	regex = r'^(((https?):\/\/)?(www\.)?youtube\.com)/(c(hannel)?/|@).+$'
 	if not re.match(regex, channel_url):
 		print(f'{channel_url} is not valid')
 		flash('Not a valid YouTube URL')
 		return redirect('/pipefeeder/list_subs')
+
+	# get channel's video feed
 	feed = get_channel_feed(channel_url)
+
 	# download channel icon
 	get_channel_icon(get_channel_url(feed))
+
+	# add new record for channel to database
 	new_record = Subs(
 		channel_id=get_channel_id(feed), 
 		channel_name=get_channel_name(feed), 
@@ -300,32 +342,45 @@ def addSub():
 
 @app.route('/pipefeeder/del_sub', methods = ['POST'])
 @login_required
-def delSub():
+def del_sub():
 	channel_id = request.form['unsubscribe']
 	db.session.query(Subs).filter_by(channel_id=channel_id).delete()
 	db.session.commit()
-	os.remove(f'webapp/static/images/channel_icons/{channel_id}.jpg')
+	# delete channel icon if it exists
+	icon_path = f'webapp/static/images/channel_icons/{channel_id}.jpg'
+	if os.path.exists(icon_path):
+		os.remove(icon_path)
 	return redirect('/pipefeeder/list_subs')
 
 
 @app.route('/pipefeeder/backup_subs', methods = ['GET'])
 @login_required
 def backup():
+	# get all channel urls from database
 	con = sqlite3.connect('webapp/instance/stringwave.db')
-	urls = con.cursor().execute('SELECT channel_url FROM subs')
+	channel_ids = con.cursor().execute('SELECT channel_id FROM subs')
+
+	# write links to text file
 	with open('webapp/static/subs.txt', 'w') as f:
-		[ f.write(f'{url[0]}\n') for url in urls.fetchall() ]
+		[ f.write(f'{channel_id[0]}\n') for channel_id in channel_ids.fetchall() ]
+
+	# return download link
 	return '<a href="/static/subs.txt" download>Download</a><br><a href="/pipefeeder/list_subs">Return to Subs</a>'
 
 
 @app.route('/pipefeeder/upload_subs', methods = ['GET', 'POST'])
 @login_required
 def upload_subs():
+	# set status to uploading
 	with open('webapp/static/upload_status', 'w') as f:
 		f.write('uploading')
+
 	file = request.files['subs']
 	file_type = file.filename.split('.')[-1]
 	logger.debug(f"RECEIVED {file.filename}")
+
+	# make sure file is allowed file type
+	# this may not be very secure since it just checks for a file extension
 	if file and allowed_file(file.filename):
 		logger.debug(f"FILE TYPE {file_type} IS ALLOWED")
 		filename = secure_filename(file.filename)
