@@ -17,7 +17,7 @@ COPY scripts/ ./scripts/
 COPY logs/ ./logs/
 COPY webapp/ ./webapp/
 COPY config/ezstream-*.xml ./config/
-COPY src/ ./src/
+# COPY src/ ./src/
 COPY app.py .
 COPY cogmera.py .
 COPY pipefeeder.py .
@@ -33,7 +33,7 @@ RUN echo 99999 > .pid-main
 RUN chown -R stringwave:stringwave \
     /stringwave/ \
     /home/stringwave
-RUN gcc src/monitor_port.c -o /bin/monitor_port
+# RUN gcc src/monitor_port.c -o /bin/monitor_port
 
 USER stringwave
 ENTRYPOINT ["bash", "./start.sh"]
