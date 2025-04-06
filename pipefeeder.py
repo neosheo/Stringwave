@@ -54,15 +54,16 @@ def get_channel_icon(channel_url):
     links = soup.find_all("link")
     for link in links:
         if link["rel"][0] == "image_src":
+            logger.debug(f"{link['rel']} IS AN ICON FOR {channel_url}")
             icon = requests.get(link["href"]).content
             channel_id = channel_url.split("/")[-1]
             icon_uri = f"/stringwave/webapp/static/images/channel_icons/{channel_id}.jpg"
             with open(icon_uri, "wb") as f:
                 f.write(icon)
-            logger.debug(f"ICON SAVED: {icon_uri}")
+            logger.debug(f"SAVED CHANNEL ICON TO {icon_uri}")
             return
         else:
-            logger.debug(f"NO ICON FOUND FOR {channel_url}")
+            logger.debug(f"{link['rel']} IS NOT AN ICON FOR {channel_url}")
             continue
 
 
@@ -132,15 +133,21 @@ def build_playlist():
 
 def populate_database(text_file):
     with open(text_file, "r") as f:
-        subs = f.readlines()
+        channel_ids = f.readlines()
     subscriptions = []
     print("Gathering subscriptions...", flush=True)
-    for sub in tqdm(subs):
+    for channel_id in tqdm(channel_ids):
+        logger.debug(f"EXTRACTING CHANNEL DATA FOR ID: {channel_id}")
         try:
-            feed = get_channel_feed(sub)
-            channel_id = get_channel_id(feed)
+            channel_id = channel_id.strip()
+            channel_url = f"https://youtube.com/channel/{channel_id}"
+            feed = get_channel_feed(channel_url)
+            logger.debug(f"GOT FEED FOR {channel_url}")
+            # channel_id = get_channel_id(feed)
             channel_name = get_channel_name(feed)
-            get_channel_icon(get_channel_url(feed))
+            logger.debug(f"CHANNEL NAME IS {channel_name}")
+            # get_channel_icon(get_channel_url(feed))
+            get_channel_icon(channel_url)
             subscriptions.append((channel_id, channel_name))
             time.sleep(3)
         except requests.exceptions.ConnectionError:
@@ -155,7 +162,6 @@ def populate_database(text_file):
         subscriptions,
     )
     con.commit()
-    logger.debug(f"INSERTED {subscriptions[1]} INTO DATABASE")
     print("Done!", flush=True)
 
 
