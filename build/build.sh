@@ -5,7 +5,14 @@ if [[ "$(pwd)" == *"/build" ]]; then
 fi
 
 # create needed files and directories
-mkdir -p radio/new radio/main config dl_data logs webapp/static webapp/instance webapp/static/images/channel_icons
+mkdir -p radio/new \
+	radio/main \
+	config \
+	dl_data \
+	logs \
+	webapp/instance \
+	webapp/static/images/channel_icons \
+	webapp/static/uploads
 cp config_examples/* config
 touch .env \
 	dl_data/pf_download_status \

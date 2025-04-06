@@ -244,4 +244,4 @@ def download_track(app):
 # rebuilds database from a backup
 def upload(file_path):
     populate_database(file_path)
-    requests.get("http://gateway/upload_complete")
+    requests.get("http://gateway:8080/pipefeeder/upload_complete")

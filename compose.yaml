@@ -13,13 +13,17 @@ services:
     networks:
       - stringwave
     volumes:
-      # - ./app.py:/stringwave/app.py
+      - ./app.py:/stringwave/app.py
       - ./radio:/stringwave/radio
+      # - ./scripts:/stringwave/scripts
       - ./logs:/stringwave/logs
-      - ./dl_data:/stringwave/dl_data/
+      # - ./dl_data:/stringwave/dl_data/
       - ./webapp/instance/:/stringwave/webapp/instance/
       # - ./webapp/templates/:/stringwave/webapp/templates/
       # - ./webapp/static/:/stringwave/webapp/static/
+      - upload_dir:/stringwave/webapp/static/uploads/
+      - ./webapp/static/images/channel_icons:/stringwave/webapp/static/images/channel_icons
+      - download_data:/stringwave/dl_data/
       #- ./tests:/stringwave/tests
     environment:
       - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
@@ -60,9 +64,12 @@ services:
     volumes:
       - ./radio:/stringwave/radio
       - ./logs:/stringwave/logs
-      - ./dl_data:/stringwave/dl_data/
+      # - ./dl_data:/stringwave/dl_data/
       - ./webapp/instance/:/stringwave/webapp/instance/
-      - ./tasks.py:/stringwave/tasks.py
+      # - ./tasks.py:/stringwave/tasks.py
+      - upload_dir:/stringwave/webapp/static/uploads/
+      - ./webapp/static/images/channel_icons:/stringwave/webapp/static/images/channel_icons
+      - download_data:/stringwave/dl_data/
     environment:
       - NUM_DAILY_DOWNLOADS=${NUM_DAILY_DOWNLOADS}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
@@ -105,3 +112,7 @@ networks:
     ipam:
       config:
         - subnet: 172.10.10.0/24
+
+volumes:
+  upload_dir:
+  download_data:
