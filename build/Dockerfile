@@ -26,7 +26,7 @@ COPY start.sh .
 COPY tasks.py .
 COPY run.sh .
 
-RUN mkdir /home/stringwave
+RUN mkdir -p /home/stringwave /stringwave/dl_data /stringwave/webapp/static/uploads/
 # RUN [ -f webapp/instance/stringwave.db ] || touch webapp/instance/stringwave.db
 RUN echo 99999 > .pid-new
 RUN echo 99999 > .pid-main

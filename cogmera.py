@@ -353,58 +353,63 @@ def download_songs(albums, num_albums_to_pick=None, config_stamp=None):
 
 
 def run_cogmera():
-    # establish connection to database
-    con = sqlite3.connect("webapp/instance/stringwave.db")
-    cur = con.cursor()
+	# establish connection to database
+	con = sqlite3.connect("webapp/instance/stringwave.db")
+	cur = con.cursor()
 
-    # pick random configs
-    num_daily_downloads = int(os.getenv("NUM_DAILY_DOWNLOADS"))
-    configs = cur.execute(
-        f'SELECT * FROM config ORDER BY RANDOM() LIMIT {num_daily_downloads}'
-    )
+	# pick random configs
+	num_daily_downloads = int(os.getenv("NUM_DAILY_DOWNLOADS"))
+	configs = cur.execute(
+		f'SELECT * FROM config ORDER BY RANDOM() LIMIT {num_daily_downloads}'
+	)
 
-    logger.debug(f"APPLICATION IS SET TO SELECT {num_daily_downloads} CONFIGURATIONS")
-    #logger.debug(f"SELECTED {len(configs.fetchall())} CONFIGURATIONS")
+	logger.debug(f"APPLICATION IS SET TO SELECT {num_daily_downloads} CONFIGURATIONS")
+	#logger.debug(f"SELECTED {len(configs.fetchall())} CONFIGURATIONS")
 
-    # clear old search queries
-    open("dl_data/search_queries", "w").close()
+	# clear old search queries
+	open("dl_data/search_queries", "w").close()
 
-    for config in configs.fetchall():
-        logger.info(f"\nID: {config[0]}")
-        logger.info(f'Genres: {config[1].replace(";", ", ")}')
-        logger.info(f'Styles: {config[2].replace(";", ", ")}')
-        logger.info(f"Decade: {config[3]}")
-        logger.info(f"Year: {config[4]}")
-        logger.info(f"Country: {config[5]}")
-        logger.info(f"Sort Method: {config[6]}")
-        logger.info(f"Sort Order: {config[7]}")
-        logger.info(f"Albums to Find: {config[8]}")
+	for config in configs.fetchall():
+		logger.info(f"\nID: {config[0]}")
+		logger.info(f'Genres: {config[1].replace(";", ", ")}')
+		logger.info(f'Styles: {config[2].replace(";", ", ")}')
+		logger.info(f"Decade: {config[3]}")
+		logger.info(f"Year: {config[4]}")
+		logger.info(f"Country: {config[5]}")
+		logger.info(f"Sort Method: {config[6]}")
+		logger.info(f"Sort Order: {config[7]}")
+		logger.info(f"Albums to Find: {config[8]}")
 
-        config_stamp = config[0]
+		config_stamp = config[0]
 
-        # build discogs search url
-        genres = set_genres(*config[1].split(";"))
-        styles = set_styles(*config[2].split(";"))
-        time_param = set_time(config[3], config[4])
-        sort_method = set_sort_method(config[6], config[7])
-        country = set_country(config[5])
-        num_albums_to_scrape = config[8]
-        url = build_url(genres, styles, time_param, sort_method, country)
-        albums = get_album_data(url, num_albums_to_scrape, 2)
-        download_songs(albums, num_albums_to_scrape, str(config_stamp))
+		# build discogs search url
+		genres = set_genres(*config[1].split(";"))
+		styles = set_styles(*config[2].split(";"))
+		time_param = set_time(config[3], config[4])
+		sort_method = set_sort_method(config[6], config[7])
+		country = set_country(config[5])
+		num_albums_to_scrape = config[8]
+		url = build_url(genres, styles, time_param, sort_method, country)
+		albums = get_album_data(url, num_albums_to_scrape, 2)
+		download_songs(albums, num_albums_to_scrape, str(config_stamp))
 
-    # initiate download and check status until all downloads complete
-    requests.get("http://gateway:8080/download/cogmera")
-    while True:
-        with open("dl_data/cm_download_status", "r") as f:
-            if f.read().rstrip() == "Done":
-                logger.info("Initiating ezstream reread.")
-                requests.get("http://gateway:8080/reread")
-                break
-        time.sleep(5)
-    open("dl_data/cm_download_status", "w").close()
-    print("Done!", flush=True)
+	# initiate download and check status until all downloads complete
+	requests.get("http://gateway:8080/download/cogmera")
+	while True:
+		status_file = "dl_data/cm_download_status"
+		# create download status file if it doesn't exist	
+		if not os.path.isfile(status_file):
+			open(status_file, "w").close()
+
+		with open(status_file, "r") as f:
+			if f.read().rstrip() == "Done":
+				logger.info("Initiating ezstream reread.")
+				requests.get("http://gateway:8080/reread")
+				break
+		time.sleep(5)
+	open(status_file, "w").close()
+	print("Done!", flush=True)
 
 
 if __name__ == "__main__":
-    run_cogmera()
+	run_cogmera()
