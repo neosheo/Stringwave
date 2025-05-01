@@ -24,7 +24,7 @@ COPY tasks.py .
 COPY start-celery.sh ./start.sh
 
 RUN export NUM_DAILY_DOWNLOADS=$NUM_DAILY_DOWNLOADS
-RUN mkdir -p /home/stringwave
+RUN mkdir -p /home/stringwave /stringwave/dl_data /stringwave/webapp/static/uploads/
 RUN chown -R stringwave:stringwave \
     /home/stringwave \
     /stringwave
