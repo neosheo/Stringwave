@@ -336,3 +336,12 @@ td p {
 .edit-button, .done-button {
     margin-top: 10px;
 }
+
+.queue-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+    visibility: hidden;
+    /* display: none; */
+}

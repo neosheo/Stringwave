@@ -210,6 +210,34 @@ def skip(station):
 		return jsonify({'station_skipped': station})
 
 
+# play now will either be 1 (true) or 0 (false)
+@app.route('/queue/<string:play_now>/<string:station>', methods = ['POST'])
+@login_required
+def queue_track(play_now: str, station: str):
+	if station != 'new' and station != 'main':
+		flash('Invalid Station')
+		return redirect(f'/tracks/{station}')
+	else:
+		# extract list of queued track ids
+		queued_tracks = request.get_json()
+
+		# create an empty list to fill with track names
+		queued_track_names = []
+
+		# convert track ids to track names
+		for track_id in queued_tracks:
+			# extract file path
+			file_path = db.session.query(Tracks).filter_by(track_id=track_id).scalar().file_path
+			# convert absolute file path to relative file path
+			track_name = file_path.replace(f"/stringwave/radio/{station}/", "")
+			# add track name to list
+			queued_track_names.append(track_name)
+
+		subprocess.run(['./scripts/ezstream-queue.sh', station, play_now, *queued_track_names])
+		flash('Tracks queued successfully!')
+		return redirect(f'/tracks/{station}')
+
+
 @app.route('/download/<string:app>', methods = ['GET'])
 def download(app):
 	download_track.delay(app)
