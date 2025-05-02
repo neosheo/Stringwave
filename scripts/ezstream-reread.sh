@@ -21,7 +21,7 @@ then
 	# checks if station is running and starts it if it wasn't running, otherwise triggers a reread
 	if ps h --pid $ezpid
 	then
-	    kill -1 $ezpid
+	    kill -SIGHUP $ezpid
 	else
 	    /stringwave/scripts/ezstream.sh "$station"
 	fi

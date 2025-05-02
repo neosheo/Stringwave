@@ -16,6 +16,9 @@ EOF
 
 python -m scripts.build_database new main
 
+./scripts/create_playlist.sh "new"
+./scripts/create_playlist.sh "main"
+
 ./scripts/start_radio.sh
 
 uwsgi \
