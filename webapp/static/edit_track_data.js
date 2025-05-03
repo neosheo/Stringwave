@@ -1,5 +1,5 @@
-var original_bg_color;
-var track_data;
+var originalBGColor;
+var trackData;
 
 document.querySelector("table").addEventListener("click", (event) => {
     // only update button variable if user clicked the edit button
@@ -7,63 +7,87 @@ document.querySelector("table").addEventListener("click", (event) => {
         const button = event.target.closest(".edit-button");
         // parent is a td with class "box"
         const buttonParent = button.parentElement;
-        // get the elements containing the track's title and artist so they can be edited
-        const track_title = buttonParent.nextElementSibling.nextElementSibling.querySelector(".track-title");
-        const track_artist = buttonParent.nextElementSibling.nextElementSibling.nextElementSibling.querySelector(".track-title");
-        track_data = {
-            artist: track_artist,
-            title: track_title
+
+        // extract title and artist elements
+        const trackTitleElement = buttonParent.nextElementSibling.nextElementSibling.querySelector(".track-title");
+        const trackArtistElement = buttonParent.nextElementSibling.nextElementSibling.nextElementSibling.querySelector(".track-title");
+
+        trackData = {
+            title: trackTitleElement,
+            artist: trackArtistElement
         };
+
         // the background color is actually stored in the element 2 parents above button
-        original_bg_color = window.getComputedStyle(buttonParent.parentElement).backgroundColor;
-        // make each key of track_data editable
-        for (let key in track_data) {
-            track_data[key].contentEditable = true;
-            track_data[key].style.backgroundColor = "#e95959ad";
+        originalBGColor = window.getComputedStyle(buttonParent.parentElement).backgroundColor;
+
+        // make each key of trackData editable
+        for (let key in trackData) {
+            trackData[key].contentEditable = true;
+            trackData[key].style.backgroundColor = "#e95959ad";
         }
+
         // replace edit button with done button
-        const new_button = document.createElement("button");
-        new_button.className = "done-button button linea-icon";
-        new_button.type = "submit";
-        const button_img = document.createElement("img");
-        button_img.src = "/static/images/basic_elaboration_bookmark_check.svg";
-        button_img.alt = "Done";
-        button_img.setAttribute("height", "20");
-        button_img.setAttribute("width", "20");
-        button_img.className = "done-button-img";
-        new_button.appendChild(button_img);
-        button.replaceWith(new_button);
+        const newButton = document.createElement("button");
+        newButton.className = "done-button button linea-icon";
+        newButton.type = "submit";
+        const buttonImage = document.createElement("img");
+        buttonImage.src = "/static/images/basic_floppydisk.svg";
+        buttonImage.alt = "Done";
+        buttonImage.setAttribute("height", "30");
+        buttonImage.setAttribute("width", "30");
+        buttonImage.className = "done-button-img";
+        newButton.appendChild(buttonImage);
+        button.replaceWith(newButton);
+
     // only update button variable if user clicked the done button
     } else if (event.target.className === "done-button-img") {
         const button = event.target.closest(".done-button");
         const buttonParent = button.parentElement;
-        const track_title = buttonParent.nextElementSibling.nextElementSibling.querySelector(".track-title");
-        const track_artist = buttonParent.nextElementSibling.nextElementSibling.nextElementSibling.querySelector(".track-title");
-        const track_id = track_title.parentElement.querySelector(".track-id").innerHTML;
+
+        const trackTitleElement = buttonParent.nextElementSibling.nextElementSibling.querySelector(".track-title");
+        const trackArtistElement = buttonParent.nextElementSibling.nextElementSibling.nextElementSibling.querySelector(".track-title");
+        const trackId = trackTitleElement.parentElement.querySelector(".track-id").innerHTML;
+
+        // get station
         const url = window.location.href.split("/");
         const station = url[url.length - 1];
-        for (let key in track_data) {
-            track_data[key].contentEditable = false;
-            track_data[key].style.backgroundColor = original_bg_color;
+
+        // create an object with the track data
+        const apiTrackData = {
+            track_id: trackId,
+            title: trackTitleElement.textContent,
+            artist: trackArtistElement.textContent,
+            station: station
         };
-        // update track data with updated data
-        track_data["title"] = track_title.textContent;
-        track_data["artist"] = track_artist.textContent;
+
+        // remove editable text boxes
+        for (let key in trackData) {
+            trackData[key].contentEditable = false;
+            trackData[key].style.backgroundColor = originalBGColor;
+        };
+
+        fetch("/update_track_data",
+        {
+            headers: {
+				"Accept": "application/json",
+				"Content-Type": "application/json"
+            },
+            method: "POST",
+            body: JSON.stringify(apiTrackData)
+        });
+
         // replace done button with edit button
-        const old_button = document.createElement("button");
-        old_button.className = "edit-button button linea-icon";
-        old_button.type = "submit";
-        const button_img = document.createElement("img");
-        button_img.src = "/static/images/software_pencil.svg";
-        button_img.alt = "Edit";
-        button_img.className = "edit-button-img";
-        button_img.setAttribute("height", "20");
-        button_img.setAttribute("width", "20");
-        old_button.appendChild(button_img);
-        button.replaceWith(old_button);
-        // set new track data to update button
-        const update_button = old_button.parentElement.querySelector(".update-button");
-        update_button.setAttribute("value", `${track_id};${track_data["title"]};${track_data["artist"]};${station}`);
+        const oldButton = document.createElement("button");
+        oldButton.className = "edit-button button linea-icon";
+        oldButton.type = "submit";
+        const buttonImage = document.createElement("img");
+        buttonImage.src = "/static/images/software_pencil.svg";
+        buttonImage.alt = "Edit";
+        buttonImage.className = "edit-button-img";
+        buttonImage.setAttribute("height", "30");
+        buttonImage.setAttribute("width", "30");
+        oldButton.appendChild(buttonImage);
+        button.replaceWith(oldButton);
         }
     }
 );

@@ -7,8 +7,6 @@
 {% block content %}
     <form method="POST" id="move" action="/move_to_main"></form>
     <form method="POST" id="delete" action="/delete_track/{{ station }}"></form>
-    <form method="POST" id="update-track-data" action="/update_track_data"></form>
-    <!-- <form method="POST" id="queue-form" action="/queue/0/{{station}}"></form> -->
 
     <!-- buttons for queue only appear when at least one track is queued -->
     <!-- needs to pass a list or a string that can be separated by backend -->
@@ -82,11 +80,10 @@
                     </button>
                 </td>
                 <td class="box">
-                    <button class="edit-button button linea-icon" type="submit"><img class="edit-button-img" src="{{ url_for('static', filename='/images/software_pencil.svg') }}" alt="Edit" height="20" width="20"></button>
-                    <button class="update-button button linea-icon" type="submit" form="update-track-data" name="update-track-data" value=""><img src="{{ url_for('static', filename='/images/basic_floppydisk.svg') }}" alt="Save" width="20" height="20"></button>
+                    <button class="edit-button button linea-icon" type="submit"><img class="edit-button-img" src="{{ url_for('static', filename='/images/software_pencil.svg') }}" alt="Edit" height="30" width="30"></button>
                 </td>
                 <td class="box">
-                    <button class="queue-button linea-icon" type="submit"><img class="queue-button-img" src="{{ url_for('static', filename='/images/playlist-add.svg') }}" alt="Queue" height="20" width="20"></button>
+                    <button class="queue-button linea-icon" type="submit"><img class="queue-button-img" src="{{ url_for('static', filename='/images/playlist-add.svg') }}" alt="Queue" height="30" width="30"></button>
                 </td>
                 <td class="box track-info">
                     <p class="track-id" hidden>{{ track.track_id }}</p>
