@@ -99,12 +99,13 @@ def radio_main(station):
 @app.route('/update_track_data', methods = ['POST'])
 @login_required
 def update_track_data():
-	data = request.form['update-track-data'].split(';')
+	data = request.get_json()
+	
 	# parse track metadata from POST request
-	track_id = data[0]
-	new_title = data[1].strip()
-	new_artist = data[2].strip()
-	station = data[3]
+	track_id = data["track_id"]
+	new_title = data["title"]
+	new_artist = data["artist"]
+	station = data["station"]
 
 	# find requested track in database based on track_id
 	track = db.session.query(Tracks).filter_by(track_id=track_id).one()
@@ -120,7 +121,7 @@ def update_track_data():
 	file['title'] = new_title
 	file['artist'] = new_artist
 	file.save()
-	return redirect(f'/tracks/{station}')
+	return "Updated track data!"
 
 
 @app.route('/update_artist', methods = ['POST'])

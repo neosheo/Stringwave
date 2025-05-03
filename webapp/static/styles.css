@@ -333,10 +333,6 @@ td p {
     position: relative;
 }
 
-.edit-button, .done-button {
-    margin-top: 10px;
-}
-
 .queue-container {
     display: flex;
     justify-content: center;
