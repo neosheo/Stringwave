@@ -1,5 +1,4 @@
-var originalBGColor;
-var trackData;
+let originalBGColor;
 
 document.querySelector("table").addEventListener("click", (event) => {
     // only update button variable if user clicked the edit button
@@ -11,19 +10,15 @@ document.querySelector("table").addEventListener("click", (event) => {
         // extract title and artist elements
         const trackTitleElement = buttonParent.nextElementSibling.nextElementSibling.querySelector(".track-title");
         const trackArtistElement = buttonParent.nextElementSibling.nextElementSibling.nextElementSibling.querySelector(".track-title");
-
-        trackData = {
-            title: trackTitleElement,
-            artist: trackArtistElement
-        };
+        const editableElements = [trackTitleElement, trackArtistElement];
 
         // the background color is actually stored in the element 2 parents above button
         originalBGColor = window.getComputedStyle(buttonParent.parentElement).backgroundColor;
 
-        // make each key of trackData editable
-        for (let key in trackData) {
-            trackData[key].contentEditable = true;
-            trackData[key].style.backgroundColor = "#e95959ad";
+        // make each element editable
+        for (let elem of editableElements) {
+            elem.contentEditable = true;
+            elem.style.backgroundColor = "#e95959ad";
         }
 
         // replace edit button with done button
@@ -46,6 +41,7 @@ document.querySelector("table").addEventListener("click", (event) => {
 
         const trackTitleElement = buttonParent.nextElementSibling.nextElementSibling.querySelector(".track-title");
         const trackArtistElement = buttonParent.nextElementSibling.nextElementSibling.nextElementSibling.querySelector(".track-title");
+        const editableElements = [trackTitleElement, trackArtistElement];
         const trackId = trackTitleElement.parentElement.querySelector(".track-id").innerHTML;
 
         // get station
@@ -53,7 +49,7 @@ document.querySelector("table").addEventListener("click", (event) => {
         const station = url[url.length - 1];
 
         // create an object with the track data
-        const apiTrackData = {
+        const trackData = {
             track_id: trackId,
             title: trackTitleElement.textContent,
             artist: trackArtistElement.textContent,
@@ -61,9 +57,9 @@ document.querySelector("table").addEventListener("click", (event) => {
         };
 
         // remove editable text boxes
-        for (let key in trackData) {
-            trackData[key].contentEditable = false;
-            trackData[key].style.backgroundColor = originalBGColor;
+        for (let elem of editableElements) {
+            elem.contentEditable = false;
+            elem.style.backgroundColor = originalBGColor;
         };
 
         fetch("/update_track_data",
@@ -73,7 +69,7 @@ document.querySelector("table").addEventListener("click", (event) => {
 				"Content-Type": "application/json"
             },
             method: "POST",
-            body: JSON.stringify(apiTrackData)
+            body: JSON.stringify(trackData)
         });
 
         // replace done button with edit button
