@@ -13,7 +13,7 @@ fi
 
 python /stringwave/scripts/remove_whitespaces.py new
 
-find /stringwave/radio/"$station" -name "*.opus" > /stringwave/radio/"$station"/.playlist
+find /stringwave/radio/"$station" -name "*.opus" | shuf | sed "s|/stringwave/radio/$station|.|g" > /stringwave/radio/"$station"/.playlist
 
 if [ -f /stringwave/.pid-$station ]
 then
