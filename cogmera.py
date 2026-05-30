@@ -347,7 +347,7 @@ def download_songs(albums, num_albums_to_pick=None, config_stamp=None):
 			"artist": selected_artist,
 			"search_query": f"{selected_artist} {random_track}",
 			"config": config_stamp,
-			"discogs_link": json.loads(requests.get(album.link, headers=header).text)['uri'].split("/")[-1]
+			"discogs_link": json.loads(requests.get(album.link, headers=header).text)['uri'].split("/")[-1].split("-")[0].replace("release", "master")
 		}
 		logger.debug(f"DATA TO PASS TO API: {data}")
 		with open("dl_data/search_queries", "a") as f:

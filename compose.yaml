@@ -5,6 +5,7 @@ services:
       dockerfile: build/Dockerfile
     image: stringwave:latest
     container_name: stringwave
+    pull_policy: never
     restart: unless-stopped
     user: stringwave
     depends_on:
@@ -32,9 +33,8 @@ services:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
       - DISCOGS_PERSONAL_ACCESS_TOKEN=${DISCOGS_PERSONAL_ACCESS_TOKEN}
-    # ports:
-    #   - 5801:5801
-    #   - 5802:5802
+    labels:
+      - wud.watch=false
 
   gateway:
     image: nginxinc/nginx-unprivileged:latest
@@ -55,6 +55,7 @@ services:
       dockerfile: build/Dockerfile-celery
     image: stringwave-celery:latest
     container_name: stringwave-celery
+    pull_policy: never
     depends_on:
       rabbitmq:
         condition: service_healthy
@@ -75,6 +76,8 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    labels:
+      - wud.watch=false
 
   rabbitmq:
     image: rabbitmq:latest
@@ -99,12 +102,15 @@ services:
       dockerfile: build/Dockerfile-icecast
     image: stringwave-icecast:latest
     container_name: stringwave-icecast
+    pull_policy: never
     depends_on:
       rabbitmq:
         condition: service_healthy
     networks:
       stringwave:
     restart: unless-stopped
+    labels:
+      - wud.watch=false
 
 networks:
   stringwave:
