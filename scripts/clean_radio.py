@@ -12,22 +12,23 @@ if not sw_in_path:
     sys.path.append("/stringwave")
 from webapp import sw_logger as logger
 
+
 def clean_track(station: str, file_name: str):
     radio_path = f"/stringwave/radio/{station}/"
-    #for file in os.listdir(radio_path):
     safe_file = delete_broken_file(file_name, radio_path)
-    if safe_file is None:
+    if not safe_file:
         return
     logger.debug(f"{file_name} IS NOT A BROKEN FILE")
     new_file_name = clean_file_name(safe_file, radio_path)
     logger.debug(f"NEW_FILENAME: {new_file_name}")
     return new_file_name
 
+
 # deletes files that will break the radio
 # returns a safe file names
 def delete_broken_file(file_name: str, radio_path: str):
     # don't try to add hidden files
-    regex = r'^\.[^\.].+'
+    regex = r"^\.[^\.].+"
     if re.match(regex, file_name):
         return
 
@@ -40,7 +41,7 @@ def delete_broken_file(file_name: str, radio_path: str):
 
     # delete broken files that cause segmentation fault in ezstream
     # and duplicate values in database
-    regex = r'.+(?<!\.temp)\.opus$'
+    regex = r".+(?<!\.temp)\.opus$"
     if not re.match(regex, file_name):
         logger.debug(f"FOUND BROKEN FILE: {file_name}")
         os.remove(file_path)
@@ -53,8 +54,8 @@ def delete_broken_file(file_name: str, radio_path: str):
 # returns new name
 def clean_file_name(file_name: str, radio_path: str):
     # remove non-breaking spaces from file names
-    if u"\xa0" in file_name:
-        new_name = file_name.replace(u"\xa0", "")
+    if "\xa0" in file_name:
+        new_name = file_name.replace("\xa0", "")
         logger.debug(f"FOUND NON-BREAKING SPACE IN: {file_name}")
         os.rename(f"{radio_path}/{file_name}", f"{radio_path}/{new_name}")
         return new_name

@@ -1,9 +1,9 @@
-FROM python:3.12.4-slim-bullseye
+FROM python:3.12.13-slim-trixie
 
 WORKDIR /stringwave
 
 RUN apt-get update && apt-get upgrade -y 
-RUN apt-get install ezstream gcc tmux procps sqlite3 python3-lxml -y
+RUN apt-get install ezstream gcc tmux procps sqlite3 libxml2-dev libxslt-dev zlib1g-dev libpq-dev postgresql-17 -y
 
 COPY build/requirements.txt .
 RUN python -m pip install --upgrade pip

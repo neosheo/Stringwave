@@ -1,7 +1,7 @@
 radio/new/*
 radio/main/*
 venv
-.env
+.*env*
 __pycache__
 config/*
 logs/*
@@ -78,4 +78,6 @@ webapp/static/uploads/*
 subs*.txt
 *.bkp
 .venv
+connect_db.sh
 api_test.py
+postgres_*

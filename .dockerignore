@@ -9,3 +9,4 @@
 **/.st*
 **/scripts/run.sh
 **/scripts/download_test.py
+**/postgres_*
