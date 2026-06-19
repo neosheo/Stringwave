@@ -47,8 +47,8 @@ def login():
             #     .one()
             # )
             user = db.session.execute(
-                select(Users).where(Users.username == form.username.data).scalar_one()
-            )
+                select(Users).where(Users.username == form.username.data)
+            ).scalar_one()
 
             # check if user exists and submitted password hash matches user's password hash
             if user and flask_bcrypt.check_password_hash(
@@ -80,8 +80,8 @@ def load_user(username):
     # returns user object if the user exists otherwise returns None
     # user = db.session.query(Users).filter(Users.username == username).one_or_none()
     user = db.session.execute(
-        select(Users).where(Users.username == username).scalar_one_or_none()
-    )
+        select(Users).where(Users.username == username)
+    ).scalar_one_or_none()
     return user
 
 

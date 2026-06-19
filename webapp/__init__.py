@@ -137,8 +137,8 @@ login_manager.init_app(app)
 class Subs(db.Model):
     __bind_key__ = "main"
     channel_id = db.Column(db.String(24), primary_key=True)
-    channel_name = db.Column(db.String(35), nullable=False)
-    video_title_regex = db.Column(db.String(35), nullable=True)
+    channel_name = db.Column(db.String(100), nullable=False)
+    video_title_regex = db.Column(db.String(100), nullable=True)
     regex_type = db.Column(db.String(12), nullable=True)
 
 
@@ -146,7 +146,7 @@ class Tracks(db.Model):
     __bind_key__ = "main"
     track_id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
-    artist = db.Column(db.String(30), nullable=False)
+    artist = db.Column(db.String(100), nullable=False)
     track_type = db.Column(db.String(1), nullable=False)
     config = db.Column(db.Integer, db.ForeignKey("config.config_id"), nullable=False)
     station = db.Column(db.String(4), nullable=False)
@@ -158,11 +158,11 @@ class Tracks(db.Model):
 class Config(db.Model):
     __bind_key__ = "main"
     config_id = db.Column(db.Integer, primary_key=True)
-    genres = db.Column(db.String(21), nullable=False)
-    styles = db.Column(db.String(30), nullable=False)
+    genres = db.Column(db.String(100), nullable=False)
+    styles = db.Column(db.String(100), nullable=False)
     decade = db.Column(db.String(4), nullable=False)
     year = db.Column(db.String(4), nullable=False)
-    country = db.Column(db.String(45), nullable=False)
+    country = db.Column(db.String(100), nullable=False)
     sort_method = db.Column(db.String(12), nullable=False)
     sort_order = db.Column(db.String(1), nullable=False)
     albums_to_find = db.Column(db.Integer, nullable=False)
@@ -171,19 +171,19 @@ class Config(db.Model):
 class Genres(db.Model):
     __bind_key__ = "discogs"
     genre_id = db.Column(db.Integer, primary_key=True)
-    genre = db.Column(db.String(21))
+    genre = db.Column(db.String(100))
 
 
 class Styles(db.Model):
     __bind_key__ = "discogs"
     style_id = db.Column(db.Integer, primary_key=True)
-    style = db.Column(db.String(30))
+    style = db.Column(db.String(100))
 
 
 class Countries(db.Model):
     __bind_key__ = "discogs"
     country_id = db.Column(db.Integer, primary_key=True)
-    country = db.Column(db.String(45))
+    country = db.Column(db.String(100))
 
 
 class Decades(db.Model):

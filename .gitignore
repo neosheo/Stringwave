@@ -59,7 +59,6 @@ docker_scripts
 scripts/yt-test.sh
 build_regex.sh
 regex.txt
-*.sql
 styles_to_change.py
 test.sh
 subs.txt
@@ -81,3 +80,4 @@ subs*.txt
 connect_db.sh
 api_test.py
 postgres_*
+webapp/instance/*.sql

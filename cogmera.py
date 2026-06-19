@@ -372,7 +372,9 @@ def run_cogmera():
     #     f"SELECT * FROM config ORDER BY RANDOM() LIMIT {num_daily_downloads}"
     # )
     configs = db.session.scalars(
-        select(Config).order_by(func.random()).limit(num_daily_downloads)
+        select(Config)
+        .order_by(func.random())
+        .limit(num_daily_downloads)
     ).all()
 
     logger.debug(f"APPLICATION IS SET TO SELECT {num_daily_downloads} CONFIGURATIONS")

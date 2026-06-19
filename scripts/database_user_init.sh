@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
-source .env
-export POSTGRES_USER
-export POSTGRES_PASSWORD
+# source .env
+# export POSTGRES_USER
+# export POSTGRES_PASSWORD
 
-# DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/stringwave"
+POSTGRES_USER="$1"
+POSTGRES_PASSWORD="$2"
+
 DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/stringwave"
 
 # check for existence of stringwave admin account in database
@@ -31,11 +33,11 @@ then
 	# if the admin user exists ask the user if they want to overwrite it with a new password
 	if [[ $admin_user_exists == "t" ]]
 	then
-    	echo  "Admin user exists, overwrite? "
+		echo  "Admin user exists, overwrite? " >&2
 	    select yn in "Yes" "No"; do
 		case $yn in
 		    Yes )
-			echo "Removing old admin account...";
+			echo "Removing old admin account..."; >&2
     	    # sed -i '/ADMIN_PASSWORD/d' .env;
 
 			psql "$DATABASE_URL" -c "

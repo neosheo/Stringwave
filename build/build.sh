@@ -92,15 +92,21 @@ then
     fi
 fi 
 
-docker compose up -d postgres
+docker compose up -d --no-deps postgres
 # wait until healthy
 until [ "$(docker inspect -f '{{.State.Health.Status}}' stringwave-postgres)" = "healthy" ]
 do
     sleep 1
 done
+
+# extract postgres credentials
+source .env
+export POSTGRES_USER
+export POSTGRES_PASSWORD
+
 # check for admin user and add if it doesn't exist
 # trim any newline characters
-ADMIN_PW_SETTING=$(./scripts/database_user_init.sh | tr -d '\r\n')
+ADMIN_PW_SETTING=$(docker compose exec postgres /scripts/database_user_init.sh "$POSTGRES_USER" "$POSTGRES_PASSWORD" | tr -d '\r\n')
 
 # create cogmera database
 docker compose exec postgres dropdb -U stringwave cogmera
@@ -120,9 +126,6 @@ elif [[ "$ADMIN_PW_SETTING" == "Create new" ]]
                 echo "ADMIN_PASSWORD=\"$(< /dev/random tr -dc _A-Z-a-z-0-9 | head -c 25;)\"" >> .env;
         fi
 fi
-
-# remove null password if its in the .env file
-sed -i '/NULL_PASSWORD/d' .env
 
 docker compose up -d
 
