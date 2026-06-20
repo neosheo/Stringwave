@@ -4,7 +4,8 @@ from datetime import datetime, timedelta
 from webapp import pf_logger as logger
 from tqdm import tqdm
 from sqlalchemy.dialects.postgresql import insert
-from webapp import db, Subs
+from webapp import app, db, Subs
+from sqlalchemy import select
 import time
 import subprocess
 import os
@@ -33,7 +34,7 @@ def get_channel_feed(channel=None):
         logger.debug(f"Channel ID found: {chan_id}")
     # get the rss feed for the channel
     feed_url = f"https://youtube.com/feeds/videos.xml?channel_id={chan_id}"
-    logger.debug(f"BUILT FEED URL: {feed_url}")
+    logger.debug(f"Built feed url: {feed_url}")
     feed = requests.get(feed_url).text
     return feed
 
@@ -51,13 +52,13 @@ def get_channel_id(feed):
 
 
 def get_channel_icon(channel_url):
-    logger.debug(f"GETTING ICON FOR {channel_url}")
+    logger.debug(f"Getting icon for {channel_url}")
     channel_html = requests.get(channel_url).text
     soup = BeautifulSoup(channel_html, "html.parser")
     links = soup.find_all("link")
     for link in links:
         if link["rel"][0] == "image_src":
-            logger.debug(f"{link['rel']} IS AN ICON FOR {channel_url}")
+            logger.debug(f"{link['rel']} is an icon for {channel_url}")
             icon = requests.get(link["href"]).content
             channel_id = channel_url.split("/")[-1]
             icon_uri = (
@@ -65,7 +66,7 @@ def get_channel_icon(channel_url):
             )
             with open(icon_uri, "wb") as f:
                 f.write(icon)
-            logger.debug(f"SAVED CHANNEL ICON TO {icon_uri}")
+            logger.debug(f"Saved channel icon to {icon_uri}")
             return
         else:
             logger.debug(f"{link['rel']} IS NOT AN ICON FOR {channel_url}")
@@ -84,7 +85,7 @@ def get_recent_uploads(feed):
     # pull channel id from feed instead of parsing from xml because sometimes videos from other channels are included
     # mostly on artists with a vevo channel, videos may be listed with the vevo channel id that isn't in the database
     channel_id = feed_soup.find("link")["href"].split("channel_id=")[1].strip()
-    logger.debug(f"EXTRACTED CHANNEL ID FROM FEED URL: {channel_id}")
+    logger.debug(f"Extracted channel id from feed url: {channel_id}")
     titles = feed_soup.find_all("media:title")
     # check if videos are were published before your specified period
     # if they are within your specified period, include them
@@ -97,8 +98,8 @@ def get_recent_uploads(feed):
             continue
         else:
             new_videos.append((videos[index], titles[index]))
-            logger.debug(f"NEW VIDEO FOUND: {videos[index].text}")
-            logger.debug(f"NEW VIDEO LINK: {titles[index].text}")
+            logger.debug(f"New video found: {videos[index].text}")
+            logger.debug(f"New video link: {titles[index].text}")
         index += 1
     # extract video urls
     urls = [
@@ -115,19 +116,16 @@ def build_playlist():
     # clear old urls
     open("dl_data/urls", "w").close()
     # retrieve channel urls from database
-    # con = sqlite3.connect("webapp/instance/stringwave.db")
-    with db.session.begin():
-        subscriptions = [
-            # f"https://youtube.com/channel/{chan_id[0]}"
-            f"https://youtube.com/channel/{sub.channel_id}"
-            # for chan_id in con.cursor().execute("SELECT channel_id FROM subs").fetchall()
-            # for sub in db.session.query(Subs).all()
-            for sub in db.session.scalars(select(Subs)).all()
-        ]
-        print("Fetching new video URLs...", flush=True)
+    with app.app_context():
+        with db.session.begin():
+            subscriptions = [
+                f"https://youtube.com/channel/{sub.channel_id}"
+                for sub in db.session.scalars(select(Subs)).all()
+            ]
+    logger.info("Fetching new video URLs...")
     for subscription in tqdm(subscriptions):
         try:
-            logger.debug(f"DOWNLOADING FEED FOR {subscription}")
+            logger.debug(f"Downloading feed for {subscription}")
             feed = get_channel_feed(subscription)
             get_recent_uploads(feed)
         except requests.exceptions.ConnectionError:
@@ -135,8 +133,8 @@ def build_playlist():
             continue
     with open("dl_data/urls", "r") as f:
         num_urls = len(f.readlines())
-        logger.debug(f"FOUND {num_urls} LINKS")
-    print(f"Grabbed {num_urls} URLs!", flush=True)
+        logger.debug(f"Found {num_urls} links")
+    logger.info(f"Grabbed {num_urls} URLs!")
     requests.get("http://gateway:8080/download/pipefeeder")
 
 
@@ -144,31 +142,25 @@ def populate_database(text_file):
     with open(text_file, "r") as f:
         channel_ids = f.readlines()
     subscriptions = []
-    print("Gathering subscriptions...", flush=True)
+    logger.info("Gathering subscriptions...", flush=True)
     for channel_id in tqdm(channel_ids):
-        logger.debug(f"EXTRACTING CHANNEL DATA FOR ID: {channel_id}")
+        logger.debug(f"Extracting channel data for id: {channel_id}")
         try:
             channel_id = channel_id.strip()
             channel_url = f"https://youtube.com/channel/{channel_id}"
             feed = get_channel_feed(channel_url)
-            logger.debug(f"GOT FEED FOR {channel_url}")
+            logger.debug(f"Got feed for {channel_url}")
             channel_name = get_channel_name(feed)
-            logger.debug(f"CHANNEL NAME IS {channel_name}")
+            logger.debug(f"Channel name is {channel_name}")
             get_channel_icon(channel_url)
             subscriptions.append((channel_id, channel_name))
             time.sleep(3)
         except requests.exceptions.ConnectionError:
             time.sleep(3)
             continue
-    print("Done!", flush=True)
-    print("Updating database...", flush=True)
-    # con = sqlite3.connect("webapp/instance/stringwave.db")
-    # cur = con.cursor()
-    # cur.executemany(
-    #     "INSERT OR IGNORE INTO subs(channel_id, channel_name) VALUES (?, ?)",
-    #     subscriptions,
-    # )
-    # con.commit()
+    logger.info("Done!")
+    logger.info("Updating database...")
+
     sql_stmt = insert(Subs).values(
         [
             {
@@ -180,14 +172,15 @@ def populate_database(text_file):
     )
     sql_stmt = sql_stmt.on_conflict_do_nothing(index_elements=["channel_id"])
 
-    try:
-        db.session.execute(sql_stmt)
-        db.session.commit()
-    except exc.IntegrityError:
-        db.session.rollback()
-        logger.error("Pipefeeder failed to insert into the database")
+    with app.app_context():
+        try:
+            db.session.execute(sql_stmt)
+            db.session.commit()
+        except exc.IntegrityError:
+            db.session.rollback()
+            logger.error("Pipefeeder failed to insert into the database")
 
-    print("Done!", flush=True)
+    logger.info("Done!", flush=True)
 
 
 if __name__ == "__main__":
@@ -206,8 +199,8 @@ if __name__ == "__main__":
             time.sleep(5)
     open(status_file, "w").close()
     # remove any duplicate database entries and illegal filenames
-    print("Cleaning up...", flush=True)
+    logger.info("Cleaning up database entries and file names...")
     res = subprocess.run(["./scripts/cleanup.sh"])
-    print("Done!", flush=True)
-    logger.debug(f"CLEANUP SCRIPT EXIT CODE: {res.returncode}")
-    print("Done!", flush=True)
+    logger.info("Done cleaning up database entries and file names")
+    logger.debug(f"Cleanup script exit code: {res.returncode}")
+    logger.info("Pipefeeder completed successfully!")

@@ -6,6 +6,7 @@
 
 POSTGRES_USER="$1"
 POSTGRES_PASSWORD="$2"
+OVERWRITE_ADMIN_USER="$3"
 
 DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/stringwave"
 
@@ -33,27 +34,29 @@ then
 	# if the admin user exists ask the user if they want to overwrite it with a new password
 	if [[ $admin_user_exists == "t" ]]
 	then
-		echo  "Admin user exists, overwrite? " >&2
-	    select yn in "Yes" "No"; do
-		case $yn in
-		    Yes )
-			echo "Removing old admin account..."; >&2
-    	    # sed -i '/ADMIN_PASSWORD/d' .env;
+		if (( OVERWRITE_ADMIN_USER )); then
+			echo  "Admin user exists, overwrite? " >&2
+			select yn in "Yes" "No"; do
+			case $yn in
+				Yes )
+				echo "Removing old admin account..."; >&2
+				# sed -i '/ADMIN_PASSWORD/d' .env;
 
-			psql "$DATABASE_URL" -c "
-				DELETE FROM users
-				WHERE username = 'admin';
-			"
-			# ADMIN_PW_MAYBE=ADMIN_PASSWORD;
-			echo "Overwrite"
-			break;;
-        	
-			No )
-			# ADMIN_PW_MAYBE=NULL_PASSWORD;
-			echo "Do not overwrite"
-			break;;
-		esac
-	    done
+				psql "$DATABASE_URL" -c "
+					DELETE FROM users
+					WHERE username = 'admin';
+				"
+				# ADMIN_PW_MAYBE=ADMIN_PASSWORD;
+				echo "Overwrite"
+				break;;
+				
+				No )
+				# ADMIN_PW_MAYBE=NULL_PASSWORD;
+				echo "Do not overwrite"
+				break;;
+			esac
+			done
+		fi
 	else
 		echo "Create new"
 	fi

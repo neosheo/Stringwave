@@ -90,7 +90,7 @@ services:
     container_name: stringwave-rabbitmq
     hostname: rabbitmq
     healthcheck:
-   #test: ["CMD-SHELL", "rabbitmq-diagnostics -q check_virtual_hosts"]
+      #test: ["CMD-SHELL", "rabbitmq-diagnostics -q check_virtual_hosts"]
       test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
       timeout: 10s
@@ -139,6 +139,8 @@ services:
       timeout: 60s
       retries: 5
       start_period: 80s
+    ports:
+      - 5432:5432
     networks:
       - stringwave
     labels:

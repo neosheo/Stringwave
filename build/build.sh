@@ -51,6 +51,14 @@ then
     echo POSTGRES_USER=stringwave >> .env
 fi
 
+# write default setting of whether to prompt user to overwrite admin user settings
+# default is 0 which means it will leave existing admin user if admin user exists
+# set to 1 if you want it to prompt for overwrite each time if admin user exists
+if ! grep "OVERWRITE_ADMIN_USER" .env > /dev/null;
+then
+    echo OVERWRITE_ADMIN_USER=0 >> .env
+fi
+
 if ! grep DISCOGS_PERSONAL_ACCESS_TOKEN .env > /dev/null;
 then
 	read -p "Enter discogs personal access token: " access_token
@@ -103,10 +111,12 @@ done
 source .env
 export POSTGRES_USER
 export POSTGRES_PASSWORD
+export OVERWRITE_ADMIN_USER
 
 # check for admin user and add if it doesn't exist
 # trim any newline characters
-ADMIN_PW_SETTING=$(docker compose exec postgres /scripts/database_user_init.sh "$POSTGRES_USER" "$POSTGRES_PASSWORD" | tr -d '\r\n')
+
+ADMIN_PW_SETTING=$(docker compose exec postgres /scripts/database_user_init.sh "$POSTGRES_USER" "$POSTGRES_PASSWORD" "$OVERWRITE_ADMIN_USER"| tr -d '\r\n')
 
 # create cogmera database
 docker compose exec postgres dropdb -U stringwave cogmera
@@ -134,3 +144,23 @@ unset FLASK_SECRET_KEY
 unset RABBITMQ_DEFAULT_USER
 unset RABBITMQ_DEFAULT_PASS
 unset ADMIN_PASSWORD
+
+# allow user to immediately follow the logs of a container
+for (( i=1; i<=$#; i++ )); do
+    arg="${!i}"
+    if [[ "$arg" == "-f" ]] || [[ "$arg" == "--follow" ]]; then
+        next_arg_index=$((i + 1))
+        image_name="${!next_arg_index}"
+        if [[ "$image_name" != "stringwave" ]]; then
+            image_name="stringwave-${image_name}"
+        fi
+        # if user wants to follow stringwave or celery containers, follow the log file
+        # otherwise follow container log
+        if [[ "$image_name" != "stringwave" ]] || [[ $"image_name" != "stringwave-celery" ]]; then
+            docker logs -f "$image_name" 
+        else
+            docker exec "$image_name" tail -f /stringwave/logs/stringwave.log
+        fi
+        break
+    fi
+done

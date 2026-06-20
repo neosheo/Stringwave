@@ -6,7 +6,7 @@ import json
 import sqlite3
 import re
 import time
-from webapp import db, Config, cm_logger as logger
+from webapp import app, db, Config, cm_logger as logger
 from sqlalchemy import select, func
 
 
@@ -34,23 +34,23 @@ class Album:
 
 def set_genres(*genres):
     if genres[0] == "None":
-        logger.debug("NO GENRES SET")
+        logger.debug("No genres set")
         return ""
 
     # log genres passed to function
     for i, genre in enumerate(genres):
-        logger.debug(f"GENRE {i + 1} SET TO {genre}")
+        logger.debug(f"Genre {i + 1} set to {genre}")
 
     genre_param = "".join(
         [f"&genre={genre.title().replace(' ', '%20')}" for genre in genres]
     )
-    logger.debug(f"GENRE PARAMETER SET AS: {genre_param}")
+    logger.debug(f"Genre parameter set as: {genre_param}")
     return genre_param
 
 
 def set_styles(*styles):
     if styles[0] == "None":
-        logger.debug("NO STYLES SET")
+        logger.debug("No styles set")
         return ""
 
     # log styles passed to function
@@ -83,48 +83,48 @@ def set_styles(*styles):
 		.replace("á", "%CC%81")
 		.replace("č", "%C4%8D")
 	)}"""
-    logger.debug(f"STYLE PARAMETER SET TO: {style_param}")
+    logger.debug(f"Style parameter set to: {style_param}")
     return style_param
 
 
 def set_time(decade="None", year="None"):
     if decade != "None":
-        logger.debug(f"DECADE SET TO {decade}")
+        logger.debug(f"Decade set to {decade}")
         decade_param = f"&decade={decade}"
     else:
-        logger.debug("NO DECADE SET")
+        logger.debug("No decade set")
         decade_param = ""
     if year != "None":
-        logger.debug(f"YEAR SET TO {year}")
+        logger.debug(f"Year set to {year}")
         year_param = f"&year={year}"
     else:
-        logger.debug(f"NO YEAR SET")
+        logger.debug(f"No year set")
         year_param = ""
-    logger.debug(f"TIME PARAMETER SET TO: {decade_param}{year_param}")
+    logger.debug(f"Time parameter set to: {decade_param}{year_param}")
     return f"{decade_param}{year_param}"
 
 
 def set_sort_method(method, order):
-    logger.debug(f"SORT METHOD SET TO {method}")
-    logger.debug(f"SORT ORDER SET TO {order}")
+    logger.debug(f"Sort method set to {method}")
+    logger.debug(f"Sort order set to {order}")
     if order == "D":
         order = "desc"
     elif order == "A":
         order = "asc"
     else:
-        logger.error("INVALID SORT ORDER")
+        logger.error("Invalid sort order")
     sort_param = f"&sort={method}%2C{order}&"
-    logger.debug(f"SORT PARAMETER SET TO: {sort_param}")
+    logger.debug(f"Sort parameter set to: {sort_param}")
     return sort_param
 
 
 def set_country(country="None"):
     if country != "None":
-        logger.debug(f"COUNTRY OF ORIGIN SET TO {country}")
+        logger.debug(f"Country of origin set to {country}")
         country_param = f"&country={country}"
-        logger.debug(f"COUNTRY OF ORIGIN PARAMETER SET TO: {country_param}")
+        logger.debug(f"Country of origin parameter set to: {country_param}")
         return country_param
-    logger.debug(f"NO COUNTRY OF ORIGIN SET")
+    logger.debug(f"No country of origin set")
     return ""
 
 
@@ -133,15 +133,15 @@ def build_url(genre_param, style_param, time_param, sort_param, query=None):
         url = f"https://api.discogs.com/database/search?per_page=100{genre_param}{style_param}{time_param}{sort_param}&token={os.getenv('DISCOGS_PERSONAL_ACCESS_TOKEN')}"
     else:
         url = f"https://api.discogs.com/database/search?per_page=100&q={query}{genre_param}{style_param}{time_param}{sort_param}&token={os.getenv('DISCOGS_PERSONAL_ACCESS_TOKEN')}"
-    logger.debug(f"SEARCH URL: {url}")
+    logger.debug(f"Search url: {url}")
     return url
 
 
 def select_random_albums(albums, num_albums_to_pick):
-    logger.debug(f"ALBUMS PASSED TO SELECTION FUNCTION: {albums}")
-    logger.debug(f"NUMBER OF ALBUMS TO PICK: {num_albums_to_pick}")
+    logger.debug(f"Albums passed to selection function: {albums}")
+    logger.debug(f"Number of albums to pick: {num_albums_to_pick}")
     if len(albums) == 0:
-        logger.error("NO ALBUMS FOUND")
+        logger.error("No albums found")
         return "error: no albums"
     i = 0
     albums_selected = []
@@ -153,7 +153,7 @@ def select_random_albums(albums, num_albums_to_pick):
     while i < num_albums_to_pick:
         try:
             selected_album = random.choice(albums)
-            logger.debug(f"ALBUM SELECTED: {selected_album[0]}")
+            logger.debug(f"Album selected: {selected_album[0]}")
         # force retry if it encounters a ValueError to prevent the program from exiting
         except ValueError:
             logger.error("ValueError on selection. Retrying...")
@@ -161,7 +161,7 @@ def select_random_albums(albums, num_albums_to_pick):
         # check the selected album against a list of previously selected albums to skip duplicates
         if selected_album[0].lower() in albums_selected_titles:
             logger.debug(
-                f"{selected_album[0]} WAS ALREADY DETECTED. SELECTING ANOTHER ALBUM..."
+                f"{selected_album[0]} was already detected. Selecting another album..."
             )
             continue
         albums_selected.append(selected_album)
@@ -171,8 +171,8 @@ def select_random_albums(albums, num_albums_to_pick):
 
 
 def get_album_data(url, num_albums_to_pick, num_pages):
-    logger.debug(f"NUMBER OF ALBUMS TO PICK: {num_albums_to_pick}")
-    logger.debug(f"NUMBER OF PAGES TO SCRAPE: {num_pages}")
+    logger.debug(f"Number of albums to pick: {num_albums_to_pick}")
+    logger.debug(f"Number of pages to scrape: {num_pages}")
     header = {
         "User-Agent": "Cogmera/1.0",
     }
@@ -180,7 +180,7 @@ def get_album_data(url, num_albums_to_pick, num_pages):
     # used to track the artists on albums with various artists
     titles, artists, links, albums, tracklist_artists = [], [], [], [], []
     for page in range(1, num_pages):
-        logger.debug(f"SCRAPING PAGE {page}...")
+        logger.debug(f"Scraping page {page}...")
         i = 0
         while True:
             # prevents application exiting on a failed connection
@@ -192,7 +192,7 @@ def get_album_data(url, num_albums_to_pick, num_pages):
                 search_results = json.loads(
                     requests.get(f"{url}&page={page}", headers=header).text
                 )["results"]
-                logger.debug(f"SCRAPED DATA FOR PAGE {page}:\n{search_results}")
+                logger.debug(f"Scraped data for page {page}:\n{search_results}")
             except requests.exceptions.ConnectionError:
                 logger.error(f"Connection error on page {page}!")
                 continue
@@ -206,11 +206,11 @@ def get_album_data(url, num_albums_to_pick, num_pages):
         for title in titles:
             albums.append((title, artists[i], links[i]))
             logger.debug(
-                f"\nALBUM DATA:\nTITLE: {title}\nARTIST: {artists[i]}\nLINK: {links[i]}"
+                f"\nAlbum data:\nTitle: {title}\nArtist: {artists[i]}\nLink: {links[i]}"
             )
             i += 1
-    logger.debug(f"NUMBER OF ALBUMS FOUND: {len(albums)}")
-    logger.debug("SELECTING RANDOM ALBUMS...")
+    logger.debug(f"Number of albums found: {len(albums)}")
+    logger.debug("Selecting random albums...")
     # multiple number of albums to pick by 2 to have a backup pick for each slot
     selected_albums = select_random_albums(albums, num_albums_to_pick * 2)
     if selected_albums == "error: no albums":
@@ -221,7 +221,7 @@ def get_album_data(url, num_albums_to_pick, num_pages):
     titles.clear()
     artists.clear()
     links.clear()
-    logger.debug("\nSELECTED ALBUMS:")
+    logger.debug("\nSelected albums:")
     for selected_album in selected_albums:
         logger.debug(f"{selected_album[0]} - {selected_album[1]}")
         # make a new list of titles, artists, and links for selections only
@@ -231,21 +231,21 @@ def get_album_data(url, num_albums_to_pick, num_pages):
     # select the random track
     # use index so you can check if album has various artists
     for i, link in enumerate(links):
-        logger.debug(f"GETTING TRACKLIST FROM {link}")
-        logger.debug(f"ARTIST OF SELECTED ALBUM IS {artists[i]}")
+        logger.debug(f"Getting tracklist from {link}")
+        logger.debug(f"Artist of selected album is {artists[i]}")
         tracks = []
         track_artists = []
         album_data_text = requests.get(link, headers=header).text
         if not album_data_text:
-            logger.debug("ALBUM DATA RETURN A BLANK STRING")
+            logger.debug("Album data returned a blank string")
         album_data = json.loads(album_data_text)
         tracklist = album_data["tracklist"]
-        logger.debug(f"NUMBER OF TRACKS FOUND: {len(tracklist)}")
+        logger.debug(f"Number of tracks found: {len(tracklist)}")
         if len(album_data["artists"]) > 1:
-            logger.debug("THIS ALBUM HAS MULTIPLE ARTISTS")
+            logger.debug("This album has multiple artists")
             for track in tracklist:
-                logger.debug(f"TRACK FOUND: {track['title']}")
-                logger.debug(f"TRACK DATA: {track}")
+                logger.debug(f"Track found: {track['title']}")
+                logger.debug(f"Track data: {track}")
                 tracks.append(track["title"])
             artists = []
             for artist in album_data["artists"]:
@@ -258,19 +258,19 @@ def get_album_data(url, num_albums_to_pick, num_pages):
                 # if more than 2 artists, separate them with commas and the word and before the last one
                 elif len(artists) > 2:
                     artist = f'{", ".join(artists[:-1])}, and {artists[-1]}'
-                logger.debug(f"ARTIST FOUND: {artist}")
+                logger.debug(f"Artist found: {artist}")
                 track_artists.append(artist)
             pass
         else:
-            logger.debug("THIS ALBUM DOES NOT HAVE VARIOUS ARTISTS")
+            logger.debug("This album does not have various artists")
             for track in tracklist:
-                logger.debug(f"TRACK FOUND: {track['title']}")
+                logger.debug(f"Track found: {track['title']}")
                 tracks.append(track["title"])
 
         tracklists.append(tracks)
-        logger.debug(f"THIS ALBUM HAS {len(tracklist)} TRACKS")
+        logger.debug(f"This album has {len(tracklist)} tracks")
         tracklist_artists.append(track_artists)
-        logger.debug(f"THIS ALBUM HAS {len(tracklist_artists)} ARTISTS")
+        logger.debug(f"This album has {len(tracklist_artists)} artists")
         if len(tracklist_artists) > 1:
             logger.debug(tracklist_artists)
     # build the album object by grabbing the title and noting the index, then apply that index to the other lists
@@ -279,7 +279,7 @@ def get_album_data(url, num_albums_to_pick, num_pages):
             Album(title, artists[i], links[i], tracklists[i], tracklist_artists[i])
         )
         [
-            logger.debug(f"ALBUM SELECTED FOR DOWNLOAD: {album.title} - {album.artist}")
+            logger.debug(f"Album selected for download: {album.title} - {album.artist}")
             for album in albums
         ]
     return albums
@@ -292,19 +292,19 @@ def validate_albums(albums, num_albums_to_pick):
     i = 0
     for album in albums:
         if i == num_albums_to_pick:
-            logger.debug("VALIDATION COMPLETE")
+            logger.debug("validation complete")
             break
         if album.tracklist == []:
-            logger.debug(f"EMPTY TRACKLIST: {album.link}")
+            logger.debug(f"Empty tracklist: {album.link}")
             continue
         else:
             if album.tracklist_artists is not None:
                 if len(album.tracklist_artists) != len(album.tracklist):
                     logger.debug(
-                        f"{album.title} HAS {len(album.tracklist_artists)} ARTISTS BUT {len(album.tracklist)} TRACKS"
+                        f"{album.title} has {len(album.tracklist_artists)} artists but {len(album.tracklist)} tracks"
                     )
                     continue
-            logger.debug(f"{album.title} IS A VALID ALBUM")
+            logger.debug(f"{album.title} is a valid album")
             valid_albums.append(album)
             i += 1
     return valid_albums
@@ -327,19 +327,18 @@ def download_songs(albums, num_albums_to_pick=None, config_stamp=None):
     ]
     for album in albums:
         random_track, random_number = album.get_random_track()
-        logger.debug(f"RANDOM TRACK SELECTED: {random_track}")
-        logger.debug(f"RANDOM TRACK NUMBER: {random_number}")
+        logger.debug(f"Random track selected: {random_track}")
+        logger.debug(f"Random track number: {random_number}")
         if album.tracklist_artists is not None:
             selected_artist = album.tracklist_artists[random_number]
         else:
             selected_artist = album.artist
-        logger.debug(f"RANDOM TRACK ARTIST: {selected_artist}")
+        logger.debug(f"Random track artist: {selected_artist}")
         logger.info(f"Track selected: {random_track} - {selected_artist}\n")
-        print(f"Track selected: {random_track} - {selected_artist}\n")
         random_track = re.sub(r"(\*|/)", "", random_track)
-        logger.debug(f"RANDOM TRACK TITLE UPDATED: {random_track}")
+        logger.debug(f"Random track title updated: {random_track}")
         selected_artist = re.sub(r"(\*|/)", "", selected_artist)
-        logger.debug(f"RANDOM TRACK ARTIST UPDATED: {selected_artist}")
+        logger.debug(f"Random track artist updated: {selected_artist}")
         header = {
             "User-Agent": "Cogmera/1.0",
         }
@@ -355,35 +354,24 @@ def download_songs(albums, num_albums_to_pick=None, config_stamp=None):
             .split("-")[0]
             .replace("release", "master"),
         }
-        logger.debug(f"DATA TO PASS TO API: {data}")
+        logger.debug(f"Data to pass to api: {data}")
         with open("dl_data/search_queries", "a") as f:
             json.dump(data, f)
             f.write("\n")
 
 
 def run_cogmera():
-    # establish connection to database
-    # con = sqlite3.connect("webapp/instance/stringwave.db")
-    # cur = con.cursor()
-
     # pick random configs
     num_daily_downloads = int(os.getenv("NUM_DAILY_DOWNLOADS"))
-    # configs = cur.execute(
-    #     f"SELECT * FROM config ORDER BY RANDOM() LIMIT {num_daily_downloads}"
-    # )
-    configs = db.session.scalars(
-        select(Config)
-        .order_by(func.random())
-        .limit(num_daily_downloads)
-    ).all()
-
-    logger.debug(f"APPLICATION IS SET TO SELECT {num_daily_downloads} CONFIGURATIONS")
-    # logger.debug(f"SELECTED {len(configs.fetchall())} CONFIGURATIONS")
+    logger.debug(f"Application is set to select {num_daily_downloads} configurations")
+    with app.app_context():
+        configs = db.session.scalars(
+            select(Config).order_by(func.random()).limit(num_daily_downloads)
+        ).all()
 
     # clear old search queries
     open("dl_data/search_queries", "w").close()
 
-    # for config in configs.fetchall():
     for config in configs:
         logger.info(f"\nID: {config.config_id}")
         logger.info(f'Genres: {config.genres.replace(";", ", ")}')
@@ -423,7 +411,7 @@ def run_cogmera():
                 break
         time.sleep(5)
     open(status_file, "w").close()
-    print("Done!", flush=True)
+    logger.info("Cogmera completed successfully!")
 
 
 if __name__ == "__main__":

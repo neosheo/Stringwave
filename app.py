@@ -41,11 +41,6 @@ def login():
     if request.method == "POST":
         if form.validate_on_submit():
             # select user matching supplied user name
-            # user = (
-            #     db.session.query(Users)
-            #     .filter(Users.username == form.username.data)
-            #     .one()
-            # )
             user = db.session.execute(
                 select(Users).where(Users.username == form.username.data)
             ).scalar_one()
@@ -78,7 +73,6 @@ def logout():
 @login_manager.user_loader
 def load_user(username):
     # returns user object if the user exists otherwise returns None
-    # user = db.session.query(Users).filter(Users.username == username).one_or_none()
     user = db.session.execute(
         select(Users).where(Users.username == username)
     ).scalar_one_or_none()
@@ -94,12 +88,6 @@ def index():
 @login_required
 def tracks_main(station):
     # filter only tracks from the supplied station for display
-    # tracks = (
-    #     db.session.query(Tracks)
-    #     .filter(Tracks.station == station)
-    #     .order_by(func.lower(Tracks.title))
-    #     .all()
-    # )
     tracks = (
         db.session.execute(
             select(Tracks)
@@ -137,19 +125,14 @@ def update_track_data():
     logger.debug(f"UPDATE REQUESTED ON {station} STATION")
 
     # find requested track in database based on track_id
-    # track = db.session.query(Tracks).filter_by(track_id=track_id).one()
     track = db.session.get(Tracks, track_id)
 
     if track:
         # set metadata in database
         logger.info(f"Updating metadata for {track.title}.")
         # extract file path from database and set new metadata to file
-        # file_path = db.session.query(Tracks).filter_by(track_id=track_id).one().file_path
         file_path = track.file_path
         file = OggOpus(file_path)
-        # save old metadata in case you need to rollback
-        # old_title = file["title"]
-        # old_artist = file["artist"]
 
         # update file metadata to new data
         file["title"] = new_title
@@ -173,29 +156,6 @@ def update_track_data():
         return f"Updated track data for track with id {track_id}!"
     else:
         return f"Track with id {track_id} does not exist in the database."
-
-
-# @app.route("/update_artist", methods=["POST"])
-# @login_required
-# def update_artist():
-#     data = request.form["update-artist"].split(";")
-#     track_id = data[0]
-#     new_name = data[1].strip()
-#     station = data[2]
-#     track = db.session.query(Tracks).filter_by(track_id=track_id).one()
-#     track.artist = new_name
-#     db.session.commit()
-#     file_path = db.session.query(Tracks).filter_by(track_id=track_id).one().file_path
-#     file = (
-#         db.session.query(Tracks)
-#         .filter_by(track_id=track_id)
-#         .one()
-#         .title.replace(" ", "_")
-#     )
-#     file = OggOpus(file_path)
-#     file["artist"] = new_name
-#     file.save()
-#     return redirect(f"/tracks/{station}")
 
 
 # sets regex pattern to extract title and artist from pipefeeder video title
@@ -234,9 +194,6 @@ def add_regex():
 @login_required
 def move_to_main():
     track_id = request.form["move_to_main"]
-    # old_file_path = (
-    #     db.session.query(Tracks).filter_by(track_id=track_id).one().file_path
-    # )
     track = db.session.get(Tracks, track_id)
     logger.info(f"Moving {track.title} to the main station.")
     old_file_path = track.file_path
@@ -266,17 +223,10 @@ def move_status():
 @login_required
 def delete_track(station):
     track_id = request.form["delete_track"]
-    # file_path = (
-    #     db.session.query(Tracks)
-    #     .filter_by(track_id=request.form["delete_track"])
-    #     .one()
-    #     .file_path
-    # )
     track = db.session.get(Tracks, track_id)
     file_path = track.file_path
     # delete file
     os.remove(file_path)
-    # db.session.query(Tracks).filter_by(track_id=request.form["delete_track"]).delete()
     # delete from database
     try:
         db.session.delete(track)
@@ -375,6 +325,7 @@ def config():
             sort_method=sort_method,
             sort_order=sort_order,
             albums_to_find=albums_to_find,
+            is_active=True,
         )
         try:
             db.session.add(new_config)
@@ -401,7 +352,6 @@ def dump():
     configs = (
         db.session.execute(select(Config).order_by(Config.config_id)).scalars().all()
     )
-    # configs = Config.query.order_by(Config.config_id).all()
     return render_template("dump_config.html", configs=configs)
 
 
@@ -409,9 +359,10 @@ def dump():
 @login_required
 def delete_config():
     config_id = request.form["delete_config"]
-    # db.session.query(Config).filter_by(config_id=request.form["delete_config"]).delete()
     try:
-        db.session.execute(delete(Config).where(Config.config_id == config_id))
+        # db.session.execute(delete(Config).where(Config.config_id == config_id))
+        config = db.session.get(Config, config_id)
+        config.is_active = False
         db.session.commit()
     except exc.IntegrityError:
         db.session.rollback()
@@ -433,6 +384,7 @@ def backup_configs():
             Config.sort_method,
             Config.sort_order,
             Config.albums_to_find,
+            Config.is_active,
         )
     )
 
@@ -523,8 +475,6 @@ def del_sub():
 @login_required
 def backup():
     # get all channel ids from database
-    # con = sqlite3.connect("webapp/instance/stringwave.db")
-    # channel_ids = con.cursor().execute("SELECT channel_id FROM subs")
     channel_ids = db.session.scalars(select(Subs.channel_id)).all()
 
     # write links to text file
@@ -583,7 +533,6 @@ def update_channel_name():
     channel_id = data[0]
     new_channel_name = data[1].strip()
     logger.debug(f"UPDATING CHANNEL NAME FOR {channel_id} TO {new_channel_name}")
-    # channel = db.session.query(Subs).filter_by(channel_id=channel_id).one()
     channel = db.session.get(Subs, channel_id)
     try:
         channel.channel_name = new_channel_name

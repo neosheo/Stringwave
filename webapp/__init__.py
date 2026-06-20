@@ -22,6 +22,7 @@ postgres_uri = f"postgresql+psycopg2://{postgres_user}:{postgres_pass}@postgres:
 radio_path = "/stringwave/radio"
 log_path = "logs"
 
+# set up logging
 log_level = logging.DEBUG
 
 
@@ -166,6 +167,7 @@ class Config(db.Model):
     sort_method = db.Column(db.String(12), nullable=False)
     sort_order = db.Column(db.String(1), nullable=False)
     albums_to_find = db.Column(db.Integer, nullable=False)
+    is_active = db.Column(db.Boolean, nullable=False, default=True)
 
 
 class Genres(db.Model):
@@ -202,9 +204,3 @@ class SortMethods(db.Model):
     __bind_key__ = "discogs"
     sort_method_id = db.Column(db.Integer, primary_key=True)
     sort_method = db.Column(db.String(4))
-
-
-with app.app_context():
-    db.create_all("main")
-    db.create_all("discogs")
-    create_admin_user(flask_bcrypt)
