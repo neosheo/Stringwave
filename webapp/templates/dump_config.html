@@ -20,7 +20,8 @@
       <th scope="col" class="box header">Delete</th>
     </tr>
   </tbody>
-  {% for config in configs %} {% if config.is_active %}
+  {% for config in configs %} {% if config.is_active and config.config_id != 0
+  %}
   <form method="POST" id="delete" action="/cogmera/delete_config"></form>
   <tr>
     <td class="box">{{ config.config_id }}</td>
