@@ -101,6 +101,7 @@ for station in stations:
         # get list of Track objects
         track_objects = []
         for track in tracks:
+            config = track[4]
             # set config to 0 if the config id doesn't exist in the config table
             config_exists = db.session.get(Config, config)
             if not config_exists:
@@ -111,7 +112,7 @@ for station in stations:
                     title=track[1],
                     artist=track[2],
                     track_type=track[3],
-                    config=track[4],
+                    config=config,
                     station=track[5],
                     file_path=track[6],
                     discogs_link=track[7],
