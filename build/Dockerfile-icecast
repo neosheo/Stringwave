@@ -12,6 +12,7 @@ RUN touch \
 RUN chown stringwave:stringwave \
     /var/log/icecast/access.log \
     /var/log/icecast/error.log
+RUN chown -R stringwave:stringwave /config
 
 USER stringwave
 ENTRYPOINT ["icecast", "-c", "/config/icecast.xml"]

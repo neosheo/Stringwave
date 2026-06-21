@@ -46,6 +46,12 @@ for station in stations:
         if "config" not in track:
             track["config"] = 0
 
+        # old versions put the string "pf" as config for pipefeeder tracks
+        # replace this with 0 to prevent postgres from throwing a type error
+        if type(track["config"][0]) == str:
+            track["config"][0] = 0
+            track.save()
+
         # placeholder if track_type isn't present
         if "track_type" not in track:
             track["track_type"] = "n"
@@ -83,20 +89,22 @@ for station in stations:
 
         # add config 0 for any tracks that have a config id not in the config table
         # or tracks added by pipefeeder
-        db.session.add(
-            Config(
-                config_id=0,
-                genres="",
-                styles="",
-                decade="",
-                year="",
-                country="",
-                sort_method="",
-                sort_order="",
-                albums_to_find=0,
-                is_active=False,
+        config_0_exists = db.session.get(Config, 0)
+        if not config_0_exists:
+            db.session.add(
+                Config(
+                    config_id=0,
+                    genres="",  
+                    styles="",
+                    decade="",
+                    year="",
+                    country="",
+                    sort_method="",
+                    sort_order="",
+                    albums_to_find=0,
+                    is_active=False,
+                )
             )
-        )
 
         # get list of Track objects
         track_objects = []

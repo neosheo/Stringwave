@@ -366,7 +366,7 @@ def run_cogmera():
     logger.debug(f"Application is set to select {num_daily_downloads} configurations")
     with app.app_context():
         configs = db.session.scalars(
-            select(Config).order_by(func.random()).limit(num_daily_downloads)
+            select(Config).where(Config.config_id != 0).order_by(func.random()).limit(num_daily_downloads)
         ).all()
 
     # clear old search queries
