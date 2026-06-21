@@ -1,9 +1,9 @@
-FROM python:3.12.4-slim-bullseye
+FROM python:3.12.13-slim-trixie
 
 WORKDIR /stringwave
 
 RUN apt-get update && apt-get upgrade -y
-RUN apt-get install ffmpeg python3-lxml -y
+RUN apt-get install ffmpeg libxml2-dev libxslt-dev zlib1g-dev libpq-dev postgresql-17 gcc -y
 
 COPY build/requirements-celery.txt ./requirements.txt
 RUN python -m pip install --upgrade pip

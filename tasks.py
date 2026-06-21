@@ -1,4 +1,13 @@
-from webapp import celery_app, db, Tracks, Subs, pf_logger, cm_logger, sw_logger,  radio_path
+from webapp import (
+    celery_app,
+    db,
+    Tracks,
+    Subs,
+    pf_logger,
+    cm_logger,
+    sw_logger,
+    radio_path,
+)
 from disallowed_titles import disallowed_titles
 from pipefeeder import populate_database
 from scripts.update_track_data import update_track_data
@@ -10,21 +19,24 @@ import shutil
 import json
 from sqlalchemy import exc
 
+
 @celery_app.task
 def move_track(track_id, old_file_path, new_file_path):
     subprocess.run(["mv", old_file_path, new_file_path])
     sw_logger.debug(f"ATTEMPTING TO MOVE TRACK ID: {track_id}")
     try:
-        entry = db.session.query(Tracks).filter_by(track_id=track_id).one()
-        entry.station = "main"
-        entry.file_path = new_file_path
-        db.session.commit()
-        requests.get("http://gateway:8080/reread/new")
-        requests.get("http://gateway:8080/reread/main")
-        requests.get("http://gateway:8080/move_complete")
+        with db.session.begin():
+            entry = db.session.query(Tracks).filter_by(track_id=track_id).one()
+            entry.station = "main"
+            entry.file_path = new_file_path
+            # db.session.commit()
+            requests.get("http://gateway:8080/reread/new")
+            requests.get("http://gateway:8080/reread/main")
+            requests.get("http://gateway:8080/move_complete")
     except exc.NoResultFound:
         sw_logger.error(f"ERROR: moving track with id {track_id} back to new station")
         subprocess.run(["mv", new_file_path, old_file_path])
+
 
 @celery_app.task
 def download_track(app):
@@ -35,7 +47,7 @@ def download_track(app):
             # read search queries and set proper attributes for database entry and download script
             with open("dl_data/search_queries", "r") as f:
                 data = [line.rstrip() for line in f.readlines()]
-                # num_queries and downloads are needed 
+                # num_queries and downloads are needed
                 # so program knows when all downloads have completed
                 num_queries = len(data)
                 logger.debug(f"RECEIVED {num_queries} SEARCH QUERIES")
@@ -46,7 +58,9 @@ def download_track(app):
                     logger.debug(f"DATA RECEIVED: {query}")
                     # remove illegal characters and spaces from filename
                     filename = re.sub(
-                        r'(\||%|&|:|;|,|!|-|\*|\+|#|\\|/|\[|"|\]|\?)', "", query["filename"]
+                        r'(\||%|&|:|;|,|!|-|\*|\+|#|\\|/|\[|"|\]|\?)',
+                        "",
+                        query["filename"],
                     ).replace(" ", "_")
                     # removing leading . in filename
                     filename = re.sub(r"^\.", "", filename)
@@ -54,16 +68,14 @@ def download_track(app):
                     title = query["filename"]
                     logger.debug(f"TITLE: {title}")
                     # remove the (#) that are added by discogs for artists with the same name
-                    artist = re.sub(
-                        r"\s\(\d+\)", "", query["artist"]
-                    ).rstrip()
+                    artist = re.sub(r"\s\(\d+\)", "", query["artist"]).rstrip()
                     logger.debug(f"ARTIST: {artist}")
                     search_query = query["search_query"]
                     logger.debug(f"SEARCH QUERY: {search_query}")
                     config = query["config"]
                     logger.debug(f"CONFIG: {config}")
                     discogs_link = query["discogs_link"]
-                    file_path = f'{radio_path}/new/{filename}.opus'
+                    file_path = f"{radio_path}/new/{filename}.opus"
                     logger.debug(f"FILE PATH: {file_path}")
                     # initiate the download
                     logger.info(f"Downloading {title}...")
@@ -75,10 +87,10 @@ def download_track(app):
                             artist,
                             search_query,
                             config,
-                            discogs_link
+                            discogs_link,
                         ],
                         stdout=subprocess.PIPE,
-                        stderr=subprocess.STDOUT
+                        stderr=subprocess.STDOUT,
                     )
                     logger.debug(f"DOWNLOAD SCRIPT EXIT CODE: {result.returncode}")
                     logger.info(result.stdout.decode())
@@ -93,10 +105,11 @@ def download_track(app):
                         config=config,
                         station="new",
                         file_path=file_path,
-                        discogs_link=discogs_link
+                        discogs_link=discogs_link,
                     )
-                    db.session.add(new_track)
-                    db.session.commit()
+                    with db.session.begin():
+                        db.session.add(new_track)
+                        # db.session.commit()
                     print("Done!")
                     # increments downloads counter until
                     # downloads = number of queries
@@ -121,7 +134,9 @@ def download_track(app):
                 # each "link" is in the format: <URL>;<artist>;<title>
                 # create a list of tuples split by the semicolons
                 for line in lines:
-                    links.append((line.split(";")[0], line.split(";")[1], line.split(";")[2]))
+                    links.append(
+                        (line.split(";")[0], line.split(";")[1], line.split(";")[2])
+                    )
             if links == []:
                 logger.info("No videos to download")
                 return
@@ -130,7 +145,7 @@ def download_track(app):
             for file in os.listdir(f"{radio_path}/new"):
                 # don't include hidden files
                 # but include files that start with more than one '.'
-                regex = r'^\.[^\.].+'
+                regex = r"^\.[^\.].+"
                 if re.match(regex, file):
                     logger.debug(f"SKIPPING HIDDEN FILE: {file}")
                     continue
@@ -144,12 +159,20 @@ def download_track(app):
                 link = video_data[0].strip()
                 logger.debug(f"PARSED LINK FROM DOWNLOAD DATA: {link}")
                 logger.debug(f"PARSED CHANNEL_ID FROM DOWNLOAD DATA: {video_data[1]}")
-                sub = db.session.query(Subs).filter_by(channel_id=video_data[1].strip()).scalar()
+                sub = (
+                    db.session.query(Subs)
+                    .filter_by(channel_id=video_data[1].strip())
+                    .scalar()
+                )
                 artist = sub.channel_name
                 logger.debug(f"CHANNEL_ID IS {artist}")
                 # convert regex to raw string
-                logger.debug(f"REGEX PATTERN RECEIVED FROM DATABASE: {sub.video_title_regex}")
-                video_title_regex = sub.video_title_regex #.encode("unicode-escape").decode()
+                logger.debug(
+                    f"REGEX PATTERN RECEIVED FROM DATABASE: {sub.video_title_regex}"
+                )
+                video_title_regex = (
+                    sub.video_title_regex
+                )  # .encode("unicode-escape").decode()
                 regex_type = sub.regex_type
                 video_title = video_data[2].strip()
                 # check if using regex
@@ -159,13 +182,17 @@ def download_track(app):
                     # check if title matches user's regex
                     matches = re.match(video_title_regex, video_title)
                     if matches == None:
-                        logger.debug(f"VIDEO TITLE DOES NOT MATCH PATTERN: {video_title_regex}")
+                        logger.debug(
+                            f"VIDEO TITLE DOES NOT MATCH PATTERN: {video_title_regex}"
+                        )
                     else:
-                    # if it matches, check regex type from database to see which
-                    # capture group is the artist and which is the title
-                    #if matches is not None:
-                    #    logger.debug(f"FOUND A MATCH: {matches}")
-                        logger.debug(f"VIDEO TITLE MATCHES REGEX PATTHER: {video_title_regex}")
+                        # if it matches, check regex type from database to see which
+                        # capture group is the artist and which is the title
+                        # if matches is not None:
+                        #    logger.debug(f"FOUND A MATCH: {matches}")
+                        logger.debug(
+                            f"VIDEO TITLE MATCHES REGEX PATTHER: {video_title_regex}"
+                        )
                         logger.debug(f"REGEX IS TYPE: {regex_type}")
                         match regex_type:
                             case "title first":
@@ -200,15 +227,17 @@ def download_track(app):
                     track_name = result.stdout.decode()
                     print(f"TRACK TITLE BEFORE UPDATING DATA: {track_name}")
                     logger.debug(f"TRACK TITLE BEFORE UPDATING DATA: {track_name}")
-                    file_path, title = update_track_data(track_name, artist, video_title)
+                    file_path, title = update_track_data(
+                        track_name, artist, video_title
+                    )
                     logger.debug(f"DOWNLOADED TRACK: {title}")
                     logger.debug(f"DOWNLOADED FILE PATH: {file_path}")
                     title_is_allowed = [True]
                     for disallowed_title in disallowed_titles:
                         if re.match(title.rstrip(), disallowed_title):
-                           logger.debug(f"DISALLOWED TITLE FOUND: {title}")
-                           title_is_allowed[0] = False
-                           break
+                            logger.debug(f"DISALLOWED TITLE FOUND: {title}")
+                            title_is_allowed[0] = False
+                            break
                     if title_is_allowed[0]:
                         new_track = Tracks(
                             title=title,
@@ -218,8 +247,9 @@ def download_track(app):
                             station="new",
                             file_path=file_path,
                         )
-                        db.session.add(new_track)
-                        db.session.commit()
+                        with db.session.begin():
+                            db.session.add(new_track)
+                            # db.session.commit()
                         logger.debug(f"ADDED FILE {file_path} TO DATABASE")
                         logger.debug(f"TRACK TITLE: {title}")
                         logger.debug(f"ARTIST: {artist}")
@@ -227,10 +257,17 @@ def download_track(app):
                     # this will delete database entries for files skipped by download script's match filter
                     else:
                         if os.path.exists(file_path):
-                            entry_to_delete = db.session.query(Tracks).filter_by(file_path=file_path).one()
-                            logger.debug(f"DELETING DATABASE ENTRY FOR {title}. THIS ENTRY WAS BLOCKED BY THE DOWNLOAD SCRIPT")
-                            db.session.delete(entry_to_delete)
-                            db.session.commit()
+                            with db.session.begin():
+                                entry_to_delete = (
+                                    db.session.query(Tracks)
+                                    .filter_by(file_path=file_path)
+                                    .one()
+                                )
+                                logger.debug(
+                                    f"DELETING DATABASE ENTRY FOR {title}. THIS ENTRY WAS BLOCKED BY THE DOWNLOAD SCRIPT"
+                                )
+                                db.session.delete(entry_to_delete)
+                                # db.session.commit()
                 # increments downloads counter until
                 # downloads = number of links
                 if downloads == num_links:

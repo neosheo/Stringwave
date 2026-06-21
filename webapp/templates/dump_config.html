@@ -1,46 +1,57 @@
-{% extends 'base.html' %}
-
-{% block title %}
-Current Configurations
-{% endblock %}
-
-{% block content %}
-	<form class="subs-manager" method="GET" action="/cogmera/backup_configs">
-		<button class="button sub-button linea-icon" type="submit">Backup Configurations</button>
-	</form>
-	<table class="tablemobile">
-		<tbody>
-			<tr>
-				<th scope="col" class="box header">ID</th>
-				<th scope="col" class="box header">Genres</th>
-				<th scope="col" class="box header">Styles</th>
-				<th scope="col" class="box header">Decade</th>
-				<th scope="col" class="box header">Year</th>
-				<th scope="col" class="box header">Country</th>
-				<th scope="col" class="box header">Sort Method</th>
-				<th scope="col" class="box header">Sort Order</th>
-				<th scope="col" class="box header">Albums to Find</th>
-				<th scope="col" class="box header">Delete</th>
-			</tr>
-		</tbody>
-		{% for config in configs %}
-		<form method="POST" id="delete" action="/cogmera/delete_config"></form>
-		<tr>
-			<td class="box">{{ config.config_id }}</td>
-			<td class="box">{{ config.genres.replace(';', ', ') }}</td>
-			<td class="box">{{ config.styles.replace(';', ', ') }}</td>
-			<td class="box">{{ config.decade }}</td>
-			<td class="box">{{ config.year }}</td>
-			<td class="box">{{ config.country }}</td>
-			<td class="box">{{ config.sort_method }}</td>
-			<td class="box">{{ config.sort_order.replace('D', 'desc').replace('A', 'asc') }}</td>
-			<td class="box">{{ config.albums_to_find }}</td>
-			<td class="box">
-				<button class="button linea-icon" type="submit" form="delete" name="delete_config" value="{{ config.config_id }}">
-					<img src="{{ url_for('static', filename='images/basic_trashcan.svg') }}" alt="Del" width="30" height="30">
-				</button>
-			</td>
-		</tr>
-		{% endfor %}
-	</table>
+{% extends 'base.html' %} {% block title %} Current Configurations {% endblock
+%} {% block content %}
+<form class="subs-manager" method="GET" action="/cogmera/backup_configs">
+  <button class="button sub-button linea-icon" type="submit">
+    Backup Configurations
+  </button>
+</form>
+<table class="tablemobile">
+  <tbody>
+    <tr>
+      <th scope="col" class="box header">ID</th>
+      <th scope="col" class="box header">Genres</th>
+      <th scope="col" class="box header">Styles</th>
+      <th scope="col" class="box header">Decade</th>
+      <th scope="col" class="box header">Year</th>
+      <th scope="col" class="box header">Country</th>
+      <th scope="col" class="box header">Sort Method</th>
+      <th scope="col" class="box header">Sort Order</th>
+      <th scope="col" class="box header">Albums to Find</th>
+      <th scope="col" class="box header">Delete</th>
+    </tr>
+  </tbody>
+  {% for config in configs %} {% if config.is_active and config.config_id != 0
+  %}
+  <form method="POST" id="delete" action="/cogmera/delete_config"></form>
+  <tr>
+    <td class="box">{{ config.config_id }}</td>
+    <td class="box">{{ config.genres.replace(';', ', ') }}</td>
+    <td class="box">{{ config.styles.replace(';', ', ') }}</td>
+    <td class="box">{{ config.decade }}</td>
+    <td class="box">{{ config.year }}</td>
+    <td class="box">{{ config.country }}</td>
+    <td class="box">{{ config.sort_method }}</td>
+    <td class="box">
+      {{ config.sort_order.replace('D', 'desc').replace('A', 'asc') }}
+    </td>
+    <td class="box">{{ config.albums_to_find }}</td>
+    <td class="box">
+      <button
+        class="button linea-icon"
+        type="submit"
+        form="delete"
+        name="delete_config"
+        value="{{ config.config_id }}"
+      >
+        <img
+          src="{{ url_for('static', filename='images/basic_trashcan.svg') }}"
+          alt="Del"
+          width="30"
+          height="30"
+        />
+      </button>
+    </td>
+  </tr>
+  {% endif %} {% endfor %}
+</table>
 {% endblock %}

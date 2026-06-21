@@ -1,7 +1,7 @@
 radio/new/*
 radio/main/*
 venv
-.env
+.*env*
 __pycache__
 config/*
 logs/*
@@ -59,7 +59,6 @@ docker_scripts
 scripts/yt-test.sh
 build_regex.sh
 regex.txt
-*.sql
 styles_to_change.py
 test.sh
 subs.txt
@@ -78,4 +77,7 @@ webapp/static/uploads/*
 subs*.txt
 *.bkp
 .venv
+connect_db.sh
 api_test.py
+postgres_*
+webapp/instance/*.sql
