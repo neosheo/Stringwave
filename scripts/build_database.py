@@ -48,8 +48,8 @@ for station in stations:
 
         # old versions put the string "pf" as config for pipefeeder tracks
         # replace this with 0 to prevent postgres from throwing a type error
-        if type(track["config"][0]) == str:
-            track["config"][0] = 0
+        if track["config"][0] == "pf":
+            track["config"] = ["0"]
             track.save()
 
         # placeholder if track_type isn't present
@@ -94,7 +94,7 @@ for station in stations:
             db.session.add(
                 Config(
                     config_id=0,
-                    genres="",  
+                    genres="",
                     styles="",
                     decade="",
                     year="",

@@ -20,7 +20,6 @@ services:
       - ./radio:/stringwave/radio
       # - ./scripts:/stringwave/scripts
       - ./logs:/stringwave/logs
-      # - ./dl_data:/stringwave/dl_data/
       # - ./webapp/templates/:/stringwave/webapp/templates/
       # - ./webapp/static/:/stringwave/webapp/static/
       - upload_dir:/stringwave/webapp/static/uploads/

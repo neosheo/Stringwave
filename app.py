@@ -454,7 +454,6 @@ def add_sub():
 @login_required
 def del_sub():
     channel_id = request.form["unsubscribe"]
-    db.session.query(Subs).filter_by(channel_id=channel_id).delete()
     channel = db.session.get(Subs, channel_id)
     try:
         db.session.delete(channel)
